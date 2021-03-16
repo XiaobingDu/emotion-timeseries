@@ -7,3 +7,5 @@ Training and Testing Codes for all three datasets.
 2. MovieGraphs Dataset
 3. LIRIS-ACCEDE Dataset
 
+- - try to use this code for learning emotions
+
