@@ -89,15 +89,15 @@ for epoch_num in range(num_epochs):
     adjust_learning_rate(optimizer, epoch_num, lr)
 
 ## Train:_________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
-    net.train()
+    net.train() #he state of model
     # Variables to track training performance:
     avg_tr_loss = 0
     for i, data in enumerate(trDataloader):
         st_time = time.time()
-        train, labels, F, Va, scene, audio = data
+        train, labels, F, Va, scene, audio = data #get training date
         labels1 = labels[0]
         labels2= labels[1]
-        if args['use_cuda']:
+        if args['use_cuda']: # use cuda
             train = torch.nn.Parameter(train).cuda()
             labels1 = torch.nn.Parameter(labels1).cuda()
             labels2 = torch.nn.Parameter(labels2).cuda()
@@ -106,7 +106,7 @@ for epoch_num in range(num_epochs):
             scene = torch.nn.Parameter(scene).cuda()
             audio = torch.nn.Parameter(audio).cuda()
 
-        train.requires_grad_()
+        train.requires_grad_() #backward
         labels1.requires_grad_()
         labels2.requires_grad_()
         F.requires_grad_()
