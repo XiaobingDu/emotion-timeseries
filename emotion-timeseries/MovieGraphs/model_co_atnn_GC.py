@@ -70,11 +70,13 @@ class MovieNet(nn.Module):
         #                           nn.ReLU(),
         #                           nn.Linear(self.embed_dim, self.attn_len),
         #                           nn.Softmax(dim=1))
+
         # Encoder computes hidden states from embeddings for each modality
         self.shared_encoder = cLSTM(6,self.h_dim, batch_first=True).cuda(device=device) 
         # self.encoder = nn.LSTM(self.embed_dim, self.h_dim, self.n_layers, batch_first=True)
         self.enc_h0 = nn.Parameter(torch.zeros(self.n_layers, 1, self.h_dim))
         self.enc_c0 = nn.Parameter(torch.zeros(self.n_layers, 1, self.h_dim))
+
         # Decodes targets and LSTM hidden states
         # self.decoder = nn.LSTM(1 + self.h_dim, self.h_dim, self.n_layers, batch_first=True)
         self.decoder = nn.LSTM(6, self.h_dim, self.n_layers, batch_first=True)

@@ -61,7 +61,7 @@ def adjust_learning_rate(optimizer, epoch, lr):
         for param_group in optimizer.param_groups:
             param_group['lr'] = lr
 
-#lculate CCC for SEND dataset
+#calculate CCC for SEND dataset
 def prsn(emot_score, labels):
     """Computes concordance correlation coefficient."""
 

@@ -24,7 +24,7 @@ args['trans_length'] = 300
 args['scene_length'] = 300
 args['desc_length'] = 300
 args['sit_length'] = 300
-args['out_layer'] = 27
+args['out_layer'] = 27 #26种情绪类别 + neutral
 args['dropout_p rob'] = 0.5
 args['use_cuda'] = True
 args['encoder_size'] = 64
@@ -37,7 +37,7 @@ args['optimizer'] = 'adam'
 args['embed_dim'] = 128
 args['h_dim'] = 512
 args['n_layers'] = 1
-args['attn_len'] = 15
+args['attn_len'] = 15 # 15个 modality pairs
 num_epochs = 10
 batch_size = 1
 lr = 1e-2
@@ -120,12 +120,16 @@ for epoch_num in range(num_epochs):
         log_softmax_output = log_softmax(emot_score)
         loss = - torch.sum(log_softmax_output * labels) / emot_score.shape[0]
         losses.update(loss.item(), train.size(0))
+
         prec1 = accuracy_multihots(emot_score, labels, topk=(1, 3))
         top1.update(prec1[0], train.size(0))
         acc += prec1[0]
+
+        #每一个epoch计算一次average loss
         epoch_loss += loss
         optimizer.zero_grad()
         loss.backward()
+
         a = torch.nn.utils.clip_grad_norm_(net.parameters(), 10)
         optimizer.step()
     print("Epoch no:",epoch_num+1, "| Avg train loss:", format(epoch_loss/len(trSet),'0.4f'), "| Training Accuracy Value:", format(acc/len(trSet)) )
@@ -159,6 +163,7 @@ for epoch_num in range(num_epochs):
         log_softmax_output = log_softmax(emot_score)
         loss = - torch.sum(log_softmax_output * labels) / emot_score.shape[0]
         losses.update(loss.item(), val.size(0))
+
         prec1 = accuracy_multihots(emot_score, labels, topk=(1, 3))
         top1.update(prec1[0], val.size(0))
         epoch_loss += loss
