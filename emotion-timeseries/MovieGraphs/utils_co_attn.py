@@ -58,10 +58,15 @@ class MovieGraphDataset(Dataset):
                 emot_labels = self.new_data[movie][7][f]
                 if len(emot_labels) == 0:
                     emot_labels.append('None')
+                # 26种 emotion words: list
                 labels = list(twenty_six_labels.keys())
+                #将emotion words 映射到 integer: dict
                 integer_mapping = {x: i for i, x in enumerate(labels)}
+                #0,1,2,3.... integer labels
                 vec = [integer_mapping[word] for word in labels]
+                # one-hot label
                 encoded = to_categorical(vec)
+
                 emot_encoding = []
                 for emot in emot_labels:
                     emot_encoding.append(list(encoded[integer_mapping[emot]]))
