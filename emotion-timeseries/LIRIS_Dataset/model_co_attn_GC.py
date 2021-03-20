@@ -1,3 +1,6 @@
+#-*-coding:utf-8-*-
+
+
 from __future__ import division
 import torch
 from torch.autograd import Variable
@@ -64,31 +67,38 @@ class MovieNet(nn.Module):
         self.att_linear5 = nn.Sequential(nn.Dropout(self.dropout),nn.Linear(self.h_dim * 2, 1), nn.LeakyReLU()) #nn.Linear(self.h_dim * 2, 1)
         self.att_linear6 = nn.Sequential(nn.Dropout(self.dropout),nn.Linear(self.h_dim * 2, 1), nn.LeakyReLU()) #nn.Linear(self.h_dim * 2, 1)
 
-        #unimodal single-modality t dimension of output is same as co-attention
+        #unimodal single-modality for cLSTM
+        #unimodal vs. multi-modal
         self.unimodal_face = nn.Sequential(nn.Dropout(self.dropout),nn.Linear(self.h_dim, 1), nn.LeakyReLU())
         self.unimodal_va = nn.Sequential(nn.Dropout(self.dropout),nn.Linear(self.h_dim, 1), nn.LeakyReLU())
         self.unimodal_audio = nn.Sequential(nn.Dropout(self.dropout),nn.Linear(self.h_dim, 1), nn.LeakyReLU())
         self.unimodal_scene = nn.Sequential(nn.Dropout(self.dropout),nn.Linear(self.h_dim, 1), nn.LeakyReLU()) #nn.Linear(self.h_dim,1)
         
+        #Encoder Module
         #cLSTM module simultaneously
-        #4 represents four features
+        #4 represents the used 4 features
         self.shared_encoder = cLSTM(4,self.h_dim, batch_first=True).cuda(device=device)
-        #
+        #To ensure update parameters during training: nn.Parameter
+        #encoder: init parameters
+        #shape = [1,h_dim]
         self.enc_h0 = nn.Parameter(torch.rand(self.n_layers, 1, self.h_dim))
         self.enc_c0 = nn.Parameter(torch.rand(self.n_layers, 1, self.h_dim))
 
+        #Decoder Module
         # Decodes targets and LSTM hidden states
         # self.decoder = nn.LSTM(1 + self.h_dim, self.h_dim, self.n_layers, batch_first=True)
+        #6 represents the context vector length
         self.decoder = nn.LSTM(6, self.h_dim, self.n_layers, batch_first=True)
+        #decoder: ini parameters
         self.dec_h0 = nn.Parameter(torch.rand(self.n_layers, 1, self.h_dim))
         self.dec_c0 = nn.Parameter(torch.rand(self.n_layers, 1, self.h_dim))
 
         # Final MLP output network
-        self.out = nn.Sequential(nn.Linear(self.h_dim, 2),#128
+        self.out = nn.Sequential(nn.Linear(self.h_dim, 2),#128 #h_dim -> 2
                                 #  nn.LeakyReLU(),
                                 #  nn.Linear(512, 8),
                                  nn.LeakyReLU(),
-                                 nn.Linear(2, self.out_layer))
+                                 nn.Linear(2, self.out_layer)) #2 -> out_layer
 
         # Store module in specified device (CUDA/CPU)
         self.device = (device if torch.cuda.is_available() else
@@ -107,18 +117,23 @@ class MovieNet(nn.Module):
         batch_size, seq_len = x.shape[0], x.shape[1]
 
         # Set initial hidden and cell states for encoder
-        h0 = self.enc_h0.repeat(1, batch_size, 1)
+        h0 = self.enc_h0.repeat(1, batch_size, 1) # 将enc_h0 在第一维上重复batch_size次，在第二维上重复1次
         c0 = self.enc_c0.repeat(1, batch_size, 1)
         # Convert raw features into equal-dimensional embeddings
         # embed = self.embed(x)
 
+        # 1.linear transform: dim = h_dim
         face_features_rep = self.face_linear(face_features)
         va_features_rep = self.va_linear(va_features)
         audio_features_rep = self.audio_linear(audio_features)
         scene_features_rep = self.scene_linear(scene_features)
 
-        concat_features = torch.cat([face_features_rep, va_features_rep], dim=-1)
+        #Co-attention Scores
+        #eq.7
+        #2. co-attention
+        concat_features = torch.cat([face_features_rep, va_features_rep], dim=-1) # dim = -1; 第一维度拼接；h_dim*2
         # concat_features = torch.tanh(concat_features)
+        # att_1
         att_1 = self.att_linear1(concat_features).squeeze(-1)
         att_1 = torch.softmax(att_1, dim=-1)
 
@@ -147,7 +162,9 @@ class MovieNet(nn.Module):
         att_6 = self.att_linear6(concat_features).squeeze(-1)
         att_6 = torch.softmax(att_6, dim=-1)
 
-
+        #cLSTM Encoder
+        #eq.5
+        #befor  input into cLSTM
         unimodal_va_input= va_features_rep
         unimodal_va_input = self.unimodal_va(unimodal_va_input).squeeze(-1)
         unimodal_va_input = torch.softmax(unimodal_va_input, dim=-1)
@@ -165,44 +182,56 @@ class MovieNet(nn.Module):
         unimodal_scene_input = torch.softmax(unimodal_scene_input, dim=-1)
         # print(unimodal_face_input.shape, unimodal_va_input.shape, unimodal_audio_input.shape, unimodal_scene_input.shape)
 
+        # 列向拼接
+        #X1:T =x1:T ⊘x1:T ⊘···⊘x1:T
         enc_input_unimodal_cat=torch.cat([unimodal_face_input, unimodal_va_input, unimodal_audio_input, unimodal_scene_input], dim=-1)
         # print(enc_input_unimodal_cat.shape, batch_size, seq_len)
         enc_input_unimodal_cat = enc_input_unimodal_cat.reshape(batch_size, seq_len, 4)
+        #α=α1 ⊕α2 ⊕···⊕αm
         attn=torch.cat([att_1, att_2, att_3, att_4, att_5, att_6], dim=-1)
         attn = attn.reshape(batch_size, seq_len, self.attn_len)
 
-       
+        # cLSTM Encoder
+        #eq.6
+        # output of cLSTM
         enc_out, _ = self.shared_encoder(enc_input_unimodal_cat)
         # Undo the packing
         # enc_out, _ = pad_packed_sequence(enc_out, batch_first=True)
 
+        #eq.8
+        #context vector d
         # Convolve output with attention weights
         # i.e. out[t] = a[t,0]*in[t] + ... + a[t,win_len-1]*in[t-(win_len-1)]
         context = convolve(enc_out, attn)
 
+        #Decoder
         # Set initial hidden and cell states for decoder
         h0 = self.dec_h0.repeat(1, batch_size, 1)
         c0 = self.dec_c0.repeat(1, batch_size, 1)
         if target is not None:
             # print(target[0].shape)
             # exit()
+            #target == GT labels
             target_0 = target[0].float().reshape(batch_size, seq_len, 1)
             target_0 = torch.nn.Parameter(target_0).cuda()
             target_1 = target[1].float().reshape(batch_size, seq_len, 1)
             target_1 = torch.nn.Parameter(target_1).cuda()
             # print(pad_shift(target, 1, tgt_init), context.shape)
 
+            #eq.9
             # Concatenate targets from previous timesteps to context
+            #将previous time label与context拼接
+            #targets from previous timesteps 怎样得到的呢？怎样传入呢？
             dec_in = torch.cat([pad_shift(target_0, 1, tgt_init),pad_shift(target_1, 1, tgt_init), context], 2)
             dec_out, _ = self.decoder(dec_in, (h0, c0))
             # Undo the packing
             dec_out = dec_out.reshape(-1, self.h_dim)
 
-
-           
             # dec_in = context           
             # dec_out, _ = self.decoder(dec_in, (h0, c0))            
             # dec_out = dec_out.reshape(-1, self.h_dim)
+            #eq.10
+            #
             predicted = self.out(dec_out).view(batch_size, seq_len, self.out_layer)
         else:
             # Use earlier predictions to predict next time-steps
@@ -217,7 +246,7 @@ class MovieNet(nn.Module):
                 # Computer prediction from output state
                 p = self.out(o.view(-1, self.h_dim))
                 predicted.append(p.unsqueeze(1))
-            predicted = torch.cat(predicted, dim=1)
+            predicted = torch.cat(predicted, dim=1) ##save the predict of every timesteps
         # Mask target entries that exceed sequence lengths
         # predicted = predicted * mask.float()
         return predicted, enc_input_unimodal_cat, self.shared_encoder, att_1, att_2, att_3, att_4, att_5, att_6

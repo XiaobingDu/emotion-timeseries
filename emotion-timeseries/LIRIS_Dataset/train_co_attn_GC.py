@@ -89,7 +89,7 @@ for epoch_num in range(num_epochs):
     adjust_learning_rate(optimizer, epoch_num, lr)
 
 ## Train:_________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
-    net.train() #he state of model
+    net.train() #the state of model
     # Variables to track training performance:
     avg_tr_loss = 0
     for i, data in enumerate(trDataloader):
@@ -124,7 +124,10 @@ for epoch_num in range(num_epochs):
         labels1 = labels1.T
         labels2 = labels2.T
 
+        # mamx-min norm
         emot_score = (2*(emot_score - torch.min(emot_score))/(torch.max(emot_score) - torch.min(emot_score))) -1
+        # mse loss
+        #两种label的loss之和
         l = mse(emot_score[:,0].unsqueeze(dim=1), labels1) + mse(emot_score[:,1].unsqueeze(dim=1), labels2)
 
         # Backprop and update weights
@@ -134,7 +137,6 @@ for epoch_num in range(num_epochs):
         optimizer.step()
         # scheduler.step()
         avg_tr_loss += l.item()
-        
 
     # print(GC_est)
     print("Epoch no:",epoch_num+1, "| Avg train loss:",format(avg_tr_loss/len(trSet),'0.4f') )
@@ -174,20 +176,27 @@ for epoch_num in range(num_epochs):
         emot_score = (2*(emot_score - torch.min(emot_score))/(torch.max(emot_score) - torch.min(emot_score))) -1
         # labels1 = (2*(labels1 - torch.min(labels1)))/(torch.max(labels1) - torch.min(labels1)) -1
         # labels2 = (2*(labels2 - torch.min(labels2)))/(torch.max(labels2) - torch.min(labels2)) -1
+        #每一个batch的average mse loss相加
         valmse += mse(emot_score[:, 0].unsqueeze(dim=1), labels1)/labels1.shape[0]
         aromse += mse(emot_score[:, 1].unsqueeze(dim=1), labels2)/labels2.shape[0]
 
+        #Pearson correlation
         valpcc += pearsonr(emot_score[:, 0].unsqueeze(dim=1).cpu().detach().numpy(), labels1.cpu().detach().numpy())[0]
         aropcc += pearsonr(emot_score[:, 1].unsqueeze(dim=1).cpu().detach().numpy(), labels2.cpu().detach().numpy())[0]
+
+    #每一个epoch loss平均
+    #每一个epoch pcc平均
     epoch_valmse = valmse/len(valSet)
     epoch_aromse = aromse/len(valSet)
     epoch_valpcc = valpcc / len(valSet)
     epoch_aropcc = aropcc / len(valSet)
+    #validation loss
     val_loss=epoch_valmse
     # val_loss=(epoch_aromse+epoch_valmse)/2
     print("Epoch Valence MSE:", epoch_valmse.item() , "Epoch Arousal MSE:", epoch_aromse.item(),"\nEpoch Valence PCC:", epoch_valpcc.item() ,
           "Epoch Arousal PCC:", epoch_aropcc.item(),"\n","==========================")
 
+    #checkpoint
     checkpoint = {
         'epoch': epoch_num + 1,
         'valid_loss_min_valence': epoch_valmse,
@@ -195,23 +204,22 @@ for epoch_num in range(num_epochs):
         'state_dict': net.state_dict(),
         'optimizer': optimizer.state_dict(),
     }
-        
     # save checkpoint
     save_ckp(checkpoint, False, checkpoint_path+"/train_co_attn_GC_current_checkpoint.pt", best_model_path+"/train_co_attn_GC_best_model.pt")
     
     ## TODO: save the model if validation loss has decreased
+    #比较目前val_loss 与 valid_loss_min
     if val_loss <= valid_loss_min:
         print('Validation loss decreased ({:.6f} --> {:.6f}).  Saving model ...'.format(valid_loss_min,val_loss))
         # save checkpoint as best model
         save_ckp(checkpoint, True, checkpoint_path+"/train_co_attn_GC_current_checkpoint.pt", best_model_path+"/train_co_attn_GC_best_model.pt")
         valid_loss_min = val_loss
-    
 
 net=MovieNet(args)
 net, optimizer, start_epoch, valid_loss_min_valence, valid_loss_min_arousal = load_ckp(best_model_path+"/train_co_attn_GC_best_model.pt", net, optimizer)
+#至此，training 和 validation结束
 
-
-
+#testing
 net.eval()
 testmse = 0
 aromse = 0
@@ -240,18 +248,22 @@ for i, data in enumerate(testDataloader):
     labels1 = labels1.T
     labels2 = labels2.T
 
+    #min-max norm
     emot_score = (2*(emot_score - torch.min(emot_score))/(torch.max(emot_score) - torch.min(emot_score))) -1
     print(emot_score)
     # labels1 = (2*(labels1 - torch.min(labels1)))/(torch.max(labels1) - torch.min(labels1)) -1
     # labels2 = (2*(labels2 - torch.min(labels2)))/(torch.max(labels2) - torch.min(labels2)) -1
+    #mse loss
     testmse += mse(emot_score[:, 0].unsqueeze(dim=1), labels1)/labels1.shape[0]
     aromse += mse(emot_score[:, 1].unsqueeze(dim=1), labels2)/labels2.shape[0]
 
+    #pearson correlation
     testpcc += pearsonr(emot_score[:, 0].unsqueeze(dim=1).cpu().detach().numpy(), labels1.cpu().detach().numpy())[0]
     aropcc += pearsonr(emot_score[:, 1].unsqueeze(dim=1).cpu().detach().numpy(), labels2.cpu().detach().numpy())[0]
-
+#average loss
 test_testmse = testmse/len(testSet)
 test_aromse = aromse/len(testSet)
+#average pcc
 test_testpcc = testpcc / len(testSet)
 test_aropcc = aropcc / len(testSet)
 

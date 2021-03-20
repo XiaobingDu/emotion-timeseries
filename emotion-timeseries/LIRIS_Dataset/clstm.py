@@ -1,3 +1,5 @@
+#-*-coding:utf-8-*-
+
 import torch
 import torch.nn as nn
 from copy import deepcopy
@@ -23,15 +25,15 @@ class LSTM(nn.Module):
     def forward(self, X, hidden=None, truncation=None):
         self.lstm.flatten_parameters()
         if hidden is None:
-            hidden = self.init_hidden(X.shape[0])
+            hidden = self.init_hidden(X.shape[0]) #X.shape[0] == batch_size
 
         if truncation is None:
             X, hidden = self.lstm(X, hidden)
         else:
-            T = X.shape[1]
+            T = X.shape[1] # T == sequence
             X_forward = []
-            for t in range(0, T, truncation):
-                lstm_out, hidden = self.lstm(X[:, t:min(t+truncation, T)],
+            for t in range(0, T, truncation): # truncation: 0, 0+truncation, 0+truncation*2,...
+                lstm_out, hidden = self.lstm(X[:, t:min(t+truncation, T)], #min(t+truncation,T)为了最后的边界取T
                                              hidden)
                 hidden = (hidden[0].detach(), hidden[1].detach())
                 X_forward.append(lstm_out)
