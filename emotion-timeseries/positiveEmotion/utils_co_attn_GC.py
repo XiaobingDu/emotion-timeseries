@@ -32,7 +32,7 @@ class MediaEvalDataset(Dataset):
         sample_nums = self.feature.shape[0]
         time_win = self.feature.shape[1]
         dim = self.feature.shape[2]
-        PSD_dim = dim / self.channel
+        PSD_dim = int(dim / self.channel)
         data = np.reshape(self.feature, [sample_nums, time_win, self.channel, PSD_dim])
         # array转换成torch tensor，为了使用 data.unsquezze_(2)和 torch.cat((),dim=2)
         data = torch.Tensor(data)

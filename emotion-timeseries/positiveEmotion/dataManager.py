@@ -177,9 +177,9 @@ def dataSplit(path1,all_sub,db_name ):
     #train data
     for s in range(len(train_set)):
 
-        # print('sub.....', s)
+        print('sub.....', s)
         for v in range(len(train_set[s])):
-            # print('video clip....', v)
+            print('video clip....', v)
             # print(train_set[s][v]['feature_arr'].shape)
             if s == 0:
                 feature = train_set[s][v]['feature_arr']
@@ -203,9 +203,9 @@ def dataSplit(path1,all_sub,db_name ):
     #val data
     for s in range(len(val_set)):
 
-        # print('sub.....', s)
+        print('sub.....', s)
         for v in range(len(val_set[s])):
-            # print('video clip....', v)
+            print('video clip....', v)
             # print(val_set[s][v]['feature_arr'].shape)
             if s == 0:
                 feature = val_set[s][v]['feature_arr']
@@ -229,9 +229,9 @@ def dataSplit(path1,all_sub,db_name ):
     #test data
     for s in range(len(test_set)):
 
-        # print('sub.....', s)
+        print('sub.....', s)
         for v in range(len(test_set[s])):
-            # print('video clip....', v)
+            print('video clip....', v)
             # print(test_set[s][v]['feature_arr'].shape)
             if s == 0:
                 feature = test_set[s][v]['feature_arr']
