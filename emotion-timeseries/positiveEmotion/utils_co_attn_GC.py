@@ -13,106 +13,116 @@ import shutil
 #___________________________________________________________________________________________________________________________
 
 # New Dataloader for MovieClass
-def MediaEvalDataset(self, feature, dis, idx):
+class MediaEvalDataset(Dataset):
+    #初始化函数，得到数据
+    def __init__(self,feature, dis, idx):
+        print('*************')
+        self.feature = feature
+        self.dis = dis
+        self.idx = idx
+        print('-----------')
+        # 对应5个脑区的特征
+        # idx = [[0,1,2,3,4,5,6],[7,11,12,16,17,21,22,26],[8,9,10,13,14,15,18,19,20],[23,24,25],[27,28,29]]
+        F_idx = idx[0]  # [0,1,2,3,4,5,6]
+        T_idx = idx[1]  # [7,11,12,16,17,21,22,26]
+        C_idx = idx[2]  # [8,9,10,13,14,15,18,19,20]
+        P_idx = idx[3]  # [23,24,25]
+        O_idx = idx[4]  # [27,28,29]
+        sample_nums = self.feature.shape[0]
+        time_win = self.feature.shape[1]
+        dim = self.feature.sahpe[2]
+        PSD_dim = dim / self.channel
+        data = np.reshape(self.feature, [sample_nums, time_win, self.channel, PSD_dim])
+        # array转换成torch tensor，为了使用 data.unsquezze_(2)和 torch.cat((),dim=2)
+        data = torch.Tensor(data)
+        # data = np.reshape(data,[self.channel, sample_nums*time_win*PSD_dim])
 
-    print('*************')
-    self.feature = feature
-    self.dis = dis
-    self.idx = idx
-    self.num_samples = feature.shape[0]
+        # frontal channel
+        for i in F_idx:
+            print('F_idx:', i)
+            if i == 0:
+                Frontal_feature = data[:, :, i, :]
+                Frontal_feature.unsqueeze_(2)
+            else:
+                Frontal_feature = torch.cat((Frontal_feature, data[:, :, i, :].unsquezze_(2)), dim=2)
+
+        Frontal_ch = Frontal_feature.shape[2]
+        # reshape
+        # Frontal_feature = np.reshape(Frontal_feature,[sample_nums,time_win,Frontal_ch,PSD_dim])
+        print('Frontal_feature shape:', Frontal_feature.shape)
+
+        # Temporal channel
+        for i in T_idx:
+            print('T_idx:', i)
+            if i == 0:
+                Temporal_feature = data[:, :, i, :]
+                Frontal_feature.unsqueeze_(2)
+            else:
+                Temporal_feature = torch.cat((Temporal_feature, data[:, :, i, :].unsquezze_(2)), dim=2)
+
+        Temporal_ch = Temporal_feature.shape[2]
+        print('Temporal_feature shape:', Temporal_feature.shape)
+
+        # Central channel
+        for i in C_idx:
+            print('C_idx:', i)
+            if i == 0:
+                Central_feature = data[:, :, i, :]
+                Central_feature.unsqueeze_(2)
+            else:
+                Central_feature = torch.cat((Central_feature, data[:, :, i, :].unsquezze_(2)), dim=2)
+
+        Central_ch = Central_feature.shape[2]
+        print('Central_feature shape:', Central_feature.shape)
+
+        # Parietal channel
+        for i in P_idx:
+            print('P_idx:', i)
+            if i == 0:
+                Parietal_feature = data[:, :, i, :]
+                Parietal_feature.unsqueeze_(2)
+            else:
+                Parietal_feature = torch.cat((Parietal_feature, data[:, :, i, :].unsquezze_(2)), dim=2)
+
+        Parietal_ch = Parietal_feature.shape[2]
+        print('Parietal_feature shape:', Parietal_feature.shape)
+
+        # Occipital channel
+        for i in O_idx:
+            print('O_idx:', i)
+            if i == 0:
+                Occipital_feature = data[:, :, i, :]
+                Occipital_feature.unsqueeze_(2)
+            else:
+                Occipital_feature = torch.cat((Occipital_feature, data[:, :, i, :].unsquezze_(2)), dim=2)
+
+        Occipital_ch = Occipital_feature.shape[2]
+        print('Occipital_feature shape:', Occipital_feature.shape)
+
+        Frontal = Frontal_feature
+        Temporal = Temporal_feature
+        Central = Central_feature
+        Parietal = Parietal_feature
+        Occipital = Occipital_feature
 
 
-    print('-----------')
-    #对应5个脑区的特征
-    #idx = [[0,1,2,3,4,5,6],[7,11,12,16,17,21,22,26],[8,9,10,13,14,15,18,19,20],[23,24,25],[27,28,29]]
-    idx = self.idx
 
-    F_idx = idx[0] #[0,1,2,3,4,5,6]
-    T_idx = idx[1] #[7,11,12,16,17,21,22,26]
-    C_idx = idx[2] #[8,9,10,13,14,15,18,19,20]
-    P_idx = idx[3] #[23,24,25]
-    O_idx = idx[4] #[27,28,29]
-    sample_nums = self.feature.shape[0]
-    time_win = self.feature.shape[1]
-    dim = self.feature.sahpe[2]
-    PSD_dim = dim/self.channel
-    data = np.reshape(self.feature,[sample_nums,time_win,self.channel,PSD_dim])
-    #array转换成torch tensor，为了使用 data.unsquezze_(2)和 torch.cat((),dim=2)
-    data = torch.Tensor(data)
-    # data = np.reshape(data,[self.channel, sample_nums*time_win*PSD_dim])
+    def __len__(self):
+        num_samples = self.feature.shape[0]
+        return num_samples
 
-    #frontal channel
-    for i in F_idx:
-        print('F_idx:',i)
-        if i == 0:
-            Frontal_feature = data[:,:,i,:]
-            Frontal_feature.unsqueeze_(2)
-        else:
-            Frontal_feature = torch.cat((Frontal_feature, data[:,:,i,:].unsquezze_(2)),dim=2)
+    def __getitem__(self, index):
+        Frontal = self.Frontal[index]
+        Temporal = self.Temporal[index]
+        Central = self.Central[index]
+        Parietal = self.Parietal[index]
+        Occipital = self.Occipital[index]
+        y = self.dis
 
-    Frontal_ch = Frontal_feature.shape[2]
-    #reshape
-    # Frontal_feature = np.reshape(Frontal_feature,[sample_nums,time_win,Frontal_ch,PSD_dim])
-    print('Frontal_feature shape:',Frontal_feature.shape)
+        # 将5个脑区的数据hstack
+        combined = np.hstack([Frontal, Temporal, Central, Parietal, Occipital])
 
-    #Temporal channel
-    for i in T_idx:
-        print('T_idx:', i)
-        if i == 0:
-            Temporal_feature = data[:,:,i,:]
-            Frontal_feature.unsqueeze_(2)
-        else:
-            Temporal_feature = torch.cat((Temporal_feature,data[:,:,i,:].unsquezze_(2)),dim=2)
-
-    Temporal_ch = Temporal_feature.shape[2]
-    print('Temporal_feature shape:', Temporal_feature.shape)
-
-    # Central channel
-    for i in C_idx:
-        print('C_idx:', i)
-        if i == 0:
-            Central_feature = data[:, :, i, :]
-            Central_feature.unsqueeze_(2)
-        else:
-            Central_feature = torch.cat((Central_feature, data[:, :, i, :].unsquezze_(2)), dim=2)
-
-    Central_ch = Central_feature.shape[2]
-    print('Central_feature shape:', Central_feature.shape)
-
-    # Parietal channel
-    for i in P_idx:
-        print('P_idx:', i)
-        if i == 0:
-            Parietal_feature = data[:, :, i, :]
-            Parietal_feature.unsqueeze_(2)
-        else:
-            Parietal_feature = torch.cat((Parietal_feature, data[:, :, i, :].unsquezze_(2)), dim=2)
-
-    Parietal_ch = Parietal_feature.shape[2]
-    print('Parietal_feature shape:', Parietal_feature.shape)
-
-    # Occipital channel
-    for i in O_idx:
-        print('O_idx:', i)
-        if i == 0:
-            Occipital_feature = data[:, :, i, :]
-            Occipital_feature.unsqueeze_(2)
-        else:
-            Occipital_feature = torch.cat((Occipital_feature, data[:, :, i, :].unsquezze_(2)), dim=2)
-
-    Occipital_ch = Occipital_feature.shape[2]
-    print('Occipital_feature shape:', Occipital_feature.shape)
-
-    Frontal = Frontal_feature
-    Temporal = Temporal_feature
-    Central = Central_feature
-    Parietal = Parietal_feature
-    Occipital = Occipital_feature
-    y = self.dis
-    #将5个脑区的数据hstack
-    combined = np.hstack([Frontal, Temporal, Central, Parietal, Occipital ])
-
-    return combined, y, Frontal, Temporal, Central, Parietal, Occipital
+        return combined, y, Frontal, Temporal, Central, Parietal, Occipital
 
 
 
