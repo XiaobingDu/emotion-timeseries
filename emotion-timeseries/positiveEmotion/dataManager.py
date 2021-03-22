@@ -253,7 +253,7 @@ def dataSplit(path1,all_sub,db_name ):
     # print('test_score shape:',test_score.shape) #(68832, 9)
 
 
-    return train_data, val_data,test_data, train_label, val_label,test_label, train_dis, val_dis, test_dis, train_score, val_score,test_score
+    return train_data, val_data,test_data, train_dis, val_dis, test_dis
 
 
 
