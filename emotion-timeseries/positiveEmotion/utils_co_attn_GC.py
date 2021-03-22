@@ -45,7 +45,7 @@ class MediaEvalDataset(Dataset):
                 Frontal_feature = data[:, :, i, :]
                 Frontal_feature.unsqueeze_(2)
             else:
-                Frontal_feature = torch.cat((Frontal_feature, data[:, :, i, :].unsquezze_(2)), dim=2)
+                Frontal_feature = torch.cat((Frontal_feature, data[:, :, i, :].unsqueeze_(2)), dim=2)
 
         Frontal_ch = Frontal_feature.shape[2]
         # reshape
@@ -59,7 +59,7 @@ class MediaEvalDataset(Dataset):
                 Temporal_feature = data[:, :, i, :]
                 Frontal_feature.unsqueeze_(2)
             else:
-                Temporal_feature = torch.cat((Temporal_feature, data[:, :, i, :].unsquezze_(2)), dim=2)
+                Temporal_feature = torch.cat((Temporal_feature, data[:, :, i, :].unsqueeze_(2)), dim=2)
 
         Temporal_ch = Temporal_feature.shape[2]
         print('Temporal_feature shape:', Temporal_feature.shape)
@@ -71,7 +71,7 @@ class MediaEvalDataset(Dataset):
                 Central_feature = data[:, :, i, :]
                 Central_feature.unsqueeze_(2)
             else:
-                Central_feature = torch.cat((Central_feature, data[:, :, i, :].unsquezze_(2)), dim=2)
+                Central_feature = torch.cat((Central_feature, data[:, :, i, :].unsqueeze_(2)), dim=2)
 
         Central_ch = Central_feature.shape[2]
         print('Central_feature shape:', Central_feature.shape)
@@ -83,7 +83,7 @@ class MediaEvalDataset(Dataset):
                 Parietal_feature = data[:, :, i, :]
                 Parietal_feature.unsqueeze_(2)
             else:
-                Parietal_feature = torch.cat((Parietal_feature, data[:, :, i, :].unsquezze_(2)), dim=2)
+                Parietal_feature = torch.cat((Parietal_feature, data[:, :, i, :].unsqueeze_(2)), dim=2)
 
         Parietal_ch = Parietal_feature.shape[2]
         print('Parietal_feature shape:', Parietal_feature.shape)
@@ -95,7 +95,7 @@ class MediaEvalDataset(Dataset):
                 Occipital_feature = data[:, :, i, :]
                 Occipital_feature.unsqueeze_(2)
             else:
-                Occipital_feature = torch.cat((Occipital_feature, data[:, :, i, :].unsquezze_(2)), dim=2)
+                Occipital_feature = torch.cat((Occipital_feature, data[:, :, i, :].unsqueeze_(2)), dim=2)
 
         Occipital_ch = Occipital_feature.shape[2]
         print('Occipital_feature shape:', Occipital_feature.shape)
