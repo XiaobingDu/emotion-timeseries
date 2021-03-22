@@ -58,11 +58,14 @@ idx = [[0,1,2,3,4,5,6],[7,11,12,16,17,21,22,26],[8,9,10,13,14,15,18,19,20],[23,2
 
 #load train, val, test data
 data_set = get_sample_data(path1,path2)
-train_data, test_data, train_label, test_label, train_dis, test_dis, train_score, test_score = dataSplit(path1,data_set,db_name)
+train_data, val_data, test_data, train_label, val_label, test_label, train_dis, val_dis, test_dis, train_score, val,score, test_score = dataSplit(path1,data_set,db_name)
 
-trSet = MediaEvalDataset(train_raw)
-valSet = MediaEvalDataset(val_raw)
-testSet = MediaEvalDataset(test_raw)
+#这个地方应该会出错
+#因为之前的MediaEvalDataset是一个类，并且通过__getitem__得到
+trSet = MediaEvalDataset(train_data, train_dis, idx) #定义的dataset类返回的结果
+valSet = MediaEvalDataset(val_data, val_label, idx)
+testSet = MediaEvalDataset(test_data, test_dis, idx)
+
 trDataloader = DataLoader(trSet,batch_size=batch_size,shuffle=True,num_workers=8)
 valDataloader = DataLoader(valSet,batch_size=batch_size,shuffle=True,num_workers=8)
 testDataloader = DataLoader(testSet,batch_size=batch_size,shuffle=True,num_workers=8)

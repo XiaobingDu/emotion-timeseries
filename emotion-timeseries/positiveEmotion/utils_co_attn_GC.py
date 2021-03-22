@@ -13,13 +13,12 @@ import shutil
 #___________________________________________________________________________________________________________________________
 
 # New Dataloader for MovieClass
-def MediaEvalDataset(self, feature, dis, idx, channel):
+def MediaEvalDataset(self, feature, dis, idx):
 
     print('*************')
     self.feature = feature
     self.dis = dis
     self.idx = idx
-    self.channel = channel
     self.num_samples = feature.shape[0]
 
 
@@ -104,15 +103,16 @@ def MediaEvalDataset(self, feature, dis, idx, channel):
     Occipital_ch = Occipital_feature.shape[2]
     print('Occipital_feature shape:', Occipital_feature.shape)
 
+    Frontal = Frontal_feature
+    Temporal = Temporal_feature
+    Central = Central_feature
+    Parietal = Parietal_feature
+    Occipital = Occipital_feature
+    y = self.dis
+    #将5个脑区的数据hstack
+    combined = np.hstack([Frontal, Temporal, Central, Parietal, Occipital ])
 
-        # F = self.new_data[idx][1]
-        # Va = self.new_data[idx][2]
-        # scene = self.new_data[idx][3]
-        # audio = self.new_data[idx][4]
-        # y = [self.new_data[idx][5][:10], self.new_data[idx][6][:10]]
-        # #将5个脑区的数据hstack
-        # combined = np.hstack([F, Va, scene, audio])
-        # return combined[:10], y, F[:10], Va[:10], scene[:10], audio[:10]
+    return combined, y, Frontal, Temporal, Central, Parietal, Occipital
 
 
 
@@ -173,18 +173,18 @@ def load_ckp(checkpoint_fpath, model, optimizer):
     # return model, optimizer, epoch value, min validation loss 
     return model, optimizer, checkpoint['epoch'], valid_loss_min_valence.item(), valid_loss_min_arousal.item()
 
-if __name__ == '__mian__':
-    print('............')
-    from dataManager import dataSplit, get_sample_data
-    path1 = '/Volumes/DATA/EEG_Multi-label/EEG_LDL_9/EEG_PSD_multilabel_9_addLabel_sum1/'
-    path2 = '/Volumes/DATA/EEG_Multi-label/EEG_LDL_9/EEG_PSD_multilabel_9_win/featureAll.mat'
-    db_name = 'LDL_data'
-    idx = [[0, 1, 2, 3, 4, 5, 6], [7, 11, 12, 16, 17, 21, 22, 26], [8, 9, 10, 13, 14, 15, 18, 19, 20], [23, 24, 25],
-           [27, 28, 29]]
-
-    # load train, val, test data
-    data_set = get_sample_data(path1, path2)
-    train_data, test_data, train_label, test_label, train_dis, test_dis, train_score, test_score = dataSplit(path1,
-                                                                                                             data_set,db_name)
-    MediaEvalDataset(train_data,train_dis,idx,30)
+# if __name__ == '__mian__':
+#     print('............')
+#     from dataManager import dataSplit, get_sample_data
+#     path1 = '/Volumes/DATA/EEG_Multi-label/EEG_LDL_9/EEG_PSD_multilabel_9_addLabel_sum1/'
+#     path2 = '/Volumes/DATA/EEG_Multi-label/EEG_LDL_9/EEG_PSD_multilabel_9_win/featureAll.mat'
+#     db_name = 'LDL_data'
+#     idx = [[0, 1, 2, 3, 4, 5, 6], [7, 11, 12, 16, 17, 21, 22, 26], [8, 9, 10, 13, 14, 15, 18, 19, 20], [23, 24, 25],
+#            [27, 28, 29]]
+#
+#     # load train, val, test data
+#     data_set = get_sample_data(path1, path2)
+#     train_data, test_data, train_label, test_label, train_dis, test_dis, train_score, test_score = dataSplit(path1,
+#                                                                                                              data_set,db_name)
+#     MediaEvalDataset(train_data,train_dis,idx)
 
