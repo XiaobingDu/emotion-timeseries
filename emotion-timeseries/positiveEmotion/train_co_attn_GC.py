@@ -23,8 +23,8 @@ from clstm import cLSTM, train_model_gista, train_model_adam, cLSTMSparse
 
 args = {}
 
-path1 = '/Volumes/DATA/EEG_Multi-label/EEG_LDL_9/EEG_PSD_multilabel_9_addLabel_sum1/'
-path2 = '/Volumes/DATA/EEG_Multi-label/EEG_LDL_9/EEG_PSD_multilabel_9_win/featureAll.mat'
+path1 = '/home/xiaobingdu/EEG_experiments/LDL-LSTM_softmax/attn_lstm/EEG_PSD_multilabel_9_addLabel_sum1/'
+path2 = '/home/xiaobingdu/EEG_experiments/LDL-LSTM_softmax/attn_lstm/EEG_PSD_multilabel_9_win/featureAll.mat'
 db_name = 'LDL_data'
 best_model_path ="./best_model"
 checkpoint_path ="./checkpoints"
