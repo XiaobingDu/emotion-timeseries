@@ -78,8 +78,9 @@ if args['use_cuda']:
 ## Initialize optimizer
 optimizer = torch.optim.RMSprop(net.parameters(), lr=lr) if args['optimizer']== 'rmsprop' else torch.optim.Adam(net.parameters(),lr=lr, weight_decay=0.9)
 # scheduler = torch.optim.lr_scheduler.CyclicLR(optimizer, base_lr=0.01, max_lr=0.1)
-crossEnt = torch.nn.BCELoss()
-mse = torch.nn.MSELoss(reduction='sum')
+# crossEnt = torch.nn.BCELoss()
+# mse = torch.nn.MSELoss(reduction='sum')
+kl_div = torch.nn.KLDivLoss(size_average = True, reduce = True)
 
 
 for epoch_num in range(num_epochs):
