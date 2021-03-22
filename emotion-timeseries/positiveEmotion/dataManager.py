@@ -180,7 +180,7 @@ def dataSplit(path1,all_sub,db_name ):
         # print('sub.....', s)
         for v in range(len(train_set[s])):
             # print('video clip....', v)
-            print(train_set[s][v]['feature_arr'].shape)
+            # print(train_set[s][v]['feature_arr'].shape)
             if s == 0:
                 feature = train_set[s][v]['feature_arr']
                 label = train_set[s][v]['label_arr']
@@ -195,9 +195,9 @@ def dataSplit(path1,all_sub,db_name ):
     train_label = label
     train_dis = dis
     train_score = score
-    # print('train_data shape:',train_data.shape) #(162986, 10, 150)
+    print('train_data shape:',train_data.shape) #(162986, 10, 150)
     # print('train_label shape:',train_label.shape) #(162986, 9)
-    # print('train_dis shape:',train_dis.shape) #(162986, 9)
+    print('train_dis shape:',train_dis.shape) #(162986, 9)
     # print('train_score shape:',train_score.shape) #(162986, 9)
 
     #val data
@@ -206,7 +206,7 @@ def dataSplit(path1,all_sub,db_name ):
         # print('sub.....', s)
         for v in range(len(val_set[s])):
             # print('video clip....', v)
-            print(val_set[s][v]['feature_arr'].shape)
+            # print(val_set[s][v]['feature_arr'].shape)
             if s == 0:
                 feature = val_set[s][v]['feature_arr']
                 label = val_set[s][v]['label_arr']
@@ -221,9 +221,9 @@ def dataSplit(path1,all_sub,db_name ):
     val_label = label
     val_dis = dis
     val_score = score
-    # print('val_data shape:',val_data.shape) #(101486, 10, 150)
+    print('val_data shape:',val_data.shape) #(101486, 10, 150)
     # print('val_label shape:',val_label.shape) #(101486, 9)
-    # print('val_dis shape:',val_dis.shape) #(101486, 9)
+    print('val_dis shape:',val_dis.shape) #(101486, 9)
     # print('val_score shape:',val_score.shape) #(101486, 9)
 
     #test data
@@ -232,7 +232,7 @@ def dataSplit(path1,all_sub,db_name ):
         # print('sub.....', s)
         for v in range(len(test_set[s])):
             # print('video clip....', v)
-            print(test_set[s][v]['feature_arr'].shape)
+            # print(test_set[s][v]['feature_arr'].shape)
             if s == 0:
                 feature = test_set[s][v]['feature_arr']
                 label = test_set[s][v]['label_arr']
@@ -247,9 +247,9 @@ def dataSplit(path1,all_sub,db_name ):
     test_label = label
     test_dis = dis
     test_score = score
-    # print('test_data shape:',test_data.shape) #(68832, 10, 150)
+    print('test_data shape:',test_data.shape) #(68832, 10, 150)
     # print('test_label shape:',test_label.shape) #(68832, 9)
-    # print('test_dis shape:',test_dis.shape) #(68832, 9)
+    print('test_dis shape:',test_dis.shape) #(68832, 9)
     # print('test_score shape:',test_score.shape) #(68832, 9)
 
 
