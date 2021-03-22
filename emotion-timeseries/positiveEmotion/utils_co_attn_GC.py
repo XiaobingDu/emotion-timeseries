@@ -17,6 +17,7 @@ class MediaEvalDataset(Dataset):
     #初始化函数，得到数据
     def __init__(self,feature, dis, idx):
         print('*************')
+        self.channel = 30
         self.feature = feature
         self.dis = dis
         self.idx = idx
