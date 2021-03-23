@@ -133,8 +133,8 @@ class MediaEvalDataset(Dataset):
         Parietal = Parietal_feature
         Occipital = Occipital_feature
 
-        combined = torch.cat((Frontal, Temporal, Central, Parietal, Occipital),dim=-1)
-        print('combined shape:', combined.shape)
+        # combined = torch.cat((Frontal, Temporal, Central, Parietal, Occipital),dim=-1)
+        # print('combined shape:', combined.shape) #([162509, 10, 150])
 
 
     def __len__(self):
@@ -143,12 +143,13 @@ class MediaEvalDataset(Dataset):
 
     def __getitem__(self, index):
         print('index:',index)
+        print('Frontal shape:', self.Frontal.shape)
         F = self.Frontal[index]
         T = self.Temporal[index]
         C = self.Central[index]
         P = self.Parietal[index]
         O = self.Occipital[index]
-        y = self.dis
+        y = self.dis[index]
 
         # 将5个脑区的数据hstack
         # combined = np.hstack([F, T, C, P, O])

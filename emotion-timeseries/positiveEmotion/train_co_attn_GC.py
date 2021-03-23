@@ -73,6 +73,8 @@ valDataloader = DataLoader(valSet ,batch_size=batch_size ,shuffle=True ,num_work
 testDataloader = DataLoader(testSet ,batch_size=batch_size ,shuffle=True ,num_workers=2)
 
 print('************trDataloader shape:',len(trDataloader))
+print('************valDataloader shape:',len(valDataloader))
+print('************testDataloader shape:',len(testDataloader))
 
 # Initialize network
 net = MovieNet(args)
