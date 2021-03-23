@@ -123,7 +123,7 @@ for epoch_num in range(num_epochs):
 
 
         # Forward pass
-        print('dis........',dis.shape)
+        print('train dis........',dis.shape)
         emot_dis, input_clstm, shared_encoder, att_1, att_2, att_3, att_4, att_5, att_6, att_7, att_8, att_9, att_10 \
             = net(train, Frontal, Temporal, Central, Parietal, Occipital, dis)
         train_model_gista(shared_encoder, input_clstm, lam=0.5, lam_ridge=1e-4, lr=0.001, max_iter=1, check_every=1000, truncation=64)
