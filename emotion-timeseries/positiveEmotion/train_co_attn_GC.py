@@ -72,6 +72,8 @@ trDataloader = DataLoader(trSet ,batch_size=batch_size ,shuffle=True ,num_worker
 valDataloader = DataLoader(valSet ,batch_size=batch_size ,shuffle=True ,num_workers=2)
 testDataloader = DataLoader(testSet ,batch_size=batch_size ,shuffle=True ,num_workers=2)
 
+print('************trDataloader shape:',trDataloader)
+
 # Initialize network
 net = MovieNet(args)
 if args['use_cuda']:
@@ -95,6 +97,7 @@ for epoch_num in range(num_epochs):
     # Variables to track training performance:
     avg_tr_loss = 0
     for i, data in enumerate(trDataloader):
+        print("第 {} 个Batch.....".format(i))
         st_time = time.time()
         train, dis, Frontal, Temporal, Central, Parietal, Occipital = data  # get training date
         # labels1 = labels[0]

@@ -12,6 +12,7 @@ class GetLoader(torch.utils.data.Dataset):
         self.label = data_label
     # index是根据batchsize划分数据后得到的索引，最后将data和对应的labels进行一起返回
     def __getitem__(self, index):
+        print('index......:',index)
         data = self.data[index]
         labels = self.label[index]
         return data, labels
