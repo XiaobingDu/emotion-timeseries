@@ -201,23 +201,23 @@ class MovieNet(nn.Module):
         #eq.5
         #befor  input into cLSTM
         unimodal_Frontal_input= Frontal_features_rep
-        unimodal_Frontal_input = self.unimodal_va(unimodal_Frontal_input).squeeze(-1)
+        unimodal_Frontal_input = self.unimodal_Frontal(unimodal_Frontal_input).squeeze(-1)
         unimodal_Frontal_input = torch.softmax(unimodal_Frontal_input, dim=-1)
 
         unimodal_Temporal_input= Temporal_features_rep
-        unimodal_Temporal_input = self.unimodal_face(unimodal_Temporal_input).squeeze(-1)
+        unimodal_Temporal_input = self.unimodal_Temporal(unimodal_Temporal_input).squeeze(-1)
         unimodal_Temporal_input = torch.softmax(unimodal_Temporal_input, dim=-1)
 
         unimodal_Central_input= Central_features_rep
-        unimodal_Central_input = self.unimodal_audio(unimodal_Central_input).squeeze(-1)
+        unimodal_Central_input = self.unimodal_Central(unimodal_Central_input).squeeze(-1)
         unimodal_Central_input = torch.softmax(unimodal_Central_input, dim=-1)
 
         unimodal_Parietal_input= Parietal_features_rep
-        unimodal_Parietal_input = self.unimodal_scene(unimodal_Parietal_input).squeeze(-1)
+        unimodal_Parietal_input = self.unimodal_Parietal(unimodal_Parietal_input).squeeze(-1)
         unimodal_Parietal_input = torch.softmax(unimodal_Parietal_input, dim=-1)
 
         unimodal_Occipital_input = Occipital_features_rep
-        unimodal_Occipital_input = self.unimodal_scene(unimodal_Occipital_input).squeeze(-1)
+        unimodal_Occipital_input = self.unimodal_Occipital(unimodal_Occipital_input).squeeze(-1)
         unimodal_Occipital_input = torch.softmax(unimodal_Occipital_input, dim=-1)
         # print(unimodal_face_input.shape, unimodal_va_input.shape, unimodal_audio_input.shape, unimodal_scene_input.shape)
 
