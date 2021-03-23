@@ -143,7 +143,7 @@ class MediaEvalDataset(Dataset):
 
     def __getitem__(self, index):
         print('index:',index)
-        print('Frontal shape:', self.Frontal.shape)
+        print('Frontal shape:', len(self.Frontal))
         F = self.Frontal[index]
         T = self.Temporal[index]
         C = self.Central[index]
