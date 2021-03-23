@@ -241,6 +241,8 @@ class MovieNet(nn.Module):
         #context vector d
         # Convolve output with attention weights
         # i.e. out[t] = a[t,0]*in[t] + ... + a[t,win_len-1]*in[t-(win_len-1)]
+        print('enc_out shape......',enc_out.shape)
+        print('attn shape.....', attn.shape)
         context = convolve(enc_out, attn)
 
         #Decoder
