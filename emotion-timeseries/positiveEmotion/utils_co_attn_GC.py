@@ -38,12 +38,14 @@ class MediaEvalDataset(Dataset):
         data = torch.Tensor(data)
         # data = np.reshape(data,[self.channel, sample_nums*time_win*PSD_dim])
 
+        cnt = 0
         # frontal channel
         for f in F_idx:
             print('F_idx:', f)
-            if f == 0:
+            if cnt == 0:
                 Frontal_feature = data[:, :, f, :]
                 Frontal_feature.unsqueeze_(2)
+                cnt = 1
             else:
                 Frontal_feature = torch.cat((Frontal_feature, data[:, :, f, :].unsqueeze_(2)), dim=2)
 
@@ -52,48 +54,56 @@ class MediaEvalDataset(Dataset):
         # Frontal_feature = np.reshape(Frontal_feature,[sample_nums,time_win,Frontal_ch,PSD_dim])
         print('Frontal_feature shape:', Frontal_feature.shape)
 
+        cnt = 0
         # Temporal channel
         for t in T_idx:
             print('T_idx:', t)
-            if t == 0:
+            if cnt == 0:
                 Temporal_feature = data[:, :, t, :]
                 Frontal_feature.unsqueeze_(2)
+                cnt = 1
             else:
                 Temporal_feature = torch.cat((Temporal_feature, data[:, :, t, :].unsqueeze_(2)), dim=2)
 
         Temporal_ch = Temporal_feature.shape[2]
         print('Temporal_feature shape:', Temporal_feature.shape)
 
+        cnt = 0
         # Central channel
         for c in C_idx:
             print('C_idx:', c)
-            if c == 0:
+            if cnt == 0:
                 Central_feature = data[:, :, c, :]
                 Central_feature.unsqueeze_(2)
+                cnt = 1
             else:
                 Central_feature = torch.cat((Central_feature, data[:, :, c, :].unsqueeze_(2)), dim=2)
 
         Central_ch = Central_feature.shape[2]
         print('Central_feature shape:', Central_feature.shape)
 
+        cnt = 0
         # Parietal channel
         for p in P_idx:
             print('P_idx:', p)
-            if p == 0:
+            if cnt == 0:
                 Parietal_feature = data[:, :, p, :]
                 Parietal_feature.unsqueeze_(2)
+                cnt = 1
             else:
                 Parietal_feature = torch.cat((Parietal_feature, data[:, :, p, :].unsqueeze_(2)), dim=2)
 
         Parietal_ch = Parietal_feature.shape[2]
         print('Parietal_feature shape:', Parietal_feature.shape)
 
+        cnt = 0
         # Occipital channel
         for o in O_idx:
             print('O_idx:', o)
-            if o == 0:
+            if cnt == 0:
                 Occipital_feature = data[:, :, o, :]
                 Occipital_feature.unsqueeze_(2)
+                cnt = 1
             else:
                 Occipital_feature = torch.cat((Occipital_feature, data[:, :, o, :].unsqueeze_(2)), dim=2)
 
