@@ -62,17 +62,17 @@ idx = [[0 ,1 ,2 ,3 ,4 ,5 ,6] ,[7 ,11 ,12 ,16 ,17 ,21 ,22 ,26] ,[8 ,9 ,10 ,13 ,14
 data_set = get_sample_data(path1 ,path2)
 train_data, val_data, test_data, train_dis, val_dis, test_dis = dataSplit(path1 ,data_set ,db_name)
 
-# 这个地方应该会出错
-# 因为之前的MediaEvalDataset是一个类，并且通过__getitem__得到
-trSet = MediaEvalDataset(train_data, train_dis, idx)  # 定义的dataset类返回的结果
+#通过 MediaEvalDataset 将数据进行加载，返回Dataset对象，包含data和labels
+trSet = MediaEvalDataset(train_data, train_dis, idx)
 valSet = MediaEvalDataset(val_data, val_dis, idx)
 testSet = MediaEvalDataset(test_data, test_dis, idx)
 
+#读取数据
 trDataloader = DataLoader(trSet ,batch_size=batch_size ,shuffle=True ,num_workers=2)
 valDataloader = DataLoader(valSet ,batch_size=batch_size ,shuffle=True ,num_workers=2)
 testDataloader = DataLoader(testSet ,batch_size=batch_size ,shuffle=True ,num_workers=2)
 
-print('************trDataloader shape:',trDataloader)
+print('************trDataloader shape:',len(trDataloader))
 
 # Initialize network
 net = MovieNet(args)

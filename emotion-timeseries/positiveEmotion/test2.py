@@ -10,12 +10,13 @@ source_data = np.random.rand(10, 20)
 source_label = np.random.randint(0,2,(10, 1))
 # 通过GetLoader将数据进行加载，返回Dataset对象，包含data和labels
 torch_data = GetLoader(source_data, source_label)
-
+print('--------------')
 # 读取数据
 datas = DataLoader(torch_data, batch_size=6, shuffle=True, drop_last=False, num_workers=2)
-
+print('..............')
 for i, data in enumerate(datas):
 	# i表示第几个batch， data表示该batch对应的数据，包含data和对应的labels
+    print('************')
     d ,label = data
     print(d)
     print(label)
