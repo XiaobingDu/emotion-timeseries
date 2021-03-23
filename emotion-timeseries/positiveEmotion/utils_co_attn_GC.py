@@ -60,7 +60,7 @@ class MediaEvalDataset(Dataset):
             print('T_idx:', t)
             if cnt == 0:
                 Temporal_feature = data[:, :, t, :]
-                Frontal_feature.unsqueeze_(2)
+                Temporal_feature.unsqueeze_(2)
                 cnt = 1
             else:
                 Temporal_feature = torch.cat((Temporal_feature, data[:, :, t, :].unsqueeze_(2)), dim=2)
