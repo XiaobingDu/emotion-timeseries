@@ -21,11 +21,11 @@ class MediaEvalDataset(Dataset):
         self.feature = feature
         self.dis = dis
         self.idx = idx
-        self.Frontal = 0
-        self.Temporal = 0
-        self.Central = 0
-        self.Parietal = 0
-        self.Occipital = 0
+        self.Frontal = []
+        self.Temporal = []
+        self.Central = []
+        self.Parietal = []
+        self.Occipital = []
         print('-----------')
         # 对应5个脑区的特征
         # idx = [[0,1,2,3,4,5,6],[7,11,12,16,17,21,22,26],[8,9,10,13,14,15,18,19,20],[23,24,25],[27,28,29]]
@@ -142,6 +142,7 @@ class MediaEvalDataset(Dataset):
         return num_samples
 
     def __getitem__(self, index):
+        print('index:',index)
         Frontal = self.Frontal[index]
         Temporal = self.Temporal[index]
         Central = self.Central[index]
