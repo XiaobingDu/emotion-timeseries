@@ -155,6 +155,7 @@ class MediaEvalDataset(Dataset):
         # combined = np.hstack([F, T, C, P, O])
         combined = torch.cat((F, T, C, P, O), dim=-1)
         print('combined shape:', combined.shape)
+        print('y shape:', y.shape)
 
         return combined, y, F, T, C, P, O
 

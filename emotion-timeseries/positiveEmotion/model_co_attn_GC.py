@@ -56,7 +56,7 @@ class MovieNet(nn.Module):
         self.h_dim = args['h_dim']
         self.n_layers = args['n_layers']
         self.attn_len = args['attn_len']
-        self.dropout=0.5
+        self.dropout= args['dropout_prob']
 
         #fully-connected linear layer
         self.Frontal_linear = nn.Linear(self.Frontal_len, self.h_dim, bias=True)
@@ -146,7 +146,7 @@ class MovieNet(nn.Module):
         #Co-attention Scores
         #eq.7
         #2. co-attention
-        concat_features = torch.cat([Frontal_features_rep, Temporal_features_rep], dim=-1) # dim = -1; 第一维度拼接；h_dim*2
+        concat_features = torch.cat([Frontal_features_rep, Temporal_features_rep], dim=-1) # dim = -1; 第一维度拼接（横向拼接）；h_dim*2
         # concat_features = torch.tanh(concat_features)
         # att_1
         att_1 = self.att_linear1(concat_features).squeeze(-1)
