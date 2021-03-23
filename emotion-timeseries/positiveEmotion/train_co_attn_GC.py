@@ -31,11 +31,11 @@ checkpoint_path ="./checkpoints"
 valid_loss_min =np.Inf
 
 ## Network Arguments
-args['Frontal_len'] = 204
-args['Temporal_len'] = 317
-args['Central_len'] = 1583
-args['Parietal_len'] = 4096
-args['Occipital_len'] = 4096
+args['Frontal_len'] = 35
+args['Temporal_len'] = 40
+args['Central_len'] = 45
+args['Parietal_len'] = 15
+args['Occipital_len'] = 15
 args['out_layer'] = 2
 args['dropout_prob'] = 0.5
 args['use_cuda'] = True
@@ -68,13 +68,9 @@ valSet = MediaEvalDataset(val_data, val_dis, idx)
 testSet = MediaEvalDataset(test_data, test_dis, idx)
 
 #读取数据
-trDataloader = DataLoader(trSet ,batch_size=batch_size ,shuffle=True ,num_workers=2)
-valDataloader = DataLoader(valSet ,batch_size=batch_size ,shuffle=True ,num_workers=2)
-testDataloader = DataLoader(testSet ,batch_size=batch_size ,shuffle=True ,num_workers=2)
-
-print('************trDataloader shape:',len(trDataloader))
-print('************valDataloader shape:',len(valDataloader))
-print('************testDataloader shape:',len(testDataloader))
+trDataloader = DataLoader(trSet ,batch_size=batch_size ,shuffle=True ,num_workers=2) # len = 5079 (bath)
+valDataloader = DataLoader(valSet ,batch_size=batch_size ,shuffle=True ,num_workers=2) #len = 3172
+testDataloader = DataLoader(testSet ,batch_size=batch_size ,shuffle=True ,num_workers=2) #len = 2151
 
 # Initialize network
 net = MovieNet(args)

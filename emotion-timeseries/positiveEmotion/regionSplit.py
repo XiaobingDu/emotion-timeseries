@@ -10,18 +10,18 @@ from matplotlib import pyplot as plt
 from scipy.stats.stats import pearsonr
 import shutil
 
-def regions(self,feature, dis, idx):
+def regions(feature, dis, idx):
     print('*************')
-    self.channel = 30
-    self.feature = feature
-    self.dis = dis
-    self.idx = idx
-    self.Frontal = []
-    self.Temporal = []
-    self.Central = []
-    self.Parietal = []
-    self.Occipital = []
-    self.data = []
+    channel = 30
+    feature = feature
+    dis = dis
+    idx = idx
+    Frontal = []
+    Temporal = []
+    Central = []
+    Parietal = []
+    Occipital = []
+    data = []
     print('-----------')
     # 对应5个脑区的特征
     # idx = [[0,1,2,3,4,5,6],[7,11,12,16,17,21,22,26],[8,9,10,13,14,15,18,19,20],[23,24,25],[27,28,29]]
@@ -30,11 +30,11 @@ def regions(self,feature, dis, idx):
     C_idx = idx[2]  # [8,9,10,13,14,15,18,19,20]
     P_idx = idx[3]  # [23,24,25]
     O_idx = idx[4]  # [27,28,29]
-    sample_nums = self.feature.shape[0]
-    time_win = self.feature.shape[1]
-    dim = self.feature.shape[2]
-    PSD_dim = int(dim / self.channel)
-    data = np.reshape(self.feature, [sample_nums, time_win, self.channel, PSD_dim])
+    sample_nums = feature.shape[0]
+    time_win = feature.shape[1]
+    dim = feature.shape[2]
+    PSD_dim = int(dim / channel)
+    data = np.reshape(feature, [sample_nums, time_win, channel, PSD_dim])
     # array转换成torch tensor，为了使用 data.unsquezze_(2)和 torch.cat((),dim=2)
     data = torch.Tensor(data)
     # data = np.reshape(data,[self.channel, sample_nums*time_win*PSD_dim])
@@ -125,19 +125,14 @@ def regions(self,feature, dis, idx):
                                                        int(Occipital_feature.shape[2] * Occipital_feature.shape[3])])
     print('Occipital_feature shape:', Occipital_feature.shape)
 
-    Frontal = Frontal_feature
-    Temporal = Temporal_feature
-    Central = Central_feature
-    Parietal = Parietal_feature
-    Occipital = Occipital_feature
-
-    data.append(Frontal)
-    data.append(Temporal)
-    data.append(Central)
-    data.append(Parietal)
-    data.append(Occipital)
-    data.append(self.dis)
+    data.append(Frontal_feature)
+    data.append(Temporal_feature)
+    data.append(Central_feature)
+    data.append(Parietal_feature)
+    data.append(Occipital_feature)
+    data.append(dis)
     print('data len:', len(data))
+    print('Frontal_feature shape:', data[0].shape)
 
     # combined = torch.cat((Frontal, Temporal, Central, Parietal, Occipital),dim=-1)
     # print('combined shape:', combined.shape) #([162509, 10, 150])

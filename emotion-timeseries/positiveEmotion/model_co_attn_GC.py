@@ -137,11 +137,11 @@ class MovieNet(nn.Module):
         # embed = self.embed(x)
 
         # 1.linear transform: dim = h_dim
-        Frontal_features_rep = self.face_linear(Frontal_features)
-        Temporal_features_rep = self.va_linear(Temporal_features)
-        Central_features_rep = self.audio_linear(Central_features)
-        Parietal_features_rep = self.scene_linear(Parietal_features)
-        Occipital_features_rep = self.scene_linear(Occipital_features)
+        Frontal_features_rep = self.Frontal_linear(Frontal_features)
+        Temporal_features_rep = self.Temporal_linear(Temporal_features)
+        Central_features_rep = self.Central_linear(Central_features)
+        Parietal_features_rep = self.Parietal_linear(Parietal_features)
+        Occipital_features_rep = self.Occipital_linear(Occipital_features)
 
         #Co-attention Scores
         #eq.7
