@@ -142,8 +142,8 @@ class MediaEvalDataset(Dataset):
         return num_samples
 
     def __getitem__(self, index):
-        print('index:',index)
-        print('Frontal shape:', len(self.Frontal))
+        # print('index:',index)
+        # print('Frontal shape:', len(self.Frontal))
         F = self.Frontal[index]
         T = self.Temporal[index]
         C = self.Central[index]
@@ -154,8 +154,8 @@ class MediaEvalDataset(Dataset):
         # 将5个脑区的数据hstack
         # combined = np.hstack([F, T, C, P, O])
         combined = torch.cat((F, T, C, P, O), dim=-1)
-        print('combined shape:', combined.shape)
-        print('y shape:', y.shape)
+        # print('combined shape:', combined.shape)
+        # print('y shape:', y.shape)
 
         return combined, y, F, T, C, P, O
 
