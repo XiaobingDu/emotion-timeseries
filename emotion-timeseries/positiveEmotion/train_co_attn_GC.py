@@ -68,9 +68,9 @@ trSet = MediaEvalDataset(train_data, train_dis, idx)  # 定义的dataset类返�
 valSet = MediaEvalDataset(val_data, val_dis, idx)
 testSet = MediaEvalDataset(test_data, test_dis, idx)
 
-trDataloader = DataLoader(trSet ,batch_size=batch_size ,shuffle=True ,num_workers=8)
-valDataloader = DataLoader(valSet ,batch_size=batch_size ,shuffle=True ,num_workers=8)
-testDataloader = DataLoader(testSet ,batch_size=batch_size ,shuffle=True ,num_workers=8)
+trDataloader = DataLoader(trSet ,batch_size=batch_size ,shuffle=True ,num_workers=2)
+valDataloader = DataLoader(valSet ,batch_size=batch_size ,shuffle=True ,num_workers=2)
+testDataloader = DataLoader(testSet ,batch_size=batch_size ,shuffle=True ,num_workers=2)
 
 # Initialize network
 net = MovieNet(args)

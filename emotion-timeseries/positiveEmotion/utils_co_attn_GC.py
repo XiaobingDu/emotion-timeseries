@@ -21,6 +21,11 @@ class MediaEvalDataset(Dataset):
         self.feature = feature
         self.dis = dis
         self.idx = idx
+        self.Frontal = 0
+        self.Temporal = 0
+        self.Central = 0
+        self.Parietal = 0
+        self.Occipital = 0
         print('-----------')
         # 对应5个脑区的特征
         # idx = [[0,1,2,3,4,5,6],[7,11,12,16,17,21,22,26],[8,9,10,13,14,15,18,19,20],[23,24,25],[27,28,29]]
@@ -116,6 +121,8 @@ class MediaEvalDataset(Dataset):
         Parietal = Parietal_feature
         Occipital = Occipital_feature
 
+        combined = np.hstack([Frontal, Temporal, Central, Parietal, Occipital])
+        print('combined shape:', combined.shape)
 
 
     def __len__(self):
