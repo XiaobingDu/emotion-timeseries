@@ -132,6 +132,7 @@ class MediaEvalDataset(Dataset):
 
         # 将5个脑区的数据hstack
         combined = np.hstack([Frontal, Temporal, Central, Parietal, Occipital])
+        print('combined shape:', combined.shape)
 
         return combined, y, Frontal, Temporal, Central, Parietal, Occipital
 

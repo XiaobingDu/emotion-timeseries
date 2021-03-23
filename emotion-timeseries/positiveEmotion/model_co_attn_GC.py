@@ -44,8 +44,8 @@ class MovieNet(nn.Module):
         self.Frontal_len = args['Frontal_len']
         self.Temporal_len = args['Temporal_len']
         self.Central_len = args['Central_len']
-        self.Parietal_len = args['Parietal_length']
-        self.Occipital_len = args['Occipital_length']
+        self.Parietal_len = args['Parietal_len']
+        self.Occipital_len = args['Occipital_len']
         self.out_layer = args['out_layer']
         #将5个脑区的特征长度相加
         self.total_mod_len = self.Frontal_len + self.Temporal_len +self.Central_len + self.Parietal_len + self.Occipital_len
