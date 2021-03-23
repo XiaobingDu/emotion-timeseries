@@ -271,7 +271,7 @@ class MovieNet(nn.Module):
             # dec_in = torch.cat([pad_shift(target_0, 1, tgt_init), context], 2)
             print('target shape....',target_0.shape)
             print('context shape....', context.shape)
-            dec_in = torch.cat([target_0, context], 2)
+            dec_in = torch.cat([target_0.float(), context.float()], dim=2)
             print('dec_in shape....',dec_in.shape)
             dec_out, _ = self.decoder(dec_in, (h0, c0))
             print('dec_out shape....',dec_out.shape)
