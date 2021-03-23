@@ -253,15 +253,16 @@ class MovieNet(nn.Module):
             #target == GT labels
             target_0 = target[0].float().reshape(batch_size, seq_len, 1)
             target_0 = torch.nn.Parameter(target_0).cuda()
-            target_1 = target[1].float().reshape(batch_size, seq_len, 1)
-            target_1 = torch.nn.Parameter(target_1).cuda()
+            # target_1 = target[1].float().reshape(batch_size, seq_len, 1)
+            # target_1 = torch.nn.Parameter(target_1).cuda()
             # print(pad_shift(target, 1, tgt_init), context.shape)
 
             #eq.9
             # Concatenate targets from previous timesteps to context
             #将previous time label与context拼接
             #targets from previous timesteps 怎样得到的呢？怎样传入呢？
-            dec_in = torch.cat([pad_shift(target_0, 1, tgt_init),pad_shift(target_1, 1, tgt_init), context], 2)
+            # dec_in = torch.cat([pad_shift(target_0, 1, tgt_init),pad_shift(target_1, 1, tgt_init), context], 2)
+            dec_in = torch.cat([pad_shift(target_0, 1, tgt_init), context], 2)
             dec_out, _ = self.decoder(dec_in, (h0, c0))
             # Undo the packing
             dec_out = dec_out.reshape(-1, self.h_dim)

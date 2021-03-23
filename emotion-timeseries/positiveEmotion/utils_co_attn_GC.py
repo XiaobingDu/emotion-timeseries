@@ -54,9 +54,11 @@ class MediaEvalDataset(Dataset):
             else:
                 Frontal_feature = torch.cat((Frontal_feature, data[:, :, f, :].unsqueeze_(2)), dim=2)
 
+        print('Frontal_feature shape:', Frontal_feature.shape)
         Frontal_ch = Frontal_feature.shape[2]
         # reshape
-        # Frontal_feature = np.reshape(Frontal_feature,[sample_nums,time_win,Frontal_ch,PSD_dim])
+        Frontal_feature = np.reshape(Frontal_feature, [Frontal_feature.shape[0], Frontal_feature.shape[1],
+                                                         int(Frontal_feature.shape[2] * Frontal_feature.shape[3])])
         print('Frontal_feature shape:', Frontal_feature.shape)
 
         cnt = 0
@@ -70,7 +72,10 @@ class MediaEvalDataset(Dataset):
             else:
                 Temporal_feature = torch.cat((Temporal_feature, data[:, :, t, :].unsqueeze_(2)), dim=2)
 
+        print('Temporal_feature shape:', Temporal_feature.shape)
         Temporal_ch = Temporal_feature.shape[2]
+        Temporal_feature = np.reshape(Temporal_feature, [Temporal_feature.shape[0], Temporal_feature.shape[1],
+                                                       int(Temporal_feature.shape[2] * Temporal_feature.shape[3])])
         print('Temporal_feature shape:', Temporal_feature.shape)
 
         cnt = 0
@@ -84,7 +89,10 @@ class MediaEvalDataset(Dataset):
             else:
                 Central_feature = torch.cat((Central_feature, data[:, :, c, :].unsqueeze_(2)), dim=2)
 
+        print('Central_feature shape:', Central_feature.shape)
         Central_ch = Central_feature.shape[2]
+        Central_feature = np.reshape(Central_feature, [Central_feature.shape[0], Central_feature.shape[1],
+                                                         int(Central_feature.shape[2] * Central_feature.shape[3])])
         print('Central_feature shape:', Central_feature.shape)
 
         cnt = 0
@@ -98,7 +106,9 @@ class MediaEvalDataset(Dataset):
             else:
                 Parietal_feature = torch.cat((Parietal_feature, data[:, :, p, :].unsqueeze_(2)), dim=2)
 
+        print('Parietal_feature shape:', Parietal_feature.shape)
         Parietal_ch = Parietal_feature.shape[2]
+        Parietal_feature = np.reshape(Parietal_feature,[Parietal_feature.shape[0],Parietal_feature.shape[1],int(Parietal_feature.shape[2]*Parietal_feature.shape[3])])
         print('Parietal_feature shape:', Parietal_feature.shape)
 
         cnt = 0
@@ -112,7 +122,9 @@ class MediaEvalDataset(Dataset):
             else:
                 Occipital_feature = torch.cat((Occipital_feature, data[:, :, o, :].unsqueeze_(2)), dim=2)
 
+        print('Occipital_feature shape:', Occipital_feature.shape)
         Occipital_ch = Occipital_feature.shape[2]
+        Occipital_feature = np.reshape(Occipital_feature,[Occipital_feature.shape[0],Occipital_feature.shape[1],int(Occipital_feature.shape[2]*Occipital_feature.shape[3])])
         print('Occipital_feature shape:', Occipital_feature.shape)
 
         Frontal = Frontal_feature
@@ -121,7 +133,7 @@ class MediaEvalDataset(Dataset):
         Parietal = Parietal_feature
         Occipital = Occipital_feature
 
-        combined = np.hstack([Frontal, Temporal, Central, Parietal, Occipital])
+        combined = torch.cat((Frontal, Temporal, Central, Parietal, Occipital),dim=-1)
         print('combined shape:', combined.shape)
 
 
