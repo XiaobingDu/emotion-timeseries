@@ -36,7 +36,7 @@ args['Temporal_len'] = 40
 args['Central_len'] = 45
 args['Parietal_len'] = 15
 args['Occipital_len'] = 15
-args['out_layer'] = 2
+args['out_layer'] = 9
 args['dropout_prob'] = 0.5
 args['use_cuda'] = True
 args['encoder_size'] = 64
@@ -130,9 +130,11 @@ for epoch_num in range(num_epochs):
         GC_est = shared_encoder.GC().cpu().data.numpy()
 
         emot_dis = emot_dis.squeeze(dim=0)
+        print('emot_dis shape.....', emot_dis.shape)
         # labels1 = labels1.T
         # labels2 = labels2.T
         dis = dis.T
+        print('dis shape.....', dis.shape)
 
         # mamx-min norm
         # emot_score = (2*(emot_score - torch.min(emot_score))/(torch.max(emot_score) - torch.min(emot_score))) -1
@@ -197,7 +199,7 @@ for epoch_num in range(num_epochs):
         # 每一个batch的average mse loss相加
         # valmse += mse(emot_score[:, 0].unsqueeze(dim=1), labels1)/labels1.shape[0]
         # aromse += mse(emot_score[:, 1].unsqueeze(dim=1), labels2)/labels2.shape[0]
-        val_kl = kl_div(emot_dis, dis ) /dis.shape[0]
+        val_kl = kl_div(emot_dis, dis) /dis.shape[0]
 
         # Pearson correlation
         # valpcc += pearsonr(emot_score[:, 0].unsqueeze(dim=1).cpu().detach().numpy(), labels1.cpu().detach().numpy())[0]

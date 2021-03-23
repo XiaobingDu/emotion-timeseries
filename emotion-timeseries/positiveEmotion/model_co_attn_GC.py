@@ -100,17 +100,17 @@ class MovieNet(nn.Module):
         # self.decoder = nn.LSTM(1 + self.h_dim, self.h_dim, self.n_layers, batch_first=True)
         #6 represents the context vector length
         #6 代表的是 input_size，x的特征维度
-        self.decoder = nn.LSTM(6, self.h_dim, self.n_layers, batch_first=True)
+        self.decoder = nn.LSTM(10, self.h_dim, self.n_layers, batch_first=True)
         #decoder: ini parameters
         self.dec_h0 = nn.Parameter(torch.rand(self.n_layers, 1, self.h_dim))
         self.dec_c0 = nn.Parameter(torch.rand(self.n_layers, 1, self.h_dim))
 
         # Final MLP output network
-        self.out = nn.Sequential(nn.Linear(self.h_dim, 2),#128 #h_dim -> 2
+        self.out = nn.Sequential(nn.Linear(self.h_dim, 32),#128 #h_dim -> 2
                                 #  nn.LeakyReLU(),
                                 #  nn.Linear(512, 8),
                                  nn.LeakyReLU(),
-                                 nn.Linear(2, self.out_layer)) #2 -> out_layer
+                                 nn.Linear(32, self.out_layer)) #2 -> out_layer
 
         # Store module in specified device (CUDA/CPU)
         self.device = (device if torch.cuda.is_available() else
@@ -241,9 +241,9 @@ class MovieNet(nn.Module):
         #context vector d
         # Convolve output with attention weights
         # i.e. out[t] = a[t,0]*in[t] + ... + a[t,win_len-1]*in[t-(win_len-1)]
-        print('enc_out shape......',enc_out.shape)
-        print('attn shape.....', attn.shape)
-        context = convolve(enc_out, attn)
+        # print('enc_out shape......',enc_out.shape) #[32, 10, 5]
+        # print('attn shape.....', attn.shape) #[32, 10, 10]
+        context = convolve(enc_out, attn) # [32, 10, 5]
 
         #Decoder
         # Set initial hidden and cell states for decoder
@@ -254,7 +254,9 @@ class MovieNet(nn.Module):
             # exit()
             #target == GT labels
             # target_0 = target.float().reshape(batch_size, seq_len, 1)
-            target_0 = torch.nn.Parameter(target).cuda()
+            target_0 = target.unsqueeze_(dim=1)
+            target_0 = torch.cat([target_0,target_0,target_0,target_0,target_0,target_0,target_0,target_0,target_0,target_0],dim=1) #[batch_size, seq_len, 9]
+            target_0 = torch.nn.Parameter(target_0).cuda()
             # target_1 = target[1].float().reshape(batch_size, seq_len, 1)
             # target_1 = torch.nn.Parameter(target_1).cuda()
             # print(pad_shift(target, 1, tgt_init), context.shape)
@@ -264,10 +266,15 @@ class MovieNet(nn.Module):
             #将previous time label与context拼接
             #targets from previous timesteps 怎样得到的呢？怎样传入呢？
             # dec_in = torch.cat([pad_shift(target_0, 1, tgt_init),pad_shift(target_1, 1, tgt_init), context], 2)
-            print('context shape.........', context.shape)
-            print('target shape..........', target.shape)
-            dec_in = torch.cat([pad_shift(target_0, 1, tgt_init), context], 2)
+            # print('context shape.........', context.shape) #[32, 10, 5]
+            # print('target shape..........', target.shape) #[32,9]
+            # dec_in = torch.cat([pad_shift(target_0, 1, tgt_init), context], 2)
+            print('target shape....',target_0.shape)
+            print('context shape....', context.shape)
+            dec_in = torch.cat([target_0, context], 2)
+            print('dec_in shape....',dec_in.shape)
             dec_out, _ = self.decoder(dec_in, (h0, c0))
+            print('dec_out shape....',dec_out.shape)
             # Undo the packing
             dec_out = dec_out.reshape(-1, self.h_dim)
 
@@ -277,6 +284,7 @@ class MovieNet(nn.Module):
             #eq.10
             #
             predicted = self.out(dec_out).view(batch_size, seq_len, self.out_layer)
+            print('predict shape', predicted.shape)
         else:
             # Use earlier predictions to predict next time-steps
             predicted = []
