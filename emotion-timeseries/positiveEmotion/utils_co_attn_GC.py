@@ -127,11 +127,11 @@ class MediaEvalDataset(Dataset):
         Occipital_feature = np.reshape(Occipital_feature,[Occipital_feature.shape[0],Occipital_feature.shape[1],int(Occipital_feature.shape[2]*Occipital_feature.shape[3])])
         print('Occipital_feature shape:', Occipital_feature.shape)
 
-        Frontal = Frontal_feature
-        Temporal = Temporal_feature
-        Central = Central_feature
-        Parietal = Parietal_feature
-        Occipital = Occipital_feature
+        self.Frontal = Frontal_feature
+        self.Temporal = Temporal_feature
+        self.Central = Central_feature
+        self.Parietal = Parietal_feature
+        self. Occipital = Occipital_feature
 
         # combined = torch.cat((Frontal, Temporal, Central, Parietal, Occipital),dim=-1)
         # print('combined shape:', combined.shape) #([162509, 10, 150])
