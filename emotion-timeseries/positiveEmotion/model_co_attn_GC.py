@@ -276,9 +276,10 @@ class MovieNet(nn.Module):
             dec_in = torch.cat([target_0.float(), context.float()], dim=2)
             print('dec_in shape....',dec_in.shape) #[32,10,14]
             dec_out, _ = self.decoder(dec_in, (h0, c0)) #decoder -> nn.LSTM这里有问题
-            print('dec_out shape....',dec_out.shape)
+            print('dec_out shape....',dec_out.shape) #[32, 10, 512]
             # Undo the packing
             dec_out = dec_out.reshape(-1, self.h_dim)
+
 
             # dec_in = context           
             # dec_out, _ = self.decoder(dec_in, (h0, c0))            
@@ -287,6 +288,7 @@ class MovieNet(nn.Module):
             #
             predicted = self.out(dec_out).view(batch_size, seq_len, self.out_layer)
             print('predict shape', predicted.shape)
+            print('predict.....', predicted[0, 0, :])
         else:
             # Use earlier predictions to predict next time-steps
             predicted = []
