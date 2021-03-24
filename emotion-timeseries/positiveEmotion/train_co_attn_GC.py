@@ -252,7 +252,7 @@ for epoch_num in range(num_epochs):
         valid_loss_min = val_loss
 
 net = MovieNet(args)
-net, optimizer, start_epoch, valid_loss_min_valence = load_ckp(
+net, optimizer, start_epoch, valid_loss_min_kl = load_ckp(
     best_model_path + "/train_co_attn_GC_best_model.pt", net, optimizer)
 # 至此，training 和 validation结束
 
