@@ -132,6 +132,9 @@ for epoch_num in range(num_epochs):
         emot_dis = emot_dis.squeeze(dim=0)
         print('emot_dis shape.....', emot_dis.shape)
         print('emot_dis.....',emot_dis[0,0,:])
+        print('emot_dis.....', emot_dis[0, 1, :])
+        print('emot_dis.....', emot_dis[0, 2, :])
+        print('emot_dis.....', emot_dis)
         # labels1 = labels1.T
         # labels2 = labels2.T
         dis = dis
@@ -144,7 +147,7 @@ for epoch_num in range(num_epochs):
         # 两种label的loss之和
         # l = mse(emot_score[:,0].unsqueeze(dim=1), labels1) + mse(emot_score[:,1].unsqueeze(dim=1), labels2)
         # kldiv loss
-        l = kl_div(emot_dis, dis)
+        l = kl_div(emot_dis.Double(), dis.Double())
 
         # Backprop and update weights
         optimizer.zero_grad()

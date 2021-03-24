@@ -287,7 +287,8 @@ class MovieNet(nn.Module):
             #eq.10
             #
             predicted = self.out(dec_out).view(batch_size, seq_len, self.out_layer)
-            print('predict shape', predicted.shape)
+            predicted = torch.softmax(predicted, dim=2)
+            print('predict shape', predicted.shape) #[32,10,9]
             print('predict.....', predicted[0, 0, :])
         else:
             # Use earlier predictions to predict next time-steps
