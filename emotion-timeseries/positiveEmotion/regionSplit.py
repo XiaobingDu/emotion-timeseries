@@ -11,7 +11,6 @@ from scipy.stats.stats import pearsonr
 import shutil
 
 def regions(feature, dis, idx):
-    print('*************')
     channel = 30
     feature = feature
     dis = dis
@@ -21,8 +20,8 @@ def regions(feature, dis, idx):
     Central = []
     Parietal = []
     Occipital = []
-    data = []
-    print('-----------')
+
+    # get the brain regions
     # 对应5个脑区的特征
     # idx = [[0,1,2,3,4,5,6],[7,11,12,16,17,21,22,26],[8,9,10,13,14,15,18,19,20],[23,24,25],[27,28,29]]
     F_idx = idx[0]  # [0,1,2,3,4,5,6]
@@ -37,7 +36,6 @@ def regions(feature, dis, idx):
     data = np.reshape(feature, [sample_nums, time_win, channel, PSD_dim])
     # array转换成torch tensor，为了使用 data.unsquezze_(2)和 torch.cat((),dim=2)
     data = torch.Tensor(data)
-    # data = np.reshape(data,[self.channel, sample_nums*time_win*PSD_dim])
 
     cnt = 0
     # frontal channel
@@ -50,12 +48,12 @@ def regions(feature, dis, idx):
         else:
             Frontal_feature = torch.cat((Frontal_feature, data[:, :, f, :].unsqueeze_(2)), dim=2)
 
-    print('Frontal_feature shape:', Frontal_feature.shape)
+    print('Frontal_feature shape:', Frontal_feature.shape)  # [68832, 10, 7, 5]
     Frontal_ch = Frontal_feature.shape[2]
     # reshape
     Frontal_feature = np.reshape(Frontal_feature, [Frontal_feature.shape[0], Frontal_feature.shape[1],
                                                    int(Frontal_feature.shape[2] * Frontal_feature.shape[3])])
-    print('Frontal_feature shape:', Frontal_feature.shape)
+    print('Frontal_feature shape:', Frontal_feature.shape)  # [68832, 10, 35]
 
     cnt = 0
     # Temporal channel
@@ -68,11 +66,11 @@ def regions(feature, dis, idx):
         else:
             Temporal_feature = torch.cat((Temporal_feature, data[:, :, t, :].unsqueeze_(2)), dim=2)
 
-    print('Temporal_feature shape:', Temporal_feature.shape)
+    print('Temporal_feature shape:', Temporal_feature.shape)  # [68832, 10, 8, 5]
     Temporal_ch = Temporal_feature.shape[2]
     Temporal_feature = np.reshape(Temporal_feature, [Temporal_feature.shape[0], Temporal_feature.shape[1],
                                                      int(Temporal_feature.shape[2] * Temporal_feature.shape[3])])
-    print('Temporal_feature shape:', Temporal_feature.shape)
+    print('Temporal_feature shape:', Temporal_feature.shape)  # [68832, 10, 40]
 
     cnt = 0
     # Central channel
@@ -85,11 +83,11 @@ def regions(feature, dis, idx):
         else:
             Central_feature = torch.cat((Central_feature, data[:, :, c, :].unsqueeze_(2)), dim=2)
 
-    print('Central_feature shape:', Central_feature.shape)
+    print('Central_feature shape:', Central_feature.shape)  # [68832, 10, 9, 5]
     Central_ch = Central_feature.shape[2]
     Central_feature = np.reshape(Central_feature, [Central_feature.shape[0], Central_feature.shape[1],
                                                    int(Central_feature.shape[2] * Central_feature.shape[3])])
-    print('Central_feature shape:', Central_feature.shape)
+    print('Central_feature shape:', Central_feature.shape)  # [68832, 10, 45]
 
     cnt = 0
     # Parietal channel
@@ -102,11 +100,11 @@ def regions(feature, dis, idx):
         else:
             Parietal_feature = torch.cat((Parietal_feature, data[:, :, p, :].unsqueeze_(2)), dim=2)
 
-    print('Parietal_feature shape:', Parietal_feature.shape)
+    print('Parietal_feature shape:', Parietal_feature.shape)  # [68832, 10, 3, 5]
     Parietal_ch = Parietal_feature.shape[2]
     Parietal_feature = np.reshape(Parietal_feature, [Parietal_feature.shape[0], Parietal_feature.shape[1],
                                                      int(Parietal_feature.shape[2] * Parietal_feature.shape[3])])
-    print('Parietal_feature shape:', Parietal_feature.shape)
+    print('Parietal_feature shape:', Parietal_feature.shape)  # [68832, 10, 15]
 
     cnt = 0
     # Occipital channel
@@ -119,17 +117,23 @@ def regions(feature, dis, idx):
         else:
             Occipital_feature = torch.cat((Occipital_feature, data[:, :, o, :].unsqueeze_(2)), dim=2)
 
-    print('Occipital_feature shape:', Occipital_feature.shape)
+    print('Occipital_feature shape:', Occipital_feature.shape)  # [68832, 10, 3, 5]
     Occipital_ch = Occipital_feature.shape[2]
     Occipital_feature = np.reshape(Occipital_feature, [Occipital_feature.shape[0], Occipital_feature.shape[1],
                                                        int(Occipital_feature.shape[2] * Occipital_feature.shape[3])])
-    print('Occipital_feature shape:', Occipital_feature.shape)
+    print('Occipital_feature shape:', Occipital_feature.shape)  # [68832, 10, 15]
 
-    data.append(Frontal_feature)
-    data.append(Temporal_feature)
-    data.append(Central_feature)
-    data.append(Parietal_feature)
-    data.append(Occipital_feature)
+    Frontal = Frontal_feature
+    Temporal = Temporal_feature
+    Central = Central_feature
+    Parietal = Parietal_feature
+    Occipital = Occipital_feature
+
+    data.append(Frontal)
+    data.append(Temporal)
+    data.append(Central)
+    data.append(Parietal)
+    data.append(Occipital)
     data.append(dis)
     print('data len:', len(data))
     print('Frontal_feature shape:', data[0].shape)

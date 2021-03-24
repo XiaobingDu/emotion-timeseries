@@ -99,13 +99,9 @@ for epoch_num in range(num_epochs):
         # print("Training .... 第 {} 个Batch.....".format(i))
         st_time = time.time()
         train, dis, Frontal, Temporal, Central, Parietal, Occipital = data  # get training date
-        # labels1 = labels[0]
-        # labels2= labels[1]
         if args['use_cuda']: # use cuda
             train = torch.nn.Parameter(train).cuda()
             dis = torch.nn.Parameter(dis).cuda()
-            # labels1 = torch.nn.Parameter(labels1).cuda()
-            # labels2 = torch.nn.Parameter(labels2).cuda()
             Frontal = torch.nn.Parameter(Frontal).cuda()
             Temporal = torch.nn.Parameter(Temporal).cuda()
             Central = torch.nn.Parameter(Central).cuda()
@@ -114,8 +110,6 @@ for epoch_num in range(num_epochs):
 
         train.requires_grad_()  # backward
         dis.requires_grad_()
-        # labels1.requires_grad_()
-        # labels2.requires_grad_()
         Frontal.requires_grad_()
         Temporal.requires_grad_()
         Central.requires_grad_()
@@ -124,31 +118,24 @@ for epoch_num in range(num_epochs):
 
 
         # Forward pass
-        # print('train dis........',dis.shape)
         emot_dis, input_clstm, shared_encoder, att_1, att_2, att_3, att_4, att_5, att_6, att_7, att_8, att_9, att_10 \
             = net(train, Frontal, Temporal, Central, Parietal, Occipital, dis)
         train_model_gista(shared_encoder, input_clstm, lam=0.5, lam_ridge=1e-4, lr=0.001, max_iter=1, check_every=1000, truncation=64)
         GC_est = shared_encoder.GC().cpu().data.numpy()
 
+        print('emot_dis....', emot_dis.shape)
         emot_dis = emot_dis.squeeze(dim=0)
-        # print('emot_dis shape.....', emot_dis.shape)
-        # print('emot_dis......', emot_dis[0:3,:])
-        # labels1 = labels1.T
-        # labels2 = labels2.T
+        print('emot_dis....', emot_dis.shape)
         dis = torch.squeeze(dis,dim=1)
-        # print('dis shape.....', dis.shape)
-        # print('dis......',dis[0:3,:])
 
         # mamx-min norm
-        # emot_score = (2*(emot_score - torch.min(emot_score))/(torch.max(emot_score) - torch.min(emot_score))) -1
+        emot_dis = (2*(emot_dis - torch.min(emot_dis))/(torch.max(emot_dis) - torch.min(emot_dis))) -1
         # mse loss
-        # 两种label的loss之和
         # l = mse(emot_score[:,0].unsqueeze(dim=1), labels1) + mse(emot_score[:,1].unsqueeze(dim=1), labels2)
         # kldiv loss
         emot_dis = torch.tensor(emot_dis, dtype=torch.double)
         dis = torch.tensor(dis, dtype=torch.double)
         l = kl_div(emot_dis, dis)
-        # print('kl_div loss.....', l)
         l = Variable(l, requires_grad=True)
 
         # Backprop and update weights
@@ -156,7 +143,6 @@ for epoch_num in range(num_epochs):
         l.backward()
         a = torch.nn.utils.clip_grad_norm_(net.parameters(), 10)
         optimizer.step()
-        # scheduler.step()
         avg_tr_loss += l.item()
 
     # print(GC_est)
@@ -168,23 +154,14 @@ for epoch_num in range(num_epochs):
 
     ## Validate:______________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
     net.eval()
-    # valmse = 0
-    # aromse = 0
     val_kl = 0
-    # valpcc = 0
-    # aropcc = 0
     emopcc = 0
     for i, data in enumerate(valDataloader):
         # print("Val ..... 第 {} 个Batch.....".format(i))
         st_time = time.time()
-        # val, labels,  F, Va, scene, audio  = data
         val, dis, Frontal, Temporal, Central, Parietal, Occipital = data
-        # labels1 = labels[0]
-        # labels2 = labels[1]
         if args['use_cuda']:
             val = torch.nn.Parameter(val).cuda()
-            # labels1 = torch.nn.Parameter(labels1).cuda()
-            # labels2 = torch.nn.Parameter(labels2).cuda()
             dis = torch.nn.Parameter(dis).cuda()
             Frontal = torch.nn.Parameter(Frontal).cuda()
             Temporal = torch.nn.Parameter(Temporal).cuda()
@@ -197,44 +174,33 @@ for epoch_num in range(num_epochs):
             net(val, Frontal, Temporal, Central, Parietal, Occipital, dis)
 
         emot_dis = emot_dis.squeeze(dim=0)
-        # labels1 = labels1.T
-        # labels2 = labels2.T
         dis = torch.squeeze(dis,dim=1)
 
-        # emot_score = (2*(emot_score - torch.min(emot_score))/(torch.max(emot_score) - torch.min(emot_score))) -1
-        # labels1 = (2*(labels1 - torch.min(labels1)))/(torch.max(labels1) - torch.min(labels1)) -1
-        # labels2 = (2*(labels2 - torch.min(labels2)))/(torch.max(labels2) - torch.min(labels2)) -1
+        #min-max norm
+        emot_dis = (2*(emot_dis - torch.min(emot_dis))/(torch.max(emot_dis) - torch.min(emot_dis))) -1
         # 每一个batch的average mse loss相加
         # valmse += mse(emot_score[:, 0].unsqueeze(dim=1), labels1)/labels1.shape[0]
         # aromse += mse(emot_score[:, 1].unsqueeze(dim=1), labels2)/labels2.shape[0]
         emot_dis = torch.tensor(emot_dis, dtype=torch.double) #[32,9]
         dis = torch.tensor(dis, dtype=torch.double)
-        val_kl = kl_div(emot_dis, dis) /dis.shape[0]
+        val_kl += kl_div(emot_dis, dis) /dis.shape[0]
 
         # Pearson correlation
-        # valpcc += pearsonr(emot_score[:, 0].unsqueeze(dim=1).cpu().detach().numpy(), labels1.cpu().detach().numpy())[0]
-        # aropcc += pearsonr(emot_score[:, 1].unsqueeze(dim=1).cpu().detach().numpy(), labels2.cpu().detach().numpy())[0]
         emopcc += pearsonr(emot_dis.cpu().detach().numpy(), dis.cpu().detach().numpy())[0]
 
     # 每一个epoch loss平均
-    # 每一个epoch pcc平均
-    # epoch_valmse = valmse/len(valSet)
-    # epoch_aromse = aromse/len(valSet)
     epoch_kl = val_kl /len(valSet)
-    # epoch_valpcc = valpcc / len(valSet)
-    # epoch_aropcc = aropcc / len(valSet)
+    # 每一个epoch pcc平均
     epoch_pcc = emopcc / len(valSet)
     # validation loss
     val_loss =epoch_kl
 
-    # val_loss=(epoch_aromse+epoch_valmse)/2
     print("Epoch emotion distribution KLDivLoss:", epoch_kl.item() , "\nEpoch emotion distribution PCC:", epoch_pcc.item() ,"\n", "==========================")
 
     # checkpoint
     checkpoint = {
         'epoch': epoch_num + 1,
         'valid_loss_min_kl': epoch_kl,
-        # 'valid_loss_min_arousal': epoch_aromse,
         'state_dict': net.state_dict(),
         'optimizer': optimizer.state_dict(),
     }
@@ -254,26 +220,17 @@ for epoch_num in range(num_epochs):
 net = MovieNet(args)
 net, optimizer, start_epoch, valid_loss_min_kl = load_ckp(
     best_model_path + "/train_co_attn_GC_best_model.pt", net, optimizer)
-# 至此，training 和 validation结束
 
 # testing
 net.eval()
-# testmse = 0
-# aromse = 0
 test_kl = 0
-# testpcc = 0
-# aropcc = 0
 emopcc = 0
 for i, data in enumerate(testDataloader):
     st_time = time.time()
     test, dis, Frontal, Temporal, Central, Parietal, Occipital = data
-    # labels1 = labels[0]
-    # labels2 = labels[1]
     dis = dis
     if args['use_cuda']:
         test = torch.nn.Parameter(test).cuda()
-        # labels1 = torch.nn.Parameter(labels1).cuda()
-        # labels2 = torch.nn.Parameter(labels2).cuda()
         dis = torch.nn.Parameter(dis).cuda()
         Frontal = torch.nn.Parameter(Frontal).cuda()
         Temporal = torch.nn.Parameter(Temporal).cuda()
@@ -290,29 +247,20 @@ for i, data in enumerate(testDataloader):
     dis = torch.squeeze(dis, dim=1)
 
     # min-max norm
-    # emot_score = (2*(emot_score - torch.min(emot_score))/(torch.max(emot_score) - torch.min(emot_score))) -1
-    # print(emot_score)
-    # labels1 = (2*(labels1 - torch.min(labels1)))/(torch.max(labels1) - torch.min(labels1)) -1
-    # labels2 = (2*(labels2 - torch.min(labels2)))/(torch.max(labels2) - torch.min(labels2)) -1
+    emot_dis = (2*(emot_dis - torch.min(emot_dis))/(torch.max(emot_dis) - torch.min(emot_dis))) -1
     # mse loss
     # testmse += mse(emot_score[:, 0].unsqueeze(dim=1), labels1)/labels1.shape[0]
     # aromse += mse(emot_score[:, 1].unsqueeze(dim=1), labels2)/labels2.shape[0]
     # kldiv loss
     emot_dis = torch.tensor(emot_dis, dtype=torch.double)  # [32,9]
     dis = torch.tensor(dis, dtype=torch.double)
-    test_kl = kl_div(emot_dis, dis) / dis.shape[0]
+    test_kl += kl_div(emot_dis, dis) / dis.shape[0]
 
     # pearson correlation
-    # testpcc += pearsonr(emot_score[:, 0].unsqueeze(dim=1).cpu().detach().numpy(), labels1.cpu().detach().numpy())[0]
-    # aropcc += pearsonr(emot_score[:, 1].unsqueeze(dim=1).cpu().detach().numpy(), labels2.cpu().detach().numpy())[0]
     emopcc += pearsonr(emot_dis.cpu().detach().numpy(), dis.cpu().detach().numpy())[0]
 # average loss
-# test_testmse = testmse/len(testSet)
-# test_aromse = aromse/len(testSet)
 test_testkl = test_kl / len(testSet)
 # average pcc
-# test_testpcc = testpcc / len(testSet)
-# test_aropcc = aropcc / len(testSet)
 test_emopcc = emopcc / len(testSet)
 
 print("Test Emotion distribution KLDivLoss:", test_testkl.item(), "\Test Emotion distribution PCC:", test_emopcc.item(),

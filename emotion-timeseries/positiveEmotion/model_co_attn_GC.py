@@ -40,16 +40,15 @@ class MovieNet(nn.Module):
 
     def __init__(self, args, device=torch.device('cuda:0')):
         super(MovieNet, self).__init__()
-        #对应5个脑区的脑电特征长度
+        #the feature length of five brain regions
         self.Frontal_len = args['Frontal_len']
         self.Temporal_len = args['Temporal_len']
         self.Central_len = args['Central_len']
         self.Parietal_len = args['Parietal_len']
         self.Occipital_len = args['Occipital_len']
         self.out_layer = args['out_layer']
-        #将5个脑区的特征长度相加
+        #concate the length
         self.total_mod_len = self.Frontal_len + self.Temporal_len +self.Central_len + self.Parietal_len + self.Occipital_len
-        # self.total_mod_len = 3*(self.text_len)
 
         #super parameters
         self.embed_dim = args['embed_dim']
@@ -87,7 +86,6 @@ class MovieNet(nn.Module):
         
         #Encoder Module
         #cLSTM module simultaneously
-        # 5 代表使用5个脑区的特征
         self.shared_encoder = cLSTM(5,self.h_dim, batch_first=True).cuda(device=device)
         #To ensure update parameters during training: nn.Parameter
         #encoder: init parameters
@@ -97,10 +95,13 @@ class MovieNet(nn.Module):
 
         #Decoder Module
         # Decodes targets and LSTM hidden states
+        # 1+self.h_dim: previous label + context
         # self.decoder = nn.LSTM(1 + self.h_dim, self.h_dim, self.n_layers, batch_first=True)
         #6 represents the context vector length
-        #6 代表的是 input_size，x的特征维度
-        self.decoder = nn.LSTM(14, self.h_dim, self.n_layers, batch_first=True)
+        # CONTEXT + PREVIOUS LABEL: dim:5 + dim:9 = 14
+        # self.decoder = nn.LSTM(14, self.h_dim, self.n_layers, batch_first=True)
+        # WITHOUT PREVIOUS LABEL dim:5
+        self.decoder = nn.LSTM(5, self.h_dim, self.n_layers, batch_first=True)
         #decoder: ini parameters
         self.dec_h0 = nn.Parameter(torch.rand(self.n_layers, 1, self.h_dim))
         self.dec_c0 = nn.Parameter(torch.rand(self.n_layers, 1, self.h_dim))
@@ -250,36 +251,40 @@ class MovieNet(nn.Module):
         h0 = self.dec_h0.repeat(1, batch_size, 1)
         c0 = self.dec_c0.repeat(1, batch_size, 1)
 
-
         if target is not None:
-            # print(target[0].shape)
-            # exit()
-            #target == GT labels
-            # target_0 = target.float().reshape(batch_size, seq_len, 1)
-            target_0 = target.unsqueeze_(dim=1)
-            target_0 = torch.cat([target_0,target_0,target_0,target_0,target_0,target_0,target_0,target_0,target_0,target_0],dim=1) #[batch_size, seq_len, 9]
-            target_0 = torch.nn.Parameter(target_0).cuda()
-            # target_1 = target[1].float().reshape(batch_size, seq_len, 1)
-            # target_1 = torch.nn.Parameter(target_1).cuda()
-            # print(pad_shift(target, 1, tgt_init), context.shape)
+            # # print(target[0].shape)
+            # # exit()
+            # #target == GT labels
+            # # target_0 = target.float().reshape(batch_size, seq_len, 1)
+            # target_0 = target.unsqueeze_(dim=1)
+            # target_0 = torch.cat([target_0,target_0,target_0,target_0,target_0,target_0,target_0,target_0,target_0,target_0],dim=1) #[batch_size, seq_len, 9]
+            # target_0 = torch.nn.Parameter(target_0).cuda()
+            # # target_1 = target[1].float().reshape(batch_size, seq_len, 1)
+            # # target_1 = torch.nn.Parameter(target_1).cuda()
+            # # print(pad_shift(target, 1, tgt_init), context.shape)
+            #
+            # #eq.9
+            # # Concatenate targets from previous timesteps to context
+            # #将previous time label与context拼接
+            # #targets from previous timesteps 怎样得到的呢？怎样传入呢？
+            # # dec_in = torch.cat([pad_shift(target_0, 1, tgt_init),pad_shift(target_1, 1, tgt_init), context], 2)
+            # # print('context shape.........', context.shape) #[32, 10, 5]
+            # # print('target shape..........', target.shape) #[32,9]
+            # # dec_in = torch.cat([pad_shift(target_0, 1, tgt_init), context], 2)
+            # # print('target shape....',target_0.shape)
+            # # print('context shape....', context.shape)
+            # dec_in = torch.cat([target_0.float(), context.float()], dim=2)
+            # # print('dec_in shape....',dec_in.shape) #[32,10,14]
 
-            #eq.9
-            # Concatenate targets from previous timesteps to context
-            #将previous time label与context拼接
-            #targets from previous timesteps 怎样得到的呢？怎样传入呢？
-            # dec_in = torch.cat([pad_shift(target_0, 1, tgt_init),pad_shift(target_1, 1, tgt_init), context], 2)
-            # print('context shape.........', context.shape) #[32, 10, 5]
-            # print('target shape..........', target.shape) #[32,9]
-            # dec_in = torch.cat([pad_shift(target_0, 1, tgt_init), context], 2)
-            # print('target shape....',target_0.shape)
-            # print('context shape....', context.shape)
-            dec_in = torch.cat([target_0.float(), context.float()], dim=2)
-            # print('dec_in shape....',dec_in.shape) #[32,10,14]
+            # DO NOT ADD PREVIOUS LABEL FOR PREDICT
+            # DECODE THE CONTEXT VECTOR
+            dec_in = context.float()
+
+            #WITH and WITHOUT PREVIOUS LABEL
             dec_out, _ = self.decoder(dec_in, (h0, c0)) #decoder -> nn.LSTM这里有问题
             # print('dec_out shape....',dec_out.shape) #[32, 10, 512]
             # Undo the packing
             dec_out = dec_out.reshape(-1, self.h_dim)
-
 
             # dec_in = context           
             # dec_out, _ = self.decoder(dec_in, (h0, c0))            

@@ -14,9 +14,7 @@ import shutil
 
 # New Dataloader for MovieClass
 class MediaEvalDataset(Dataset):
-    #初始化函数，得到数据
     def __init__(self,feature, dis, idx):
-        print('*************')
         self.channel = 30
         self.feature = feature
         self.dis = dis
@@ -26,7 +24,8 @@ class MediaEvalDataset(Dataset):
         self.Central = []
         self.Parietal = []
         self.Occipital = []
-        print('-----------')
+
+        #get the brain regions
         # 对应5个脑区的特征
         # idx = [[0,1,2,3,4,5,6],[7,11,12,16,17,21,22,26],[8,9,10,13,14,15,18,19,20],[23,24,25],[27,28,29]]
         F_idx = idx[0]  # [0,1,2,3,4,5,6]
@@ -41,7 +40,6 @@ class MediaEvalDataset(Dataset):
         data = np.reshape(self.feature, [sample_nums, time_win, self.channel, PSD_dim])
         # array转换成torch tensor，为了使用 data.unsquezze_(2)和 torch.cat((),dim=2)
         data = torch.Tensor(data)
-        # data = np.reshape(data,[self.channel, sample_nums*time_win*PSD_dim])
 
         cnt = 0
         # frontal channel
@@ -54,12 +52,12 @@ class MediaEvalDataset(Dataset):
             else:
                 Frontal_feature = torch.cat((Frontal_feature, data[:, :, f, :].unsqueeze_(2)), dim=2)
 
-        print('Frontal_feature shape:', Frontal_feature.shape)
+        print('Frontal_feature shape:', Frontal_feature.shape) #[68832, 10, 7, 5]
         Frontal_ch = Frontal_feature.shape[2]
         # reshape
         Frontal_feature = np.reshape(Frontal_feature, [Frontal_feature.shape[0], Frontal_feature.shape[1],
                                                          int(Frontal_feature.shape[2] * Frontal_feature.shape[3])])
-        print('Frontal_feature shape:', Frontal_feature.shape)
+        print('Frontal_feature shape:', Frontal_feature.shape) #[68832, 10, 35]
 
         cnt = 0
         # Temporal channel
@@ -72,11 +70,11 @@ class MediaEvalDataset(Dataset):
             else:
                 Temporal_feature = torch.cat((Temporal_feature, data[:, :, t, :].unsqueeze_(2)), dim=2)
 
-        print('Temporal_feature shape:', Temporal_feature.shape)
+        print('Temporal_feature shape:', Temporal_feature.shape) #[68832, 10, 8, 5]
         Temporal_ch = Temporal_feature.shape[2]
         Temporal_feature = np.reshape(Temporal_feature, [Temporal_feature.shape[0], Temporal_feature.shape[1],
                                                        int(Temporal_feature.shape[2] * Temporal_feature.shape[3])])
-        print('Temporal_feature shape:', Temporal_feature.shape)
+        print('Temporal_feature shape:', Temporal_feature.shape) #[68832, 10, 40]
 
         cnt = 0
         # Central channel
@@ -89,11 +87,11 @@ class MediaEvalDataset(Dataset):
             else:
                 Central_feature = torch.cat((Central_feature, data[:, :, c, :].unsqueeze_(2)), dim=2)
 
-        print('Central_feature shape:', Central_feature.shape)
+        print('Central_feature shape:', Central_feature.shape) #[68832, 10, 9, 5]
         Central_ch = Central_feature.shape[2]
         Central_feature = np.reshape(Central_feature, [Central_feature.shape[0], Central_feature.shape[1],
                                                          int(Central_feature.shape[2] * Central_feature.shape[3])])
-        print('Central_feature shape:', Central_feature.shape)
+        print('Central_feature shape:', Central_feature.shape) #[68832, 10, 45]
 
         cnt = 0
         # Parietal channel
@@ -106,10 +104,10 @@ class MediaEvalDataset(Dataset):
             else:
                 Parietal_feature = torch.cat((Parietal_feature, data[:, :, p, :].unsqueeze_(2)), dim=2)
 
-        print('Parietal_feature shape:', Parietal_feature.shape)
+        print('Parietal_feature shape:', Parietal_feature.shape) #[68832, 10, 3, 5]
         Parietal_ch = Parietal_feature.shape[2]
         Parietal_feature = np.reshape(Parietal_feature,[Parietal_feature.shape[0],Parietal_feature.shape[1],int(Parietal_feature.shape[2]*Parietal_feature.shape[3])])
-        print('Parietal_feature shape:', Parietal_feature.shape)
+        print('Parietal_feature shape:', Parietal_feature.shape) #[68832, 10, 15]
 
         cnt = 0
         # Occipital channel
@@ -122,10 +120,10 @@ class MediaEvalDataset(Dataset):
             else:
                 Occipital_feature = torch.cat((Occipital_feature, data[:, :, o, :].unsqueeze_(2)), dim=2)
 
-        print('Occipital_feature shape:', Occipital_feature.shape)
+        print('Occipital_feature shape:', Occipital_feature.shape) #[68832, 10, 3, 5]
         Occipital_ch = Occipital_feature.shape[2]
         Occipital_feature = np.reshape(Occipital_feature,[Occipital_feature.shape[0],Occipital_feature.shape[1],int(Occipital_feature.shape[2]*Occipital_feature.shape[3])])
-        print('Occipital_feature shape:', Occipital_feature.shape)
+        print('Occipital_feature shape:', Occipital_feature.shape) #[68832, 10, 15]
 
         self.Frontal = Frontal_feature
         self.Temporal = Temporal_feature
@@ -133,8 +131,6 @@ class MediaEvalDataset(Dataset):
         self.Parietal = Parietal_feature
         self. Occipital = Occipital_feature
 
-        # combined = torch.cat((Frontal, Temporal, Central, Parietal, Occipital),dim=-1)
-        # print('combined shape:', combined.shape) #([162509, 10, 150])
 
 
     def __len__(self):
@@ -142,8 +138,6 @@ class MediaEvalDataset(Dataset):
         return num_samples
 
     def __getitem__(self, index):
-        # print('index:',index)
-        # print('Frontal shape:', len(self.Frontal))
         F = self.Frontal[index]
         T = self.Temporal[index]
         C = self.Central[index]
@@ -154,8 +148,6 @@ class MediaEvalDataset(Dataset):
         # 将5个脑区的数据hstack
         # combined = np.hstack([F, T, C, P, O])
         combined = torch.cat((F, T, C, P, O), dim=-1)
-        # print('combined shape:', combined.shape)
-        # print('y shape:', y.shape)
 
         return combined, y, F, T, C, P, O
 
@@ -214,25 +206,7 @@ def load_ckp(checkpoint_fpath, model, optimizer):
     optimizer.load_state_dict(checkpoint['optimizer'])
     # initialize valid_loss_min from checkpoint to valid_loss_min
     valid_loss_min_kl = checkpoint['valid_loss_min_kl']
-    # valid_loss_min_valence = checkpoint['valid_loss_min_valence']
-    # valid_loss_min_arousal = checkpoint['valid_loss_min_arousal']
-    # return model, optimizer, epoch value, min validation loss 
-    # return model, optimizer, checkpoint['epoch'], valid_loss_min_valence.item(), valid_loss_min_arousal.item()
+
     return model, optimizer, checkpoint['epoch'], valid_loss_min_kl.item()
 
-
-# if __name__ == '__mian__':
-#     print('............')
-#     from dataManager import dataSplit, get_sample_data
-#     path1 = '/Volumes/DATA/EEG_Multi-label/EEG_LDL_9/EEG_PSD_multilabel_9_addLabel_sum1/'
-#     path2 = '/Volumes/DATA/EEG_Multi-label/EEG_LDL_9/EEG_PSD_multilabel_9_win/featureAll.mat'
-#     db_name = 'LDL_data'
-#     idx = [[0, 1, 2, 3, 4, 5, 6], [7, 11, 12, 16, 17, 21, 22, 26], [8, 9, 10, 13, 14, 15, 18, 19, 20], [23, 24, 25],
-#            [27, 28, 29]]
-#
-#     # load train, val, test data
-#     data_set = get_sample_data(path1, path2)
-#     train_data, test_data, train_label, test_label, train_dis, test_dis, train_score, test_score = dataSplit(path1,
-#                                                                                                              data_set,db_name)
-#     MediaEvalDataset(train_data,train_dis,idx)
 
