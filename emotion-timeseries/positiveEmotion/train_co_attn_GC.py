@@ -69,9 +69,9 @@ valSet = MediaEvalDataset(val_data, val_dis, idx)
 testSet = MediaEvalDataset(test_data, test_dis, idx)
 
 #读取数据
-trDataloader = DataLoader(trSet ,batch_size=batch_size ,shuffle=True ,num_workers=2) # len = 5079 (bath)
-valDataloader = DataLoader(valSet ,batch_size=batch_size ,shuffle=True ,num_workers=2) #len = 3172
-testDataloader = DataLoader(testSet ,batch_size=batch_size ,shuffle=True ,num_workers=2) #len = 2151
+trDataloader = DataLoader(trSet ,batch_size=batch_size ,shuffle=True ,num_workers=0) # len = 5079 (batches)
+valDataloader = DataLoader(valSet ,batch_size=batch_size ,shuffle=True ,num_workers=0) #len = 3172
+testDataloader = DataLoader(testSet ,batch_size=batch_size ,shuffle=True ,num_workers=0) #len = 2151
 
 # Initialize network
 net = MovieNet(args)
