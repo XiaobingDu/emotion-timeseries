@@ -131,10 +131,12 @@ for epoch_num in range(num_epochs):
 
         emot_dis = emot_dis.squeeze(dim=0)
         print('emot_dis shape.....', emot_dis.shape)
+        print('emot_dis......', emot_dis[0:3,:])
         # labels1 = labels1.T
         # labels2 = labels2.T
         dis = torch.squeeze(dis,dim=1)
         print('dis shape.....', dis.shape)
+        print('dis......',dis[0:3,:])
 
         # mamx-min norm
         # emot_score = (2*(emot_score - torch.min(emot_score))/(torch.max(emot_score) - torch.min(emot_score))) -1
@@ -142,6 +144,8 @@ for epoch_num in range(num_epochs):
         # 两种label的loss之和
         # l = mse(emot_score[:,0].unsqueeze(dim=1), labels1) + mse(emot_score[:,1].unsqueeze(dim=1), labels2)
         # kldiv loss
+        emot_dis = torch.tensor(emot_dis, dtype=torch.duble)
+        dis = torch.tensor(dis, dtype=torch.duble)
         l = kl_div(emot_dis, dis)
 
         # Backprop and update weights
