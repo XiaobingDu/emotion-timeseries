@@ -8,6 +8,7 @@ from model_co_attn_GC import MovieNet
 from dataManager import dataSplit, get_sample_data
 from utils_co_attn_GC import adjust_learning_rate, MediaEvalDataset, prsn, save_ckp, load_ckp
 from torch.utils.data import DataLoader
+from torch.autograd import Variable
 import time
 import math
 import warnings
@@ -147,6 +148,8 @@ for epoch_num in range(num_epochs):
         emot_dis = torch.tensor(emot_dis, dtype=torch.double)
         dis = torch.tensor(dis, dtype=torch.double)
         l = kl_div(emot_dis, dis)
+        print('kl_div loss.....', l)
+        l = Variable(l, requires_grad=True)
 
         # Backprop and update weights
         optimizer.zero_grad()
