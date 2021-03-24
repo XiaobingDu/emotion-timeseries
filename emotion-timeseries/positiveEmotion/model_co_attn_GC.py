@@ -271,12 +271,12 @@ class MovieNet(nn.Module):
             # print('context shape.........', context.shape) #[32, 10, 5]
             # print('target shape..........', target.shape) #[32,9]
             # dec_in = torch.cat([pad_shift(target_0, 1, tgt_init), context], 2)
-            print('target shape....',target_0.shape)
-            print('context shape....', context.shape)
+            # print('target shape....',target_0.shape)
+            # print('context shape....', context.shape)
             dec_in = torch.cat([target_0.float(), context.float()], dim=2)
-            print('dec_in shape....',dec_in.shape) #[32,10,14]
+            # print('dec_in shape....',dec_in.shape) #[32,10,14]
             dec_out, _ = self.decoder(dec_in, (h0, c0)) #decoder -> nn.LSTM这里有问题
-            print('dec_out shape....',dec_out.shape) #[32, 10, 512]
+            # print('dec_out shape....',dec_out.shape) #[32, 10, 512]
             # Undo the packing
             dec_out = dec_out.reshape(-1, self.h_dim)
 
@@ -287,9 +287,9 @@ class MovieNet(nn.Module):
             #eq.10
             #
             predicted = self.out(dec_out).view(batch_size, seq_len, self.out_layer)
-            print('predict shape', predicted.shape)  # [32,10,9]
+            # print('predict shape', predicted.shape)  # [32,10,9]
             predicted_last = predicted [:,-1,:]
-            print('predict_last shape', predicted_last.shape)  # [32,1,9]
+            # print('predict_last shape', predicted_last.shape)  # [32,1,9]
             predicted = torch.softmax(predicted_last, dim=1)
         else:
             # Use earlier predictions to predict next time-steps
