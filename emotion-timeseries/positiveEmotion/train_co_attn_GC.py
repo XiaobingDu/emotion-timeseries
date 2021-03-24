@@ -133,9 +133,8 @@ for epoch_num in range(num_epochs):
         print('emot_dis shape.....', emot_dis.shape)
         # labels1 = labels1.T
         # labels2 = labels2.T
-        dis = dis
+        dis = np.reshape(dis,[dis.shape[0],dis.shape[2]])
         print('dis shape.....', dis.shape)
-        print('dis.....', dis[0,0,:])
 
         # mamx-min norm
         # emot_score = (2*(emot_score - torch.min(emot_score))/(torch.max(emot_score) - torch.min(emot_score))) -1
