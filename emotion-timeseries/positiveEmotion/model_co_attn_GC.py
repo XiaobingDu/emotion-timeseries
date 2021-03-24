@@ -100,7 +100,7 @@ class MovieNet(nn.Module):
         # self.decoder = nn.LSTM(1 + self.h_dim, self.h_dim, self.n_layers, batch_first=True)
         #6 represents the context vector length
         #6 代表的是 input_size，x的特征维度
-        self.decoder = nn.LSTM(10, self.h_dim, self.n_layers, batch_first=True)
+        self.decoder = nn.LSTM(14, self.h_dim, self.n_layers, batch_first=True)
         #decoder: ini parameters
         self.dec_h0 = nn.Parameter(torch.rand(self.n_layers, 1, self.h_dim))
         self.dec_c0 = nn.Parameter(torch.rand(self.n_layers, 1, self.h_dim))
@@ -241,7 +241,7 @@ class MovieNet(nn.Module):
         #context vector d
         # Convolve output with attention weights
         # i.e. out[t] = a[t,0]*in[t] + ... + a[t,win_len-1]*in[t-(win_len-1)]
-        # print('enc_out shape......',enc_out.shape) #[32, 10, 5]
+        # print('enc_out shape......',enc_out.shape) #[32, 10, 5] 每一个timestep都有输出
         # print('attn shape.....', attn.shape) #[32, 10, 10]
         context = convolve(enc_out, attn) # [32, 10, 5]
 
@@ -249,6 +249,8 @@ class MovieNet(nn.Module):
         # Set initial hidden and cell states for decoder
         h0 = self.dec_h0.repeat(1, batch_size, 1)
         c0 = self.dec_c0.repeat(1, batch_size, 1)
+
+
         if target is not None:
             # print(target[0].shape)
             # exit()
@@ -272,8 +274,8 @@ class MovieNet(nn.Module):
             print('target shape....',target_0.shape)
             print('context shape....', context.shape)
             dec_in = torch.cat([target_0.float(), context.float()], dim=2)
-            print('dec_in shape....',dec_in.shape)
-            dec_out, _ = self.decoder(dec_in, (h0, c0))
+            print('dec_in shape....',dec_in.shape) #[32,10,14]
+            dec_out, _ = self.decoder(dec_in, (h0, c0)) #decoder -> nn.LSTM这里有问题
             print('dec_out shape....',dec_out.shape)
             # Undo the packing
             dec_out = dec_out.reshape(-1, self.h_dim)
