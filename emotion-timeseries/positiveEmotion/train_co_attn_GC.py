@@ -96,7 +96,7 @@ for epoch_num in range(num_epochs):
     # Variables to track training performance:
     avg_tr_loss = 0
     for i, data in enumerate(trDataloader):
-        print("Training .... 第 {} 个Batch.....".format(i))
+        # print("Training .... 第 {} 个Batch.....".format(i))
         st_time = time.time()
         train, dis, Frontal, Temporal, Central, Parietal, Occipital = data  # get training date
         # labels1 = labels[0]
@@ -175,7 +175,7 @@ for epoch_num in range(num_epochs):
     # aropcc = 0
     emopcc = 0
     for i, data in enumerate(valDataloader):
-        print("Val ..... 第 {} 个Batch.....".format(i))
+        # print("Val ..... 第 {} 个Batch.....".format(i))
         st_time = time.time()
         # val, labels,  F, Va, scene, audio  = data
         val, dis, Frontal, Temporal, Central, Parietal, Occipital = data
