@@ -96,7 +96,7 @@ for epoch_num in range(num_epochs):
     # Variables to track training performance:
     avg_tr_loss = 0
     for i, data in enumerate(trDataloader):
-        print("第 {} 个Batch.....".format(i))
+        print("Training .... 第 {} 个Batch.....".format(i))
         st_time = time.time()
         train, dis, Frontal, Temporal, Central, Parietal, Occipital = data  # get training date
         # labels1 = labels[0]
@@ -124,20 +124,20 @@ for epoch_num in range(num_epochs):
 
 
         # Forward pass
-        print('train dis........',dis.shape)
+        # print('train dis........',dis.shape)
         emot_dis, input_clstm, shared_encoder, att_1, att_2, att_3, att_4, att_5, att_6, att_7, att_8, att_9, att_10 \
             = net(train, Frontal, Temporal, Central, Parietal, Occipital, dis)
         train_model_gista(shared_encoder, input_clstm, lam=0.5, lam_ridge=1e-4, lr=0.001, max_iter=1, check_every=1000, truncation=64)
         GC_est = shared_encoder.GC().cpu().data.numpy()
 
         emot_dis = emot_dis.squeeze(dim=0)
-        print('emot_dis shape.....', emot_dis.shape)
-        print('emot_dis......', emot_dis[0:3,:])
+        # print('emot_dis shape.....', emot_dis.shape)
+        # print('emot_dis......', emot_dis[0:3,:])
         # labels1 = labels1.T
         # labels2 = labels2.T
         dis = torch.squeeze(dis,dim=1)
-        print('dis shape.....', dis.shape)
-        print('dis......',dis[0:3,:])
+        # print('dis shape.....', dis.shape)
+        # print('dis......',dis[0:3,:])
 
         # mamx-min norm
         # emot_score = (2*(emot_score - torch.min(emot_score))/(torch.max(emot_score) - torch.min(emot_score))) -1
@@ -148,7 +148,7 @@ for epoch_num in range(num_epochs):
         emot_dis = torch.tensor(emot_dis, dtype=torch.double)
         dis = torch.tensor(dis, dtype=torch.double)
         l = kl_div(emot_dis, dis)
-        print('kl_div loss.....', l)
+        # print('kl_div loss.....', l)
         l = Variable(l, requires_grad=True)
 
         # Backprop and update weights
@@ -175,6 +175,7 @@ for epoch_num in range(num_epochs):
     # aropcc = 0
     emopcc = 0
     for i, data in enumerate(valDataloader):
+        print("Val ..... 第 {} 个Batch.....".format(i))
         st_time = time.time()
         # val, labels,  F, Va, scene, audio  = data
         val, dis, Frontal, Temporal, Central, Parietal, Occipital = data
@@ -198,7 +199,7 @@ for epoch_num in range(num_epochs):
         emot_dis = emot_dis.squeeze(dim=0)
         # labels1 = labels1.T
         # labels2 = labels2.T
-        dis = dis.T
+        dis = torch.squeeze(dis,dim=1)
 
         # emot_score = (2*(emot_score - torch.min(emot_score))/(torch.max(emot_score) - torch.min(emot_score))) -1
         # labels1 = (2*(labels1 - torch.min(labels1)))/(torch.max(labels1) - torch.min(labels1)) -1
@@ -206,12 +207,14 @@ for epoch_num in range(num_epochs):
         # 每一个batch的average mse loss相加
         # valmse += mse(emot_score[:, 0].unsqueeze(dim=1), labels1)/labels1.shape[0]
         # aromse += mse(emot_score[:, 1].unsqueeze(dim=1), labels2)/labels2.shape[0]
+        emot_dis = torch.tensor(emot_dis, dtype=torch.double) #[32,9]
+        dis = torch.tensor(dis, dtype=torch.double)
         val_kl = kl_div(emot_dis, dis) /dis.shape[0]
 
         # Pearson correlation
         # valpcc += pearsonr(emot_score[:, 0].unsqueeze(dim=1).cpu().detach().numpy(), labels1.cpu().detach().numpy())[0]
         # aropcc += pearsonr(emot_score[:, 1].unsqueeze(dim=1).cpu().detach().numpy(), labels2.cpu().detach().numpy())[0]
-        emopcc += pearsonr(emot_dis.unsqueeze(dim=1).cpu().detach().numpy(), dis.cpu().detach().numpy())[0]
+        emopcc += pearsonr(emot_dis.cpu().detach().numpy(), dis.cpu().detach().numpy())[0]
 
     # 每一个epoch loss平均
     # 每一个epoch pcc平均
@@ -284,9 +287,7 @@ for i, data in enumerate(testDataloader):
     print(att_1, att_2, att_3, att_4, att_5, att_6)
 
     emot_dis = emot_dis.squeeze(dim=0)
-    # labels1 = labels1.T
-    # labels2 = labels2.T
-    dis = dis.T
+    dis = torch.squeeze(dis, dim=1)
 
     # min-max norm
     # emot_score = (2*(emot_score - torch.min(emot_score))/(torch.max(emot_score) - torch.min(emot_score))) -1
@@ -297,12 +298,14 @@ for i, data in enumerate(testDataloader):
     # testmse += mse(emot_score[:, 0].unsqueeze(dim=1), labels1)/labels1.shape[0]
     # aromse += mse(emot_score[:, 1].unsqueeze(dim=1), labels2)/labels2.shape[0]
     # kldiv loss
+    emot_dis = torch.tensor(emot_dis, dtype=torch.double)  # [32,9]
+    dis = torch.tensor(dis, dtype=torch.double)
     test_kl = kl_div(emot_dis, dis) / dis.shape[0]
 
     # pearson correlation
     # testpcc += pearsonr(emot_score[:, 0].unsqueeze(dim=1).cpu().detach().numpy(), labels1.cpu().detach().numpy())[0]
     # aropcc += pearsonr(emot_score[:, 1].unsqueeze(dim=1).cpu().detach().numpy(), labels2.cpu().detach().numpy())[0]
-    emopcc += pearsonr(emot_dis.unsqueeze(dim=1).cpu().detach().numpy(), dis.cpu().detach().numpy())[0]
+    emopcc += pearsonr(emot_dis.cpu().detach().numpy(), dis.cpu().detach().numpy())[0]
 # average loss
 # test_testmse = testmse/len(testSet)
 # test_aromse = aromse/len(testSet)
