@@ -144,8 +144,8 @@ for epoch_num in range(num_epochs):
         # 两种label的loss之和
         # l = mse(emot_score[:,0].unsqueeze(dim=1), labels1) + mse(emot_score[:,1].unsqueeze(dim=1), labels2)
         # kldiv loss
-        emot_dis = torch.tensor(emot_dis, dtype=torch.duble)
-        dis = torch.tensor(dis, dtype=torch.duble)
+        emot_dis = torch.tensor(emot_dis, dtype=torch.double)
+        dis = torch.tensor(dis, dtype=torch.double)
         l = kl_div(emot_dis, dis)
 
         # Backprop and update weights
