@@ -181,7 +181,7 @@ for epoch_num in range(num_epochs):
         # aromse += mse(emot_score[:, 1].unsqueeze(dim=1), labels2)/labels2.shape[0]
         emot_dis = torch.tensor(emot_dis, dtype=torch.double) #[32,9]
         dis = torch.tensor(dis, dtype=torch.double)
-        val_kl += kl_div(emot_dis, dis) /dis.shape[0]
+        val_kl += kl_div(emot_dis.log(), dis) /dis.shape[0]
 
         # Pearson correlation
         emopcc += pearsonr(emot_dis.cpu().detach().numpy(), dis.cpu().detach().numpy())[0]
@@ -252,7 +252,7 @@ for i, data in enumerate(testDataloader):
     # kldiv loss
     emot_dis = torch.tensor(emot_dis, dtype=torch.double)  # [32,9]
     dis = torch.tensor(dis, dtype=torch.double)
-    test_kl += kl_div(emot_dis, dis) / dis.shape[0]
+    test_kl += kl_div(emot_dis.log(), dis) / dis.shape[0]
 
     # pearson correlation
     emopcc += pearsonr(emot_dis.cpu().detach().numpy(), dis.cpu().detach().numpy())[0]
