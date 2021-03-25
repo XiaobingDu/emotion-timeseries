@@ -133,6 +133,9 @@ for epoch_num in range(num_epochs):
         # kldiv loss
         emot_dis = torch.tensor(emot_dis, dtype=torch.double)
         dis = torch.tensor(dis, dtype=torch.double)
+        softmax = torch.nn.Softmax(dim=1)
+        dis = softmax(dis)
+
         print('emot_dis......',emot_dis[0:3,:])
         print('dis......', dis[0:3, :])
         l = kl_div(emot_dis, dis)
