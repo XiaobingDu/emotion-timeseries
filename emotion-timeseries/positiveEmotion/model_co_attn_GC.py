@@ -243,7 +243,7 @@ class MovieNet(nn.Module):
         # Convolve output with attention weights
         # i.e. out[t] = a[t,0]*in[t] + ... + a[t,win_len-1]*in[t-(win_len-1)]
         # print('enc_out shape......',enc_out.shape) #[32, 10, 5] 每一个timestep都有输出
-        print('attn shape.....', attn.shape) #[32, 10, 10]
+        # print('attn shape.....', attn.shape) #[32, 10, 10]
         context = convolve(enc_out, attn) # [32, 10, 5]
 
         #Decoder
@@ -278,16 +278,18 @@ class MovieNet(nn.Module):
 
             # DO NOT ADD PREVIOUS LABEL FOR PREDICT
             # DECODE THE CONTEXT VECTOR
-            print('context shape.........', context.shape)  # [32, 10, 5]
+            # print('context shape.........', context.shape)  # [32, 10, 5]
             dec_in = context.float()
-            print('dec_in shape.....',dec_in.shape)
-            print('dec_in.....', dec_in[0:3])
+            # print('dec_in shape.....',dec_in.shape) #[32,10,5]
+            # print('dec_in.....', dec_in[0:3])
 
             #WITH and WITHOUT PREVIOUS LABEL
             dec_out, _ = self.decoder(dec_in, (h0, c0)) #decoder -> nn.LSTM这里有问题
             # print('dec_out shape....',dec_out.shape) #[32, 10, 512]
             # Undo the packing
             dec_out = dec_out.reshape(-1, self.h_dim)
+            print('dec_out shape....',dec_out.shape)
+            print('dec_out......', dec_out[0:1,0:2,:])
 
             # dec_in = context           
             # dec_out, _ = self.decoder(dec_in, (h0, c0))            
