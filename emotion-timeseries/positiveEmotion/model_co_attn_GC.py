@@ -277,18 +277,15 @@ class MovieNet(nn.Module):
             #WITH and WITHOUT PREVIOUS LABEL
             # [32, 10, 512]
             dec_out, _ = self.decoder(dec_in, (h0, c0)) #decoder -> nn.LSTM这里有问题
-            print('dec_out shape....', dec_out.shape)
             # Undo the packing
+            #[320,512] <0
             dec_out = dec_out.reshape(-1, self.h_dim) #[640,512]
-            print('dec_out shape....',dec_out.shape)
-            print('dec_out......', dec_out[0:1,:])
 
             #eq.10
             ## [32,10,9]
             predicted = self.out(dec_out).view(batch_size, seq_len, self.out_layer)
-            # [32,1,9]
+            # [32,1,9] <0
             predicted_last = predicted [:,-1,:]
-            print('predict_last......', predicted_last.squeeze(dim=0)[0:3,:])  # [32,1,9]
 
             # softmax layer
             # softmax = torch.nn.Softmax(dim=1)
