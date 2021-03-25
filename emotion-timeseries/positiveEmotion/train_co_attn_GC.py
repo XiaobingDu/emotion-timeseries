@@ -239,7 +239,7 @@ for i, data in enumerate(testDataloader):
     # Forward pass
     emot_dis, input_clstm, shared_encoder, att_1, att_2, att_3, att_4, att_5, att_6, att_7, att_8, att_9, att_10 = \
         net(test, Frontal, Temporal, Central, Parietal, Occipital, dis)
-    print(att_1, att_2, att_3, att_4, att_5, att_6)
+    # print(att_1, att_2, att_3, att_4, att_5, att_6)
 
     emot_dis = emot_dis.squeeze(dim=0)
     dis = torch.squeeze(dis, dim=1)
@@ -263,6 +263,7 @@ test_emopcc = emopcc / len(testSet)
 
 print("Test Emotion distribution KLDivLoss:", test_testkl.item(), "\Test Emotion distribution PCC:", test_emopcc.item(),
       "\n", "==========================")
+print(att_1, att_2, att_3, att_4, att_5, att_6)
 
 import csv
 
