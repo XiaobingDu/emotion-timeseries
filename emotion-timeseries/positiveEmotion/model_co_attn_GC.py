@@ -296,10 +296,12 @@ class MovieNet(nn.Module):
             predicted_last = predicted [:,-1,:]
             # print('predict_last shape', predicted_last.shape)  # [32,1,9]
             # softmax layer
-            # log_softmax = torch.nn.LogSoftmax(dim=1)
-            # log_softmax_output = log_softmax(emot_score)
-            softmax = torch.nn.Softmax(dim=1)
-            predicted = softmax(predicted_last)
+            # softmax = torch.nn.Softmax(dim=1)
+            # predicted = softmax(predicted_last)
+            #log_softmax layer
+            log_softmax = torch.nn.LogSoftmax(dim=1)
+            predicted = log_softmax(predicted)
+
         else:
             # Use earlier predictions to predict next time-steps
             predicted = []

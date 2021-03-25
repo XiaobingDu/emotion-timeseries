@@ -133,7 +133,7 @@ for epoch_num in range(num_epochs):
         # kldiv loss
         emot_dis = torch.tensor(emot_dis, dtype=torch.double)
         dis = torch.tensor(dis, dtype=torch.double)
-        l = kl_div(emot_dis.log(), dis)
+        l = kl_div(emot_dis, dis)
         l = Variable(l, requires_grad=True)
 
         # Backprop and update weights
