@@ -229,11 +229,13 @@ class MovieNet(nn.Module):
         enc_input_unimodal_cat = enc_input_unimodal_cat.reshape(batch_size, seq_len, 5)
         #α=α1 ⊕α2 ⊕···⊕αm
         attn=torch.cat([att_1, att_2, att_3, att_4, att_5, att_6, att_7, att_8, att_9, att_10], dim=-1)
+        # [32, 10, 10]
         attn = attn.reshape(batch_size, seq_len, self.attn_len)
 
         # cLSTM Encoder
         #eq.6
         # output of cLSTM
+        # [32, 10, 5]
         enc_out, _ = self.shared_encoder(enc_input_unimodal_cat)
         # Undo the packing
         # enc_out, _ = pad_packed_sequence(enc_out, batch_first=True)
@@ -242,9 +244,8 @@ class MovieNet(nn.Module):
         #context vector d
         # Convolve output with attention weights
         # i.e. out[t] = a[t,0]*in[t] + ... + a[t,win_len-1]*in[t-(win_len-1)]
-        # print('enc_out shape......',enc_out.shape) #[32, 10, 5] 每一个timestep都有输出
-        # print('attn shape.....', attn.shape) #[32, 10, 10]
-        context = convolve(enc_out, attn) # [32, 10, 5]
+        # [32, 10, 5]
+        context = convolve(enc_out, attn)
 
         #Decoder
         # Set initial hidden and cell states for decoder
@@ -259,47 +260,34 @@ class MovieNet(nn.Module):
             # target_0 = target.unsqueeze_(dim=1)
             # target_0 = torch.cat([target_0,target_0,target_0,target_0,target_0,target_0,target_0,target_0,target_0,target_0],dim=1) #[batch_size, seq_len, 9]
             # target_0 = torch.nn.Parameter(target_0).cuda()
-            # # target_1 = target[1].float().reshape(batch_size, seq_len, 1)
-            # # target_1 = torch.nn.Parameter(target_1).cuda()
-            # # print(pad_shift(target, 1, tgt_init), context.shape)
             #
             # #eq.9
-            # # Concatenate targets from previous timesteps to context
-            # #将previous time label与context拼接
-            # #targets from previous timesteps 怎样得到的呢？怎样传入呢？
+            # # Concatenate targets from previous timestep to context
             # # dec_in = torch.cat([pad_shift(target_0, 1, tgt_init),pad_shift(target_1, 1, tgt_init), context], 2)
-            # # print('context shape.........', context.shape) #[32, 10, 5]
-            # # print('target shape..........', target.shape) #[32,9]
+            # target_0 #[32,9]
             # # dec_in = torch.cat([pad_shift(target_0, 1, tgt_init), context], 2)
-            # # print('target shape....',target_0.shape)
-            # # print('context shape....', context.shape)
+            # [32,10,14]
             # dec_in = torch.cat([target_0.float(), context.float()], dim=2)
-            # # print('dec_in shape....',dec_in.shape) #[32,10,14]
 
             # DO NOT ADD PREVIOUS LABEL FOR PREDICT
             # DECODE THE CONTEXT VECTOR
-            # print('context shape.........', context.shape)  # [32, 10, 5]
+            # [32,10,5]
             dec_in = context.float()
-            # print('dec_in shape.....',dec_in.shape) #[32,10,5]
-            # print('dec_in.....', dec_in[0:3])
 
             #WITH and WITHOUT PREVIOUS LABEL
+            # [32, 10, 512]
             dec_out, _ = self.decoder(dec_in, (h0, c0)) #decoder -> nn.LSTM这里有问题
-            # print('dec_out shape....',dec_out.shape) #[32, 10, 512]
+            print('dec_out shape....', dec_out.shape)
             # Undo the packing
-            dec_out = dec_out.reshape(-1, self.h_dim)
+            dec_out = dec_out.reshape(-1, self.h_dim) #[640,512]
             print('dec_out shape....',dec_out.shape)
-            print('dec_out......', dec_out[0:1,0:2,:])
+            print('dec_out......', dec_out[0:1,:])
 
-            # dec_in = context           
-            # dec_out, _ = self.decoder(dec_in, (h0, c0))            
-            # dec_out = dec_out.reshape(-1, self.h_dim)
             #eq.10
-            #
+            ## [32,10,9]
             predicted = self.out(dec_out).view(batch_size, seq_len, self.out_layer)
-            # print('predict shape', predicted.shape)  # [32,10,9]
+            # [32,1,9]
             predicted_last = predicted [:,-1,:]
-            # print('predict_last shape', predicted_last.shape)  # [32,1,9]
             print('predict_last......', predicted_last.squeeze(dim=0)[0:3,:])  # [32,1,9]
 
             # softmax layer
