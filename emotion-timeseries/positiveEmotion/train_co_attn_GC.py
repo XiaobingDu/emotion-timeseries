@@ -123,9 +123,7 @@ for epoch_num in range(num_epochs):
         train_model_gista(shared_encoder, input_clstm, lam=0.5, lam_ridge=1e-4, lr=0.001, max_iter=1, check_every=1000, truncation=64)
         GC_est = shared_encoder.GC().cpu().data.numpy()
 
-        print('emot_dis....', emot_dis.shape)
         emot_dis = emot_dis.squeeze(dim=0)
-        print('emot_dis....', emot_dis.shape)
         dis = torch.squeeze(dis,dim=1)
 
         # mamx-min norm
@@ -135,7 +133,7 @@ for epoch_num in range(num_epochs):
         # kldiv loss
         emot_dis = torch.tensor(emot_dis, dtype=torch.double)
         dis = torch.tensor(dis, dtype=torch.double)
-        l = kl_div(emot_dis, dis)
+        l = kl_div(emot_dis.log(), dis)
         l = Variable(l, requires_grad=True)
 
         # Backprop and update weights

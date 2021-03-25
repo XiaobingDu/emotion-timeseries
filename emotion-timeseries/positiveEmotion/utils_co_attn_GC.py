@@ -147,7 +147,7 @@ class MediaEvalDataset(Dataset):
 
         # 将5个脑区的数据hstack
         # combined = np.hstack([F, T, C, P, O])
-        combined = torch.cat((F, T, C, P, O), dim=-1)
+        combined = torch.cat((F, T, C, P, O), dim=-1) #[10,150]
 
         return combined, y, F, T, C, P, O
 
