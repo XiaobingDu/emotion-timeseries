@@ -84,7 +84,7 @@ optimizer = torch.optim.RMSprop(net.parameters(), lr=lr) if args['optimizer' ]==
 # scheduler = torch.optim.lr_scheduler.CyclicLR(optimizer, base_lr=0.01, max_lr=0.1)
 # crossEnt = torch.nn.BCELoss()
 # mse = torch.nn.MSELoss(reduction='sum')
-kl_div = torch.nn.KLDivLoss(size_average = True, reduce = True)
+kl_div = torch.nn.KLDivLoss(size_average = False, reduce = True)
 
 
 for epoch_num in range(num_epochs):
@@ -133,6 +133,8 @@ for epoch_num in range(num_epochs):
         # kldiv loss
         emot_dis = torch.tensor(emot_dis, dtype=torch.double)
         dis = torch.tensor(dis, dtype=torch.double)
+        print('emot_dis......',emot_dis[0:3,:])
+        print('dis......', dis[0:3, :])
         l = kl_div(emot_dis, dis)
         l = Variable(l, requires_grad=True)
 
@@ -181,7 +183,7 @@ for epoch_num in range(num_epochs):
         # aromse += mse(emot_score[:, 1].unsqueeze(dim=1), labels2)/labels2.shape[0]
         emot_dis = torch.tensor(emot_dis, dtype=torch.double) #[32,9]
         dis = torch.tensor(dis, dtype=torch.double)
-        val_kl += kl_div(emot_dis.log(), dis) /dis.shape[0]
+        val_kl += kl_div(emot_dis, dis) /dis.shape[0]
 
         # Pearson correlation
         emopcc += pearsonr(emot_dis.cpu().detach().numpy(), dis.cpu().detach().numpy())[0]
@@ -252,7 +254,7 @@ for i, data in enumerate(testDataloader):
     # kldiv loss
     emot_dis = torch.tensor(emot_dis, dtype=torch.double)  # [32,9]
     dis = torch.tensor(dis, dtype=torch.double)
-    test_kl += kl_div(emot_dis.log(), dis) / dis.shape[0]
+    test_kl += kl_div(emot_dis, dis) / dis.shape[0]
 
     # pearson correlation
     emopcc += pearsonr(emot_dis.cpu().detach().numpy(), dis.cpu().detach().numpy())[0]
