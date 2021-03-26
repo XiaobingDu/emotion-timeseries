@@ -21,9 +21,16 @@ Training and Testing Codes for all three datasets.
           1.9719e-01,  2.0428e-01,  5.6338e-02,  4.5805e-02,  6.5245e-02,
 
 - KLDivLoss 没有随着epoch而减小，并没有什么变化
+- - 已经修改，看结果如何！！！
 
 2. 未完成
 - criterion 未添加
 - GCN + label correlation未添加
+- - model 相对简单
+- - 已经阅读代码，明天将其添加过来！！！
 - dominant emotion loss founction 未添加
+- - 需要到coco数据集对应的代码看一下loss founction，然后添加过来！！！
 - dominant emotion criterion 未添加
+- - top 1 top 3 top 5
+  - precision
+  - 根据代码，跟其保持一致即可
