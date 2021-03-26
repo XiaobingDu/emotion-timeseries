@@ -13,6 +13,7 @@ Training and Testing Codes for all three datasets.
 1. current
 - GC 输出全部是0
 - co-attention 权重输出全部是average weights
+- - （32,10） attention 是对时间维度
 - 模型最后一层输出如下，模型似乎没有学习能力
 - - predict_last......
   - tensor(-0.0411,  0.1370, -0.1754, -0.0580, -0.0578,  0.1431,  0.1562, -0.0996,0.1616

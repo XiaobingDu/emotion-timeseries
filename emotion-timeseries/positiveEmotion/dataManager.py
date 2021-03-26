@@ -61,7 +61,7 @@ def get_data_info(path):
 
         all_sub.append(sin_sub)
 
-    # get suubject info
+    # get subject info
     data = all_sub
     s_len = len(data)
     info = []

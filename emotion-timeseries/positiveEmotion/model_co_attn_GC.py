@@ -228,13 +228,10 @@ class MovieNet(nn.Module):
         # print(enc_input_unimodal_cat.shape, batch_size, seq_len)
         enc_input_unimodal_cat = enc_input_unimodal_cat.reshape(batch_size, seq_len, 5)
         #α=α1 ⊕α2 ⊕···⊕αm
+        #att_1:[32, 20]; attn:[32,200]
         attn=torch.cat([att_1, att_2, att_3, att_4, att_5, att_6, att_7, att_8, att_9, att_10], dim=-1)
-        print('attn1 shape.......', att_1.shape)
-        print('attn2 shape.......', att_2.shape)
-        print('attn shape.......', attn.shape)
         # [32, 10, 10]
         attn = attn.reshape(batch_size, seq_len, self.attn_len)
-        print('attn reshape.......',attn.shape)
 
         # cLSTM Encoder
         #eq.6
