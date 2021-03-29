@@ -27,15 +27,13 @@ Training and Testing Codes for all three datasets.
 - KLDivLoss 没有随着epoch而减小，并没有什么变化
 - - 已经修改，看结果如何！！！
 
-2. 未完成
+2. 完成
 - criterion 未添加
 - - MultiLabelMarginLoss
   - MultiLabelSoftMarginLoss
 - GCN + label correlation未添加
 - - model 相对简单
-- - 已经阅读代码，明天将其添加过来！！！
-- dominant emotion loss founction 未添加
-- - 需要到coco数据集对应的代码看一下loss founction，然后添加过来！！！
+- dominant emotion loss founction
   -  https://www.zhihu.com/question/358811772
 
   - pred = torch.from_numpy(pred).float()

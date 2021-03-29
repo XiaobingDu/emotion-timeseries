@@ -212,7 +212,7 @@ def load_ckp(checkpoint_fpath, model, optimizer):
 
 def gen_A(num_classes, t, adj_file):
     import pickle
-    result = pickle.load(open(adj_file, 'rb'))
+    result = pickle.load(open(adj_file, 'rb'), encoding='bytes')
     _adj = result['adj']
     _nums = result['nums']
     _nums = _nums[:, np.newaxis]
