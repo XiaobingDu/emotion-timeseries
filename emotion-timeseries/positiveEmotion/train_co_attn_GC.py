@@ -1,7 +1,6 @@
 
 # -*-coding:utf-8-*-
 
-
 from __future__ import print_function
 import torch
 from model_co_attn_GC import MovieNet
@@ -24,8 +23,8 @@ from clstm import cLSTM, train_model_gista, train_model_adam, cLSTMSparse
 
 args = {}
 
-path1 = '/home/xiaobingdu/EEG_experiments/LDL-LSTM_softmax/attn_lstm/EEG_PSD_multilabel_9_addLabel_sum1/'
-path2 = '/home/xiaobingdu/EEG_experiments/LDL-LSTM_softmax/attn_lstm/EEG_PSD_multilabel_9_win/featureAll.mat'
+path1 = '/home/xiaobingdu/EEG_experiments/LDL-LSTM_softmax/attn_lstm/EEG_PSD_9_DOM/'
+path2 = '/home/xiaobingdu/EEG_experiments/LDL-LSTM_softmax/attn_lstm/EEG_PSD_multilabel_9_win/DOM_featureAll.mat'
 db_name = 'LDL_data'
 best_model_path ="./best_model"
 checkpoint_path ="./checkpoints"
@@ -37,7 +36,7 @@ args['Temporal_len'] = 40
 args['Central_len'] = 45
 args['Parietal_len'] = 15
 args['Occipital_len'] = 15
-args['out_layer'] = 9
+args['out_layer'] = 2048 #9
 args['dropout_prob'] = 0.5
 args['use_cuda'] = True
 args['encoder_size'] = 64
@@ -218,10 +217,11 @@ for epoch_num in range(num_epochs):
                  best_model_path + "/train_co_attn_GC_best_model.pt")
         valid_loss_min = val_loss
 
+
+# testing
 net = MovieNet(args)
 net, optimizer, start_epoch, valid_loss_min_kl = load_ckp(
     best_model_path + "/train_co_attn_GC_best_model.pt", net, optimizer)
-
 # testing
 net.eval()
 test_kl = 0

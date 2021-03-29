@@ -1,6 +1,5 @@
 #-*-coding:utf-8-*-
 
-
 from __future__ import division
 import torch
 from torch.autograd import Variable
@@ -9,7 +8,7 @@ from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
 import warnings
 warnings.filterwarnings('ignore')
 from clstm import cLSTM, train_model_gista, train_model_adam, cLSTMSparse
-
+from graph_module import GCN
 
 def pad_shift(x, shift, padv=0.0):
     """Shift 3D tensor forwards in time with padding."""
@@ -107,11 +106,11 @@ class MovieNet(nn.Module):
         self.dec_c0 = nn.Parameter(torch.rand(self.n_layers, 1, self.h_dim))
 
         # Final MLP output network
-        self.out = nn.Sequential(nn.Linear(self.h_dim, 32),#128 #h_dim -> 2
+        self.out = nn.Sequential(nn.Linear(self.h_dim, 1024),#128 #h_dim 512 -> 1024
                                 #  nn.LeakyReLU(),
                                 #  nn.Linear(512, 8),
                                  nn.LeakyReLU(),
-                                 nn.Linear(32, self.out_layer)) #2 -> out_layer
+                                 nn.Linear(1024, self.out_layer)) #1024 -> out_layer:2048
 
         # Store module in specified device (CUDA/CPU)
         self.device = (device if torch.cuda.is_available() else
@@ -281,12 +280,28 @@ class MovieNet(nn.Module):
             # Undo the packing
             #[320,512] <0
             dec_out = dec_out.reshape(-1, self.h_dim) #[640,512]
+            print('dec_out......',dec_out.shape)
+
+            #GCN module
+            #num_class = 9
+
+            GCN_module = GCN(num_class = 9, in_channel=300, t=0.4, adj_file='embedding/positiveEmotion_adj.pkl')
+            GCN_output = GCN_module(inp='embedding/positiveEmotion_glove_word2vec.pkl') #[9,2048]
+            print('GCN_output......', GCN_output.shape)
+            GCN_output = GCN_output.transpose(0, 1) #[2048,9]
+            print('GCN_output transpose......', GCN_output.shape)
 
             #eq.10
-            ## [32,10,9]
+            ## [32,10,2048]
             predicted = self.out(dec_out).view(batch_size, seq_len, self.out_layer)
+            print('predicted......', predicted.shape)
             # [32,1,9] <0
             predicted_last = predicted [:,-1,:]
+            print('predicted_last......', predicted_last.shape)
+
+            # GCN output * LSTM out lastTimestep
+            predict = torch.matmul(predicted_last, GCN_output)  # ML-GCN eq.4
+            print('predict......', predict.shape)
 
             # softmax layer
             # softmax = torch.nn.Softmax(dim=1)
@@ -294,7 +309,7 @@ class MovieNet(nn.Module):
 
             #log_softmax layer
             log_softmax = torch.nn.LogSoftmax(dim=1)
-            predicted = log_softmax(predicted_last)
+            predicted = log_softmax(predict)
 
         else:
             # Use earlier predictions to predict next time-steps
