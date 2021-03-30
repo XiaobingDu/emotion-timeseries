@@ -10,6 +10,9 @@ from matplotlib import pyplot as plt
 from scipy.stats.stats import pearsonr
 import shutil
 import math
+import scipy.stats
+from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.metrics import hamming_loss
 
 #___________________________________________________________________________________________________________________________
 
@@ -212,8 +215,106 @@ def load_ckp(checkpoint_fpath, model, optimizer):
 
     return model, optimizer, checkpoint['epoch'], valid_loss_min_kl.item()
 
+## metrics for emotion distribution learning
 
-##metrics
+# euclidean distance
+def euclidean_dist (size, RD, PD):
+    RD = RD.detach().numpy()
+    PD = PD.detach().numpy()
+    _size = size
+    dist = np.empty(_size)
+    for i in range(_size):
+        d1 = np.sqrt(np.sum(np.square(RD[i] - PD[i])))
+        dist[i] = d1
+    euclidean_dist = sum(dist)/_size
+
+    return euclidean_dist
+
+# chebyshev distance
+def chebyshev_dist (size, RD, PD):
+    RD = RD.detach().numpy()
+    PD = PD.detach().numpy()
+    _size = size
+    chebyshev_distances = np.empty(_size)
+    for i in range(_size):
+        chebyshev_distances[i] = np.max(np.abs(RD[i]-PD[i]))
+
+    return sum(chebyshev_distances) / _size
+
+# Kullback-Leibler divergence
+def KL_dist(RD, PD):
+    RD = RD.detach().numpy()
+    PD = PD.detach().numpy()
+
+    kldiv = RD * np.log(RD / PD)
+    kldist = kldiv.sum(axis=1)
+    kldist = [x for x in kldist if str(x) != 'nan' and str(x) != 'inf']  # 除去inf值
+    kldist = np.mean(kldist)
+
+    return kldist
+
+# clark distance
+def clark_dist(RD, PD):
+    RD = RD.detach().numpy()
+    PD = PD.detach().numpy()
+
+    temp = PD - RD
+    temp = temp * temp
+    temp2 = PD + RD
+    temp2 = temp2 * temp2
+    temp = temp / temp2
+    temp = temp.sum(axis=1)
+    temp = np.sqrt(temp)
+    distance = np.mean(temp)
+
+    return distance
+
+#canberra metric
+def canberra_dist(RD, PD):
+    RD = RD.detach().numpy()
+    PD = PD.detach().numpy()
+
+    temp = np.abs(PD - RD)
+    temp2 = PD + RD
+    temp = temp / temp2
+    temp = temp.sum(axis=1)
+    distance = np.mean(temp)
+
+    return distance
+
+#cosine coefficient
+def cosine_dist(RD, PD):
+    RD = RD.detach().numpy()
+    PD = PD.detach().numpy()
+
+    temp = PD * RD
+    inner = temp.sum(axis=1)
+    pd_temp = PD * PD
+    pd_temp = pd_temp.sum(axis=1)
+    rd_temp = RD * RD
+    rd_temp = rd_temp.sum(axis=1)
+    len = np.sqrt(pd_temp) * np.sqrt(rd_temp)
+    len = [x for x in len if str(x) != 'nan' and str(x) != 'inf']  # 除去inf值
+    tmp = inner/len
+    tmp = [x for x in tmp if str(x) != 'nan' and str(x) != 'inf']
+    distance = np.mean(tmp)
+
+    return distance
+
+#intersection similarity
+def intersection_dist(RD, PD):
+    RD = RD.detach().numpy()
+    PD = PD.detach().numpy()
+
+    temp = np.minimum(PD,RD)
+    temp = temp.sum(axis=1)
+    similarity = np.mean(temp)
+
+    return similarity
+
+
+
+##metrics for multi-label emotion predictation
 ## from CVPR 2019
 
 class AveragePrecisionMeter(object):
@@ -371,7 +472,7 @@ class AveragePrecisionMeter(object):
         CF1 = (2 * CP * CR) / (CP + CR)
         return OP, OR, OF1, CP, CR, CF1
 
-
+#generate adj
 def gen_A(num_classes, t, adj_file):
     import pickle
     result = pickle.load(open(adj_file,'rb'), encoding='iso-8859-1')

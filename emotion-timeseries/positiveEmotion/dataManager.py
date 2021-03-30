@@ -104,6 +104,7 @@ def get_sample_data(path1,path2):
             sub_sample = []
             sub_label = []
             sub_dis = []
+            sub_dom_label = []
             sub_score = []
 
             s_len = t_len
@@ -116,12 +117,14 @@ def get_sample_data(path1,path2):
                 sample_feature = data[n_s][n_len]['feature_arr'][start:end, :]
                 sample_label = data[n_s][n_len]['label_arr'][start:start + 1, :]  ##############
                 sample_dis = data[n_s][n_len]['dis_arr'][start:start + 1, :]
+                sample_dom_label = data[n_s][n_len]['primary_arr'][start:start + 1, :]
                 sample_score = data[n_s][n_len]['score_arr'][start:start + 1, :]
                 start = start + strides
 
                 sub_sample.append(sample_feature)
                 sub_label.append(sample_label)
                 sub_dis.append(sample_dis)
+                sub_dom_label.append(sample_dom_label)
                 sub_score.append(sample_score)
 
             sub_sample = np.asarray(sub_sample)
@@ -131,6 +134,9 @@ def get_sample_data(path1,path2):
             sub_dis = np.asarray(sub_dis)
             sub_dis = np.reshape(np.asarray(sub_dis), [np.asarray(sub_dis).shape[0],
                                                        np.asarray(sub_dis).shape[1] * np.asarray(sub_dis).shape[2]])
+            sub_dom_label = np.asarray(sub_dom_label)
+            sub_dom_label = np.reshape(np.asarray(sub_dom_label), [np.asarray(sub_dis).shape[0],
+                                                       np.asarray(sub_dis).shape[1] * np.asarray(sub_dis).shape[2]])
             sub_score = np.asarray(sub_score)
             sub_score = np.reshape(np.asarray(sub_score), [np.asarray(sub_score).shape[0],
                                                            np.asarray(sub_score).shape[1] * np.asarray(sub_score).shape[
@@ -139,6 +145,7 @@ def get_sample_data(path1,path2):
             data[n_s][n_len]['feature_arr'] = sub_sample
             data[n_s][n_len]['label_arr'] = sub_label
             data[n_s][n_len]['dis_arr'] = sub_dis
+            data[n_s][n_len]['primary_arr'] = sub_dom_label
             data[n_s][n_len]['score_arr'] = sub_score
 
             sin_sub.append(data[n_s][n_len])
@@ -185,20 +192,24 @@ def dataSplit(path1,all_sub,db_name ):
                 feature = train_set[s][v]['feature_arr']
                 label = train_set[s][v]['label_arr']
                 dis = train_set[s][v]['dis_arr']
+                dom_label = train_set[s][v]['primary_arr']
                 score = train_set[s][v]['dis_arr']
             else:
                 feature = np.vstack((feature,train_set[s][v]['feature_arr']))
                 label = np.vstack((label,train_set[s][v]['label_arr']))
                 dis = np.vstack((dis,train_set[s][v]['dis_arr']))
+                dom_label = np.vstack((dom_label, train_set[s][v]['primary_arr']))
                 score = np.vstack((score,train_set[s][v]['dis_arr']))
     train_data = feature
     train_label = label
     train_dis = dis
+    train_dom_label = dom_label
     train_score = score
     print('train_data shape:',train_data.shape) #(162986, 10, 150)
     # print('train_label shape:',train_label.shape) #(162986, 9)
     print('train_dis shape:',train_dis.shape) #(162986, 9)
     # print('train_score shape:',train_score.shape) #(162986, 9)
+    print('train_dom_label shape:', train_dom_label.shape)  # (162986, 9)
 
     #val data
     for s in range(len(val_set)):
@@ -211,20 +222,24 @@ def dataSplit(path1,all_sub,db_name ):
                 feature = val_set[s][v]['feature_arr']
                 label = val_set[s][v]['label_arr']
                 dis = val_set[s][v]['dis_arr']
+                dom_label = val_set[s][v]['primary_arr']
                 score = val_set[s][v]['dis_arr']
             else:
                 feature = np.vstack((feature,val_set[s][v]['feature_arr']))
                 label = np.vstack((label,val_set[s][v]['label_arr']))
                 dis = np.vstack((dis,val_set[s][v]['dis_arr']))
+                dom_label = np.vstack((dom_label, val_set[s][v]['primary_arr']))
                 score = np.vstack((score,val_set[s][v]['dis_arr']))
     val_data = feature
     val_label = label
     val_dis = dis
     val_score = score
+    val_dom_label = dom_label
     print('val_data shape:',val_data.shape) #(101486, 10, 150)
     # print('val_label shape:',val_label.shape) #(101486, 9)
     print('val_dis shape:',val_dis.shape) #(101486, 9)
     # print('val_score shape:',val_score.shape) #(101486, 9)
+    print('val_dom_label shape:', val_dom_label.shape)  # (101486, 9)
 
     #test data
     for s in range(len(test_set)):
@@ -237,23 +252,26 @@ def dataSplit(path1,all_sub,db_name ):
                 feature = test_set[s][v]['feature_arr']
                 label = test_set[s][v]['label_arr']
                 dis = test_set[s][v]['dis_arr']
+                dom_label = test_set[s][v]['primary_arr']
                 score = test_set[s][v]['dis_arr']
             else:
                 feature = np.vstack((feature,test_set[s][v]['feature_arr']))
                 label = np.vstack((label,test_set[s][v]['label_arr']))
                 dis = np.vstack((dis,test_set[s][v]['dis_arr']))
+                dom_label = np.vstack((dom_label, test_set[s][v]['primary_arr']))
                 score = np.vstack((score,test_set[s][v]['dis_arr']))
     test_data = feature
     test_label = label
     test_dis = dis
     test_score = score
+    test_dom_label = dom_label
     print('test_data shape:',test_data.shape) #(68832, 10, 150)
     # print('test_label shape:',test_label.shape) #(68832, 9)
     print('test_dis shape:',test_dis.shape) #(68832, 9)
     # print('test_score shape:',test_score.shape) #(68832, 9)
+    print('test_dom_label shape:', test_dom_label.shape)  # (68832, 9)
 
-
-    return train_data, val_data,test_data, train_dis, val_dis, test_dis
+    return train_data, val_data,test_data, train_dis, val_dis, test_dis,train_dom_label, val_dom_label, test_dom_label
 
 
 
