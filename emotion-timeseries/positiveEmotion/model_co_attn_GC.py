@@ -280,29 +280,23 @@ class MovieNet(nn.Module):
             # Undo the packing
             #[320,512] <0
             dec_out = dec_out.reshape(-1, self.h_dim) #[640,512]
-            print('dec_out......',dec_out.shape)
 
             #GCN module
             #num_class = 9
 
             GCN_module = GCN(num_classes = 9, in_channel=300, t=0.4, adj_file='embedding/positiveEmotion_adj.pkl')
             GCN_output = GCN_module(inp='embedding/positiveEmotion_glove_word2vec.pkl') #[9,2048]
-            print('GCN_output......', GCN_output.shape)
             GCN_output = GCN_output.transpose(0, 1).cuda() #[2048,9]
-            print('GCN_output transpose......', GCN_output.shape)
-
 
             #eq.10
-            ## [32,10,2048]
+            ## [32,30,2048]
             predicted = self.out(dec_out).view(batch_size, seq_len, self.out_layer)
-            print('predicted......', predicted.shape)
-            # [32,1,9] <0
+            # [32,9] <0; #[32,2048]
             predicted_last = predicted [:,-1,:]
-            print('predicted_last......', predicted_last.shape)
 
             # GCN output * LSTM out lastTimestep
+            ## [32,9]
             predict = torch.matmul(predicted_last, GCN_output)  # ML-GCN eq.4
-            print('predict......', predict.shape)
 
             # softmax layer
             # softmax = torch.nn.Softmax(dim=1)
