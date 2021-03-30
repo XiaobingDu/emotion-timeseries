@@ -135,8 +135,8 @@ def get_sample_data(path1,path2):
             sub_dis = np.reshape(np.asarray(sub_dis), [np.asarray(sub_dis).shape[0],
                                                        np.asarray(sub_dis).shape[1] * np.asarray(sub_dis).shape[2]])
             sub_dom_label = np.asarray(sub_dom_label)
-            sub_dom_label = np.reshape(np.asarray(sub_dom_label), [np.asarray(sub_dis).shape[0],
-                                                       np.asarray(sub_dis).shape[1] * np.asarray(sub_dis).shape[2]])
+            sub_dom_label = np.reshape(np.asarray(sub_dom_label), [np.asarray(sub_dom_label).shape[0],
+                                                       np.asarray(sub_dom_label).shape[1] * np.asarray(sub_dom_label).shape[2]])
             sub_score = np.asarray(sub_score)
             sub_score = np.reshape(np.asarray(sub_score), [np.asarray(sub_score).shape[0],
                                                            np.asarray(sub_score).shape[1] * np.asarray(sub_score).shape[
