@@ -60,8 +60,9 @@ class GCN(nn.Module):
 
         #GCN：learning inter-dependent object classification
         import pickle
-        embeding = pickle.load(open(inp,'rb'), encoding='iso-8859-1')
-        inp = embeding
+        embedding = pickle.load(open(inp,'rb'), encoding='iso-8859-1')
+        embedding = torch.Tensor(embedding)
+        inp = embedding
         # tensor.detach(): 从self.A中分离出来的adj, 此时的adj与A共享存储空间
         #adj与self.A的区别：adj没有梯度，self.A有梯度；在adj没有改变的情况下self.A可以反向求导，adj不可以
         #adj是首先计算好的，在training过程中不会改变
