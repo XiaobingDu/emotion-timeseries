@@ -5,7 +5,8 @@ from __future__ import print_function
 import torch
 from model_co_attn_GC import MovieNet
 from dataManager import dataSplit, get_sample_data
-from utils_co_attn_GC import adjust_learning_rate, MediaEvalDataset, prsn, save_ckp, load_ckp, AveragePrecisionMeter
+# from utils_co_attn_GC import adjust_learning_rate, MediaEvalDataset, prsn, save_ckp, load_ckp, AveragePrecisionMeter
+from utils_co_attn_GC import *
 from torch.utils.data import DataLoader
 from torch.autograd import Variable
 import time
@@ -177,7 +178,7 @@ for epoch_num in range(num_epochs):
         if args['use_cuda']: # use cuda
             train = torch.nn.Parameter(train).cuda()
             dis = torch.nn.Parameter(dis).cuda()
-            dom_label = torch.nn.Parameter(dom_label).cuda()
+            dom_label = torch.nn.Parameter(torch.Tensor(dom_label)).cuda()
             Frontal = torch.nn.Parameter(Frontal).cuda()
             Temporal = torch.nn.Parameter(Temporal).cuda()
             Central = torch.nn.Parameter(Central).cuda()
@@ -235,9 +236,36 @@ for epoch_num in range(num_epochs):
 
         on_end_batch(ap, emot_dis, target_gt, loss2, state= 'training')
     on_end_epoch(ap,epoch_num, loss2, state= 'training')
+
+    #emotion distribution metrics
+    # euclidean
+    euclidean_dist = euclidean_dist(batch_size, dis, emot_dis)
+    # chebyshev
+    chebyshev_dist = chebyshev_dist(batch_size, dis, emot_dis)
+    # Kullback-Leibler divergence
+    kldist = KL_dist(dis, emot_dis)
+    # clark
+    clark_dist = clark_dist(dis, emot_dis)
+    # canberra
+    canberra_dist = canberra_dist(dis, emot_dis)
+    # cosine
+    cosine_dist = cosine_dist(dis, emot_dis)
+    # intersection
+    intersection_dist = intersection_dist(dis, emot_dis)
+
     # print(GC_est)
     print("Epoch no:" ,epoch_num +1, "| Avg train loss:" ,format(avg_tr_loss /len(trSet) ,'0.4f') )
-
+    print('euclidean_dist: {euclidean_dist:.4f}\t'
+          'chebyshev_dist: {chebyshev_dist:.4f}\t'
+          'kldist: {kldist:.4f}\t'
+          'clark_dist: {clark_dist:.4f}\t'
+          'canberra_dist: {canberra_dist:.4f}\t'
+          'cosine_dist: {cosine_dist:.4f}\t'
+          'intersection_dist: {intersection_dist:.4f}\t'.format(euclidean_dist=euclidean_dist,
+                                                                chebyshev_dist=chebyshev_dist, kldist=kldist,
+                                                                clark_dist=clark_dist, canberra_dist=canberra_dist,
+                                                                cosine_dist=cosine_dist,
+                                                                intersection_dist=intersection_dist))
     # _________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 
 
@@ -257,7 +285,7 @@ for epoch_num in range(num_epochs):
         if args['use_cuda']:
             val = torch.nn.Parameter(val).cuda()
             dis = torch.nn.Parameter(dis).cuda()
-            dom_label = torch.nn.Parameter(dom_label).cuda()
+            dom_label = torch.nn.Parameter(torch.Tensor(dom_label)).cuda()
             Frontal = torch.nn.Parameter(Frontal).cuda()
             Temporal = torch.nn.Parameter(Temporal).cuda()
             Central = torch.nn.Parameter(Central).cuda()
@@ -303,8 +331,34 @@ for epoch_num in range(num_epochs):
 
     on_end_epoch(ap, epoch_num, loss2, state='validation')
 
-    print("Validation: Epoch emotion distribution KLDivLoss:", epoch_loss.item() , "\nEpoch emotion distribution PCC:", epoch_pcc.item() ,"\n", "==========================")
+    # emotion distribution metrics
+    # euclidean
+    euclidean_dist = euclidean_dist(batch_size, dis, emot_dis)
+    # chebyshev
+    chebyshev_dist = chebyshev_dist(batch_size, dis, emot_dis)
+    # Kullback-Leibler divergence
+    kldist = KL_dist(dis, emot_dis)
+    # clark
+    clark_dist = clark_dist(dis, emot_dis)
+    # canberra
+    canberra_dist = canberra_dist(dis, emot_dis)
+    # cosine
+    cosine_dist = cosine_dist(dis, emot_dis)
+    # intersection
+    intersection_dist = intersection_dist(dis, emot_dis)
 
+    print("Validation: Epoch emotion distribution KLDivLoss:", epoch_loss.item() , "\nEpoch emotion distribution PCC:", epoch_pcc.item() ,"\n", "==========================")
+    print('euclidean_dist: {euclidean_dist:.4f}\t'
+          'chebyshev_dist: {chebyshev_dist:.4f}\t'
+          'kldist: {kldist:.4f}\t'
+          'clark_dist: {clark_dist:.4f}\t'
+          'canberra_dist: {canberra_dist:.4f}\t'
+          'cosine_dist: {cosine_dist:.4f}\t'
+          'intersection_dist: {intersection_dist:.4f}\t'.format(euclidean_dist=euclidean_dist,
+                                                                chebyshev_dist=chebyshev_dist, kldist=kldist,
+                                                                clark_dist=clark_dist, canberra_dist=canberra_dist,
+                                                                cosine_dist=cosine_dist,
+                                                                intersection_dist=intersection_dist))
     # checkpoint
     checkpoint = {
         'epoch': epoch_num + 1,
@@ -346,7 +400,7 @@ for i, data in enumerate(testDataloader):
     if args['use_cuda']:
         test = torch.nn.Parameter(test).cuda()
         dis = torch.nn.Parameter(dis).cuda()
-        dom_label = torch.nn.Parameter(dom_label).cuda()
+        dom_label = torch.nn.Parameter(torch.Tensor(dom_label)).cuda()
         Frontal = torch.nn.Parameter(Frontal).cuda()
         Temporal = torch.nn.Parameter(Temporal).cuda()
         Central = torch.nn.Parameter(Central).cuda()
@@ -392,8 +446,36 @@ test_emopcc = emopcc / len(testSet)
 
 on_end_epoch(ap, epoch_num, loss2, state= 'test')
 
+# emotion distribution metrics
+# euclidean
+euclidean_dist = euclidean_dist(batch_size, dis, emot_dis)
+# chebyshev
+chebyshev_dist = chebyshev_dist(batch_size, dis, emot_dis)
+# Kullback-Leibler divergence
+kldist = KL_dist(dis, emot_dis)
+# clark
+clark_dist = clark_dist(dis, emot_dis)
+# canberra
+canberra_dist = canberra_dist(dis, emot_dis)
+# cosine
+cosine_dist = cosine_dist(dis, emot_dis)
+# intersection
+intersection_dist = intersection_dist(dis, emot_dis)
+
 print("Test Emotion distribution KLDivLoss:", test_testkl.item(), "\Test Emotion distribution PCC:", test_emopcc.item(),
       "\n", "==========================")
+print('euclidean_dist: {euclidean_dist:.4f}\t'
+          'chebyshev_dist: {chebyshev_dist:.4f}\t'
+          'kldist: {kldist:.4f}\t'
+          'clark_dist: {clark_dist:.4f}\t'
+          'canberra_dist: {canberra_dist:.4f}\t'
+          'cosine_dist: {cosine_dist:.4f}\t'
+          'intersection_dist: {intersection_dist:.4f}\t'.format(euclidean_dist=euclidean_dist,
+                                                                chebyshev_dist=chebyshev_dist, kldist=kldist,
+                                                                clark_dist=clark_dist, canberra_dist=canberra_dist,
+                                                                cosine_dist=cosine_dist,
+                                                                intersection_dist=intersection_dist))
+
 print(att_1, att_2, att_3, att_4, att_5, att_6)
 
 import csv
