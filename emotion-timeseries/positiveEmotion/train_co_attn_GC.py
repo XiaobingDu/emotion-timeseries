@@ -96,7 +96,7 @@ def on_start_batch(target_gt):
     target_gt = target_gt
     return target_gt
 
-def on_end_batch(AveragePrecisionMeter, output, target_gt, multiLabel_loss, state = 'training'):
+def on_end_batch(AveragePrecisionMeter, epoch_num, output, target_gt, multiLabel_loss, state = 'training'):
     # measure mAP
     AveragePrecisionMeter.add(output, target_gt)
 
@@ -178,7 +178,7 @@ for epoch_num in range(num_epochs):
         if args['use_cuda']: # use cuda
             train = torch.nn.Parameter(train).cuda()
             dis = torch.nn.Parameter(dis).cuda()
-            dom_label = torch.nn.Parameter(torch.Tensor(dom_label)).cuda()
+            dom_label = torch.nn.Parameter(dom_label.float()).cuda()
             Frontal = torch.nn.Parameter(Frontal).cuda()
             Temporal = torch.nn.Parameter(Temporal).cuda()
             Central = torch.nn.Parameter(Central).cuda()
@@ -234,7 +234,7 @@ for epoch_num in range(num_epochs):
         optimizer.step()
         avg_tr_loss += loss.item()
 
-        on_end_batch(ap, emot_dis, target_gt, loss2, state= 'training')
+        on_end_batch(ap, epoch_num, emot_dis, target_gt, loss2, state= 'training')
     on_end_epoch(ap,epoch_num, loss2, state= 'training')
 
     #emotion distribution metrics
@@ -285,7 +285,7 @@ for epoch_num in range(num_epochs):
         if args['use_cuda']:
             val = torch.nn.Parameter(val).cuda()
             dis = torch.nn.Parameter(dis).cuda()
-            dom_label = torch.nn.Parameter(torch.Tensor(dom_label)).cuda()
+            dom_label = torch.nn.Parameter(dom_label.float()).cuda()
             Frontal = torch.nn.Parameter(Frontal).cuda()
             Temporal = torch.nn.Parameter(Temporal).cuda()
             Central = torch.nn.Parameter(Central).cuda()
@@ -317,7 +317,7 @@ for epoch_num in range(num_epochs):
         val_loss += val_loss /dis.shape[0]
 
         #measure mAP
-        on_end_batch(ap, emot_dis, target_gt, loss2, state='validation')
+        on_end_batch(ap, epoch_num, emot_dis, target_gt, loss2, state='validation')
 
         # Pearson correlation
         emopcc += pearsonr(emot_dis.cpu().detach().numpy(), dis.cpu().detach().numpy())[0]
@@ -400,7 +400,7 @@ for i, data in enumerate(testDataloader):
     if args['use_cuda']:
         test = torch.nn.Parameter(test).cuda()
         dis = torch.nn.Parameter(dis).cuda()
-        dom_label = torch.nn.Parameter(torch.Tensor(dom_label)).cuda()
+        dom_label = torch.nn.Parameter(dom_label.float()).cuda()
         Frontal = torch.nn.Parameter(Frontal).cuda()
         Temporal = torch.nn.Parameter(Temporal).cuda()
         Central = torch.nn.Parameter(Central).cuda()
@@ -435,7 +435,7 @@ for i, data in enumerate(testDataloader):
     test_loss += test_loss / dis.shape[0]
 
     # measure mAP
-    on_end_batch(ap, emot_dis, target_gt, loss2, state= 'test')
+    on_end_batch(ap, epoch_num, emot_dis, target_gt, loss2, state= 'test')
 
     # pearson correlation
     emopcc += pearsonr(emot_dis.cpu().detach().numpy(), dis.cpu().detach().numpy())[0]

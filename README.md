@@ -49,8 +49,13 @@ Training and Testing Codes for all three datasets.
 - - 两个criterion达到的效果一样
 
 
-- ！！！
+- 已经添加
 - dominant emotion criterion 未添加
 - - top 1 top 3 top 5
   - precision
   - 根据代码，跟其保持一致即可
+
+- 以上全部完成
+
+- 对于co-attention模型：
+- 修改模型：只得到 context vector，不再经过decoder layer
