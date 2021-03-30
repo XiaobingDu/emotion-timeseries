@@ -5,7 +5,7 @@ from __future__ import print_function
 import torch
 from model_co_attn_GC import MovieNet
 from dataManager import dataSplit, get_sample_data
-from utils_co_attn_GC import adjust_learning_rate, MediaEvalDataset, prsn, save_ckp, load_ckp
+from utils_co_attn_GC import adjust_learning_rate, MediaEvalDataset, prsn, save_ckp, load_ckp, AveragePrecisionMeter
 from torch.utils.data import DataLoader
 from torch.autograd import Variable
 import time
@@ -60,12 +60,12 @@ idx = [[0 ,1 ,2 ,3 ,4 ,5 ,6] ,[7 ,11 ,12 ,16 ,17 ,21 ,22 ,26] ,[8 ,9 ,10 ,13 ,14
 
 # load train, val, test data
 data_set = get_sample_data(path1 ,path2)
-train_data, val_data, test_data, train_dis, val_dis, test_dis = dataSplit(path1 ,data_set ,db_name)
+train_data, val_data, test_data, train_dis, val_dis, test_dis, train_dom_label, val_dom_label, test_dom_label = dataSplit(path1 ,data_set ,db_name)
 
 #通过 MediaEvalDataset 将数据进行加载，返回Dataset对象，包含data和labels
-trSet = MediaEvalDataset(train_data, train_dis, idx)
-valSet = MediaEvalDataset(val_data, val_dis, idx)
-testSet = MediaEvalDataset(test_data, test_dis, idx)
+trSet = MediaEvalDataset(train_data, train_dis, train_dom_label, idx)
+valSet = MediaEvalDataset(val_data, val_dis, val_dom_label, idx)
+testSet = MediaEvalDataset(test_data, test_dis, test_dom_label, idx)
 
 #读取数据
 trDataloader = DataLoader(trSet ,batch_size=batch_size ,shuffle=True ,num_workers=0) # len = 5079 (batches)
@@ -84,11 +84,86 @@ optimizer = torch.optim.RMSprop(net.parameters(), lr=lr) if args['optimizer' ]==
 # crossEnt = torch.nn.BCELoss()
 # mse = torch.nn.MSELoss(reduction='sum')
 kl_div = torch.nn.KLDivLoss(size_average = False, reduce = True)
+#from multi-label dom_emotion predict
+MLSML = torch.nn.MultiLabelSoftMarginLoss()
+
+# measure mAP
+difficult_examples = False
+ap = AveragePrecisionMeter(difficult_examples)
+
+def on_start_batch(target_gt):
+    target_gt = target_gt
+    return target_gt
+
+def on_end_batch(AveragePrecisionMeter, output, target_gt, multiLabel_loss, state = 'training'):
+    # measure mAP
+    AveragePrecisionMeter.add(output, target_gt)
+
+    if state == 'training':
+        print('Epoch: [{0}]\t'
+              'MultiLabel-Loss {loss:.4f}\t'.format(epoch_num, loss=multiLabel_loss))
+    elif state == 'validation':
+        print('Validation: \t MultiLabel-Loss {loss:.4f}'.format(loss=multiLabel_loss))
+    elif state == 'test':
+        print('Test: \t MultiLabel-Loss {loss:.4f}'.format(loss=multiLabel_loss))
 
 
+
+def on_start_epoch(AveragePrecisionMeter):
+    AveragePrecisionMeter.reset()
+
+def on_end_epoch(AveragePrecisionMeter, epoch_num, multiLabel_loss, state = 'training'):
+    map = 100 * AveragePrecisionMeter.value().mean()
+    OP, OR, OF1, CP, CR, CF1 = AveragePrecisionMeter.overall()
+    OP_k, OR_k, OF1_k, CP_k, CR_k, CF1_k = AveragePrecisionMeter.overall_topk(3)
+
+    if state == 'training':
+        print('Epoch: [{0}]\t'
+              'Loss {loss:.4f}\t'
+              'mAP {map:.3f}'.format(epoch_num, loss=multiLabel_loss, map=map))
+        print('OP: {OP:.4f}\t'
+              'OR: {OR:.4f}\t'
+              'OF1: {OF1:.4f}\t'
+              'CP: {CP:.4f}\t'
+              'CR: {CR:.4f}\t'
+              'CF1: {CF1:.4f}'.format(OP=OP, OR=OR, OF1=OF1, CP=CP, CR=CR, CF1=CF1))
+    elif state == 'validation':
+        print('Validation: \t Loss {loss:.4f}\t mAP {map:.3f}'.format(loss=multiLabel_loss, map=map))
+        print('OP: {OP:.4f}\t'
+              'OR: {OR:.4f}\t'
+              'OF1: {OF1:.4f}\t'
+              'CP: {CP:.4f}\t'
+              'CR: {CR:.4f}\t'
+              'CF1: {CF1:.4f}'.format(OP=OP, OR=OR, OF1=OF1, CP=CP, CR=CR, CF1=CF1))
+        print('OP_3: {OP:.4f}\t'
+              'OR_3: {OR:.4f}\t'
+              'OF1_3: {OF1:.4f}\t'
+              'CP_3: {CP:.4f}\t'
+              'CR_3: {CR:.4f}\t'
+              'CF1_3: {CF1:.4f}'.format(OP=OP_k, OR=OR_k, OF1=OF1_k, CP=CP_k, CR=CR_k, CF1=CF1_k))
+    elif state == 'test':
+        print('Test: \t Loss {loss:.4f}\t mAP {map:.3f}'.format(loss=multiLabel_loss, map=map))
+        print('OP: {OP:.4f}\t'
+              'OR: {OR:.4f}\t'
+              'OF1: {OF1:.4f}\t'
+              'CP: {CP:.4f}\t'
+              'CR: {CR:.4f}\t'
+              'CF1: {CF1:.4f}'.format(OP=OP, OR=OR, OF1=OF1, CP=CP, CR=CR, CF1=CF1))
+        print('OP_3: {OP:.4f}\t'
+              'OR_3: {OR:.4f}\t'
+              'OF1_3: {OF1:.4f}\t'
+              'CP_3: {CP:.4f}\t'
+              'CR_3: {CR:.4f}\t'
+              'CF1_3: {CF1:.4f}'.format(OP=OP_k, OR=OR_k, OF1=OF1_k, CP=CP_k, CR=CR_k, CF1=CF1_k))
+
+    return map
+
+#traning&val&test
 for epoch_num in range(num_epochs):
     #    """Sets the learning rate to the initial LR decayed by 10 every 30 epochs"""
     adjust_learning_rate(optimizer, epoch_num, lr)
+    #start_epoch
+    on_start_epoch(ap)
 
     ## Train:_________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
     net.train()  # the state of model
@@ -97,10 +172,12 @@ for epoch_num in range(num_epochs):
     for i, data in enumerate(trDataloader):
         # print("Training .... 第 {} 个Batch.....".format(i))
         st_time = time.time()
-        train, dis, Frontal, Temporal, Central, Parietal, Occipital = data  # get training date
+        train, dis, dom_label, Frontal, Temporal, Central, Parietal, Occipital = data  # get training date
+
         if args['use_cuda']: # use cuda
             train = torch.nn.Parameter(train).cuda()
             dis = torch.nn.Parameter(dis).cuda()
+            dom_label = torch.nn.Parameter(dom_label).cuda()
             Frontal = torch.nn.Parameter(Frontal).cuda()
             Temporal = torch.nn.Parameter(Temporal).cuda()
             Central = torch.nn.Parameter(Central).cuda()
@@ -109,12 +186,15 @@ for epoch_num in range(num_epochs):
 
         train.requires_grad_()  # backward
         dis.requires_grad_()
+        dom_label.requires_grad_()
         Frontal.requires_grad_()
         Temporal.requires_grad_()
         Central.requires_grad_()
         Parietal.requires_grad_()
         Occipital.requires_grad_()
 
+        # start training batch
+        target_gt = on_start_batch(dom_label)
 
         # Forward pass
         emot_dis, input_clstm, shared_encoder, att_1, att_2, att_3, att_4, att_5, att_6, att_7, att_8, att_9, att_10 \
@@ -131,20 +211,30 @@ for epoch_num in range(num_epochs):
         # l = mse(emot_score[:,0].unsqueeze(dim=1), labels1) + mse(emot_score[:,1].unsqueeze(dim=1), labels2)
         # kldiv loss
         emot_dis = torch.tensor(emot_dis, dtype=torch.double)  #<0
+
+        #emotion distribution loss
         dis = torch.tensor(dis, dtype=torch.double) #>0
         softmax = torch.nn.Softmax(dim=1)
         dis = softmax(dis)
+        loss1 = kl_div(emot_dis, dis)
+        loss1 = Variable(loss1, requires_grad=True)
 
-        l = kl_div(emot_dis, dis)
-        l = Variable(l, requires_grad=True)
+        #multi-labe emotion prediction loss
+        target_gt = torch.tensor(target_gt, dtype=torch.double)
+        loss2 = MLSML(emot_dis, target_gt)
+        loss2 = Variable(loss2, requires_grad=True)
+
+        loss = loss1 + loss2
 
         # Backprop and update weights
         optimizer.zero_grad()
-        l.backward()
+        loss.backward()
         a = torch.nn.utils.clip_grad_norm_(net.parameters(), 10)
         optimizer.step()
-        avg_tr_loss += l.item()
+        avg_tr_loss += loss.item()
 
+        on_end_batch(ap, emot_dis, target_gt, loss2, state= 'training')
+    on_end_epoch(ap,epoch_num, loss2, state= 'training')
     # print(GC_est)
     print("Epoch no:" ,epoch_num +1, "| Avg train loss:" ,format(avg_tr_loss /len(trSet) ,'0.4f') )
 
@@ -156,18 +246,26 @@ for epoch_num in range(num_epochs):
     net.eval()
     val_kl = 0
     emopcc = 0
+    # start_epoch
+    on_start_epoch(ap)
+
     for i, data in enumerate(valDataloader):
         # print("Val ..... 第 {} 个Batch.....".format(i))
         st_time = time.time()
-        val, dis, Frontal, Temporal, Central, Parietal, Occipital = data
+        val, dis, dom_label, Frontal, Temporal, Central, Parietal, Occipital = data
+
         if args['use_cuda']:
             val = torch.nn.Parameter(val).cuda()
             dis = torch.nn.Parameter(dis).cuda()
+            dom_label = torch.nn.Parameter(dom_label).cuda()
             Frontal = torch.nn.Parameter(Frontal).cuda()
             Temporal = torch.nn.Parameter(Temporal).cuda()
             Central = torch.nn.Parameter(Central).cuda()
             Parietal = torch.nn.Parameter(Parietal).cuda()
             Occipital = torch.nn.Parameter(Occipital).cuda()
+
+        # tart_batch
+        target_gt = on_start_batch(dom_label)
 
         # Forward pass
         emot_dis, input_clstm, shared_encoder, att_1, att_2, att_3, att_4, att_5, att_6, att_7, att_8, att_9, att_10 = \
@@ -182,25 +280,35 @@ for epoch_num in range(num_epochs):
         # valmse += mse(emot_score[:, 0].unsqueeze(dim=1), labels1)/labels1.shape[0]
         # aromse += mse(emot_score[:, 1].unsqueeze(dim=1), labels2)/labels2.shape[0]
         emot_dis = torch.tensor(emot_dis, dtype=torch.double) #[32,9]
+        #emotion distribution loss
         dis = torch.tensor(dis, dtype=torch.double)
-        val_kl += kl_div(emot_dis, dis) /dis.shape[0]
+        loss1 = kl_div(emot_dis, dis)
+        #multi-label emotion prediction loss
+        loss2 = MLSML(emot_dis, target_gt)
+        val_loss = loss1 + loss2
+        val_loss += val_loss /dis.shape[0]
+
+        #measure mAP
+        on_end_batch(ap, emot_dis, target_gt, loss2, state='validation')
 
         # Pearson correlation
         emopcc += pearsonr(emot_dis.cpu().detach().numpy(), dis.cpu().detach().numpy())[0]
 
     # 每一个epoch loss平均
-    epoch_kl = val_kl /len(valSet)
+    epoch_loss = val_loss /len(valSet)
     # 每一个epoch pcc平均
     epoch_pcc = emopcc / len(valSet)
     # validation loss
-    val_loss =epoch_kl
+    val_loss = epoch_loss
 
-    print("Epoch emotion distribution KLDivLoss:", epoch_kl.item() , "\nEpoch emotion distribution PCC:", epoch_pcc.item() ,"\n", "==========================")
+    on_end_epoch(ap, epoch_num, loss2, state='validation')
+
+    print("Validation: Epoch emotion distribution KLDivLoss:", epoch_loss.item() , "\nEpoch emotion distribution PCC:", epoch_pcc.item() ,"\n", "==========================")
 
     # checkpoint
     checkpoint = {
         'epoch': epoch_num + 1,
-        'valid_loss_min_kl': epoch_kl,
+        'valid_loss_min_kl': epoch_loss,
         'state_dict': net.state_dict(),
         'optimizer': optimizer.state_dict(),
     }
@@ -226,24 +334,32 @@ net, optimizer, start_epoch, valid_loss_min_kl = load_ckp(
 net.eval()
 test_kl = 0
 emopcc = 0
+
+# start_epoch
+on_start_epoch(ap)
+
 for i, data in enumerate(testDataloader):
     st_time = time.time()
-    test, dis, Frontal, Temporal, Central, Parietal, Occipital = data
+    test, dis, dom_label, Frontal, Temporal, Central, Parietal, Occipital = data
     dis = dis
+
     if args['use_cuda']:
         test = torch.nn.Parameter(test).cuda()
         dis = torch.nn.Parameter(dis).cuda()
+        dom_label = torch.nn.Parameter(dom_label).cuda()
         Frontal = torch.nn.Parameter(Frontal).cuda()
         Temporal = torch.nn.Parameter(Temporal).cuda()
         Central = torch.nn.Parameter(Central).cuda()
         Parietal = torch.nn.Parameter(Parietal).cuda()
         Occipital = torch.nn.Parameter(Occipital).cuda()
 
+    # start batch
+    target_gt = on_start_batch(dom_label)
+
     # Forward pass
     emot_dis, input_clstm, shared_encoder, att_1, att_2, att_3, att_4, att_5, att_6, att_7, att_8, att_9, att_10 = \
         net(test, Frontal, Temporal, Central, Parietal, Occipital, dis)
     # print(att_1, att_2, att_3, att_4, att_5, att_6)
-
     emot_dis = emot_dis.squeeze(dim=0)
     dis = torch.squeeze(dis, dim=1)
 
@@ -254,15 +370,27 @@ for i, data in enumerate(testDataloader):
     # aromse += mse(emot_score[:, 1].unsqueeze(dim=1), labels2)/labels2.shape[0]
     # kldiv loss
     emot_dis = torch.tensor(emot_dis, dtype=torch.double)  # [32,9]
+
+    #emotion distribution loss
     dis = torch.tensor(dis, dtype=torch.double)
-    test_kl += kl_div(emot_dis, dis) / dis.shape[0]
+    loss1 = kl_div(emot_dis, dis)
+    #multi-label emotion predictation loss
+    loss2 = MLSML(emot_dis, target_gt)
+
+    test_loss = loss1 + loss2
+    test_loss += test_loss / dis.shape[0]
+
+    # measure mAP
+    on_end_batch(ap, emot_dis, target_gt, loss2, state= 'test')
 
     # pearson correlation
     emopcc += pearsonr(emot_dis.cpu().detach().numpy(), dis.cpu().detach().numpy())[0]
 # average loss
-test_testkl = test_kl / len(testSet)
+test_testkl = test_loss / len(testSet)
 # average pcc
 test_emopcc = emopcc / len(testSet)
+
+on_end_epoch(ap, epoch_num, loss2, state= 'test')
 
 print("Test Emotion distribution KLDivLoss:", test_testkl.item(), "\Test Emotion distribution PCC:", test_emopcc.item(),
       "\n", "==========================")
