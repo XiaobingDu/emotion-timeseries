@@ -288,8 +288,9 @@ class MovieNet(nn.Module):
             GCN_module = GCN(num_classes = 9, in_channel=300, t=0.4, adj_file='embedding/positiveEmotion_adj.pkl')
             GCN_output = GCN_module(inp='embedding/positiveEmotion_glove_word2vec.pkl') #[9,2048]
             print('GCN_output......', GCN_output.shape)
-            GCN_output = GCN_output.transpose(0, 1) #[2048,9]
+            GCN_output = GCN_output.transpose(0, 1).cuda() #[2048,9]
             print('GCN_output transpose......', GCN_output.shape)
+
 
             #eq.10
             ## [32,10,2048]
