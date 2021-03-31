@@ -210,39 +210,33 @@ class MovieNet(nn.Module):
         #befor input into cLSTM
         unimodal_Frontal_input= Frontal_features_rep
         unimodal_Frontal_input = self.unimodal_Frontal(unimodal_Frontal_input).squeeze(-1)
-        unimodal_Frontal_input = torch.softmax(unimodal_Frontal_input, dim=-1)
-        print('unimodal_Frontal_input...',unimodal_Frontal_input.shape)
+        unimodal_Frontal_input = torch.softmax(unimodal_Frontal_input, dim=-1) #[32,20]
 
         unimodal_Temporal_input= Temporal_features_rep
         unimodal_Temporal_input = self.unimodal_Temporal(unimodal_Temporal_input).squeeze(-1)
-        unimodal_Temporal_input = torch.softmax(unimodal_Temporal_input, dim=-1)
-        print('unimodal_Temporal_input...', unimodal_Temporal_input.shape)
+        unimodal_Temporal_input = torch.softmax(unimodal_Temporal_input, dim=-1) #[32,20]
 
         unimodal_Central_input= Central_features_rep
         unimodal_Central_input = self.unimodal_Central(unimodal_Central_input).squeeze(-1)
-        unimodal_Central_input = torch.softmax(unimodal_Central_input, dim=-1)
-        print('unimodal_Central_input...', unimodal_Central_input.shape)
+        unimodal_Central_input = torch.softmax(unimodal_Central_input, dim=-1) #[32,20]
 
         unimodal_Parietal_input= Parietal_features_rep
         unimodal_Parietal_input = self.unimodal_Parietal(unimodal_Parietal_input).squeeze(-1)
-        unimodal_Parietal_input = torch.softmax(unimodal_Parietal_input, dim=-1)
-        print('unimodal_Parietal_input...', unimodal_Parietal_input.shape)
+        unimodal_Parietal_input = torch.softmax(unimodal_Parietal_input, dim=-1) #[32,20]
 
         unimodal_Occipital_input = Occipital_features_rep
         unimodal_Occipital_input = self.unimodal_Occipital(unimodal_Occipital_input).squeeze(-1)
-        unimodal_Occipital_input = torch.softmax(unimodal_Occipital_input, dim=-1)
-        print('unimodal_Parietal_input...', unimodal_Parietal_input.shape)
+        unimodal_Occipital_input = torch.softmax(unimodal_Occipital_input, dim=-1) #[32,20]
 
         # 列向拼接
         #X1:T =x1:T ⊘x1:T ⊘···⊘x1:T
+        # [32,100]
         enc_input_unimodal_cat=torch.cat([unimodal_Frontal_input, unimodal_Temporal_input, unimodal_Central_input, unimodal_Parietal_input, unimodal_Occipital_input], dim=-1)
-        print('enc_input_unimodal_cat....', enc_input_unimodal_cat.shape, batch_size, seq_len)
-        enc_input_unimodal_cat = enc_input_unimodal_cat.reshape(batch_size, seq_len, 5)
-        print('enc_input_unimodal_cat....',enc_input_unimodal_cat.shape)
+        enc_input_unimodal_cat = enc_input_unimodal_cat.reshape(batch_size, seq_len, 5) #[32,20,5]
         #α=α1 ⊕α2 ⊕···⊕αm
         #att_1:[32, 20]; attn:[32,200]
         attn=torch.cat([att_1, att_2, att_3, att_4, att_5, att_6, att_7, att_8, att_9, att_10], dim=-1)
-        # [32, 10, 10]
+        # [32, 20, 10]
         attn = attn.reshape(batch_size, seq_len, self.attn_len)
 
         # cLSTM Encoder
