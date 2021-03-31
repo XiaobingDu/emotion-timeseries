@@ -234,9 +234,9 @@ for epoch_num in range(num_epochs):
         a = torch.nn.utils.clip_grad_norm_(net.parameters(), 10)
         optimizer.step()
         avg_tr_loss += loss.item()
-
-        #end_batch
-        on_end_batch(ap, epoch_num, emot_dis, target_gt, loss2, state= 'training')
+        if i % 100 == 0:
+            #end_batch
+            on_end_batch(ap, epoch_num, emot_dis, target_gt, loss2, state= 'training')
     #end_epoch
     on_end_epoch(ap,epoch_num, loss2, state= 'training')
 
@@ -320,9 +320,10 @@ for epoch_num in range(num_epochs):
         val_loss = loss1 + loss2
         val_loss += val_loss /dis.shape[0]
 
-        #measure mAP
-        #end_batch
-        on_end_batch(ap, epoch_num, emot_dis, target_gt, loss2, state='validation')
+        if i % 100 == 0:
+            #measure mAP
+            #end_batch
+            on_end_batch(ap, epoch_num, emot_dis, target_gt, loss2, state='validation')
 
         # Pearson correlation
         emopcc += pearsonr(emot_dis.cpu().detach().numpy(), dis.cpu().detach().numpy())[0]
@@ -440,8 +441,9 @@ for i, data in enumerate(testDataloader):
     test_loss = loss1 + loss2
     test_loss += test_loss / dis.shape[0]
 
-    # measure mAP
-    on_end_batch(ap, epoch_num, emot_dis, target_gt, loss2, state= 'test')
+    if i % 100 == 0:
+        # measure mAP
+        on_end_batch(ap, epoch_num, emot_dis, target_gt, loss2, state= 'test')
 
     # pearson correlation
     emopcc += pearsonr(emot_dis.cpu().detach().numpy(), dis.cpu().detach().numpy())[0]
