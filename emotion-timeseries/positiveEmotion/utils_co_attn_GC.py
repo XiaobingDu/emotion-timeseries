@@ -451,7 +451,6 @@ class AveragePrecisionMeter(object):
                 scores[i, ind] = 1 if tmp[i, ind] >= 0 else -1
         return self.evaluation(scores, targets)
 
-
     def evaluation(self, scores_, targets_):
         n, n_class = scores_.shape
         Nc, Np, Ng = np.zeros(n_class), np.zeros(n_class), np.zeros(n_class)

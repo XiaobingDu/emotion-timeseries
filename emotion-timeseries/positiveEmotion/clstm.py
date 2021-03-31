@@ -86,13 +86,13 @@ class cLSTM(nn.Module):
                 hidden = [None for _ in range(self.p)]
             pred = [self.networks[i](X, hidden[i], truncation)
                     for i in range(self.p)]
-            print('pred shape.....', pred.shape)
+            print('pred shape.....', len(pred))
             print(pred)
             pred, hidden = zip(*pred)
-            print('pred shape.....', pred.shape)
+            print('pred shape.....', len(pred))
             print(pred)
             pred = torch.cat(pred, dim=2)
-            print('pred shape.....', pred.shape)
+            print('pred shape.....', len(pred))
             print(pred)
 
         else:
