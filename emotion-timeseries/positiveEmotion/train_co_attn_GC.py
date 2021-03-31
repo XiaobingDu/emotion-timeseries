@@ -237,9 +237,9 @@ for epoch_num in range(num_epochs):
         avg_tr_loss += loss.item()
         if i % 100 == 0:
             #end_batch
-            on_end_batch(ap, epoch_num, emot_dis, target_gt, loss2, state= 'training')
+            on_end_batch(ap, epoch_num+1, emot_dis, target_gt, loss2, state= 'training')
     #end_epoch
-    on_end_epoch(ap,epoch_num, loss2, state= 'training')
+    on_end_epoch(ap,epoch_num+1, loss2, state= 'training')
 
     #emotion distribution metrics
     # euclidean
@@ -325,7 +325,7 @@ for epoch_num in range(num_epochs):
         if i % 100 == 0:
             #measure mAP
             #end_batch
-            on_end_batch(ap, epoch_num, emot_dis, target_gt, loss2, state='validation')
+            on_end_batch(ap, epoch_num+1, emot_dis, target_gt, loss2, state='validation')
 
         # Pearson correlation
         emopcc += pearsonr(emot_dis.cpu().detach().numpy(), dis.cpu().detach().numpy())[0]
@@ -338,13 +338,13 @@ for epoch_num in range(num_epochs):
     val_loss = epoch_loss
 
     #end_epoch
-    on_end_epoch(ap, epoch_num, loss2, state='validation')
+    on_end_epoch(ap, epoch_num+1, loss2, state='validation')
 
     # emotion distribution metrics
     # euclidean
-    euclidean_dist = euclidean_dist(batch_size, dis, emot_dis)
+    euclidean_dist = euclidean_dist(dis.shape[0], dis, emot_dis)
     # chebyshev
-    chebyshev_dist = chebyshev_dist(batch_size, dis, emot_dis)
+    chebyshev_dist = chebyshev_dist(dis.shape[0], dis, emot_dis)
     # Kullback-Leibler divergence
     kldist = KL_dist(dis, emot_dis)
     # clark
@@ -446,7 +446,7 @@ for i, data in enumerate(testDataloader):
 
     if i % 100 == 0:
         # measure mAP
-        on_end_batch(ap, epoch_num, emot_dis, target_gt, loss2, state= 'test')
+        on_end_batch(ap, epoch_num+1, emot_dis, target_gt, loss2, state= 'test')
 
     # pearson correlation
     emopcc += pearsonr(emot_dis.cpu().detach().numpy(), dis.cpu().detach().numpy())[0]
@@ -455,13 +455,13 @@ test_testkl = test_loss / len(testSet)
 # average pcc
 test_emopcc = emopcc / len(testSet)
 
-on_end_epoch(ap, epoch_num, loss2, state= 'test')
+on_end_epoch(ap, epoch_num+1, loss2, state= 'test')
 
 # emotion distribution metrics
 # euclidean
-euclidean_dist = euclidean_dist(batch_size, dis, emot_dis)
+euclidean_dist = euclidean_dist(dis.shape[0], dis, emot_dis)
 # chebyshev
-chebyshev_dist = chebyshev_dist(batch_size, dis, emot_dis)
+chebyshev_dist = chebyshev_dist(dis.shape[0], dis, emot_dis)
 # Kullback-Leibler divergence
 kldist = KL_dist(dis, emot_dis)
 # clark
