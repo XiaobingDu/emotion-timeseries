@@ -85,8 +85,7 @@ class cLSTM(nn.Module):
             pred = [self.networks[i](X, hidden[i], truncation) #len = 5
                     for i in range(self.p)]
             pred, hidden = zip(*pred) # pred len = 5
-            pred = torch.cat(pred, dim=2) # pred.shape =
-            print('pred shape.....', pred.shape)
+            pred = torch.cat(pred, dim=2) # pred.shape = [32,20,5]
 
         else:
             print(self.networks)
