@@ -226,7 +226,7 @@ for epoch_num in range(num_epochs):
         loss2 = MLSML(emot_dis.cuda(), target_gt.cuda())
         loss2 = Variable(loss2, requires_grad=True)
 
-        loss = loss1 + loss2
+        loss = (loss1 + loss2).cuda()
 
         # Backprop and update weights
         optimizer.zero_grad()
