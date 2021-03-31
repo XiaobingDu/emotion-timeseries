@@ -243,19 +243,19 @@ for epoch_num in range(num_epochs):
 
     #emotion distribution metrics
     # euclidean
-    euclidean_dist = euclidean_dist(dis.shape[0], dis, emot_dis)
+    euclidean = euclidean_dist(dis.shape[0], dis, emot_dis)
     # chebyshev
-    chebyshev_dist = chebyshev_dist(dis.shape[0], dis, emot_dis)
+    chebyshev = chebyshev_dist(dis.shape[0], dis, emot_dis)
     # Kullback-Leibler divergence
     kldist = KL_dist(dis, emot_dis)
     # clark
-    clark_dist = clark_dist(dis, emot_dis)
+    clark = clark_dist(dis, emot_dis)
     # canberra
-    canberra_dist = canberra_dist(dis, emot_dis)
+    canberra = canberra_dist(dis, emot_dis)
     # cosine
-    cosine_dist = cosine_dist(dis, emot_dis)
+    cosine = cosine_dist(dis, emot_dis)
     # intersection
-    intersection_dist = intersection_dist(dis, emot_dis)
+    intersection = intersection_dist(dis, emot_dis)
 
     # print(GC_est)
     print("Epoch no:" ,epoch_num +1, "| Avg train loss:" ,format(avg_tr_loss /len(trSet) ,'0.4f') )
@@ -265,11 +265,11 @@ for epoch_num in range(num_epochs):
           'clark_dist: {clark_dist:.4f}\t'
           'canberra_dist: {canberra_dist:.4f}\t'
           'cosine_dist: {cosine_dist:.4f}\t'
-          'intersection_dist: {intersection_dist:.4f}\t'.format(euclidean_dist=euclidean_dist,
-                                                                chebyshev_dist=chebyshev_dist, kldist=kldist,
-                                                                clark_dist=clark_dist, canberra_dist=canberra_dist,
-                                                                cosine_dist=cosine_dist,
-                                                                intersection_dist=intersection_dist))
+          'intersection_dist: {intersection_dist:.4f}\t'.format(euclidean_dist=euclidean,
+                                                                chebyshev_dist=chebyshev, kldist=kldist,
+                                                                clark_dist=clark, canberra_dist=canberra,
+                                                                cosine_dist=cosine,
+                                                                intersection_dist=intersection))
     # _________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 
 
@@ -342,19 +342,19 @@ for epoch_num in range(num_epochs):
 
     # emotion distribution metrics
     # euclidean
-    euclidean_dist = euclidean_dist(dis.shape[0], dis, emot_dis)
+    euclidean = euclidean_dist(dis.shape[0], dis, emot_dis)
     # chebyshev
-    chebyshev_dist = chebyshev_dist(dis.shape[0], dis, emot_dis)
+    chebyshev = chebyshev_dist(dis.shape[0], dis, emot_dis)
     # Kullback-Leibler divergence
     kldist = KL_dist(dis, emot_dis)
     # clark
-    clark_dist = clark_dist(dis, emot_dis)
+    clark = clark_dist(dis, emot_dis)
     # canberra
-    canberra_dist = canberra_dist(dis, emot_dis)
+    canberra = canberra_dist(dis, emot_dis)
     # cosine
-    cosine_dist = cosine_dist(dis, emot_dis)
+    cosine = cosine_dist(dis, emot_dis)
     # intersection
-    intersection_dist = intersection_dist(dis, emot_dis)
+    intersection = intersection_dist(dis, emot_dis)
 
     print("Validation: Epoch emotion distribution KLDivLoss:", epoch_loss.item() , "\nEpoch emotion distribution PCC:", epoch_pcc.item() ,"\n", "==========================")
     print('euclidean_dist: {euclidean_dist:.4f}\t'
@@ -363,11 +363,11 @@ for epoch_num in range(num_epochs):
           'clark_dist: {clark_dist:.4f}\t'
           'canberra_dist: {canberra_dist:.4f}\t'
           'cosine_dist: {cosine_dist:.4f}\t'
-          'intersection_dist: {intersection_dist:.4f}\t'.format(euclidean_dist=euclidean_dist,
-                                                                chebyshev_dist=chebyshev_dist, kldist=kldist,
-                                                                clark_dist=clark_dist, canberra_dist=canberra_dist,
-                                                                cosine_dist=cosine_dist,
-                                                                intersection_dist=intersection_dist))
+          'intersection_dist: {intersection_dist:.4f}\t'.format(euclidean_dist=euclidean,
+                                                                chebyshev_dist=chebyshev, kldist=kldist,
+                                                                clark_dist=clark, canberra_dist=canberra,
+                                                                cosine_dist=cosine,
+                                                                intersection_dist=intersection))
     # checkpoint
     checkpoint = {
         'epoch': epoch_num + 1,
@@ -459,19 +459,19 @@ on_end_epoch(ap, epoch_num+1, loss2, state= 'test')
 
 # emotion distribution metrics
 # euclidean
-euclidean_dist = euclidean_dist(dis.shape[0], dis, emot_dis)
+euclidean = euclidean_dist(dis.shape[0], dis, emot_dis)
 # chebyshev
-chebyshev_dist = chebyshev_dist(dis.shape[0], dis, emot_dis)
+chebyshev = chebyshev_dist(dis.shape[0], dis, emot_dis)
 # Kullback-Leibler divergence
 kldist = KL_dist(dis, emot_dis)
 # clark
-clark_dist = clark_dist(dis, emot_dis)
+clark = clark_dist(dis, emot_dis)
 # canberra
-canberra_dist = canberra_dist(dis, emot_dis)
+canberra = canberra_dist(dis, emot_dis)
 # cosine
-cosine_dist = cosine_dist(dis, emot_dis)
+cosine = cosine_dist(dis, emot_dis)
 # intersection
-intersection_dist = intersection_dist(dis, emot_dis)
+intersection = intersection_dist(dis, emot_dis)
 
 print("Test Emotion distribution KLDivLoss:", test_testkl.item(), "\Test Emotion distribution PCC:", test_emopcc.item(),
       "\n", "==========================")
@@ -481,11 +481,11 @@ print('euclidean_dist: {euclidean_dist:.4f}\t'
           'clark_dist: {clark_dist:.4f}\t'
           'canberra_dist: {canberra_dist:.4f}\t'
           'cosine_dist: {cosine_dist:.4f}\t'
-          'intersection_dist: {intersection_dist:.4f}\t'.format(euclidean_dist=euclidean_dist,
-                                                                chebyshev_dist=chebyshev_dist, kldist=kldist,
-                                                                clark_dist=clark_dist, canberra_dist=canberra_dist,
-                                                                cosine_dist=cosine_dist,
-                                                                intersection_dist=intersection_dist))
+          'intersection_dist: {intersection_dist:.4f}\t'.format(euclidean_dist=euclidean,
+                                                                chebyshev_dist=chebyshev, kldist=kldist,
+                                                                clark_dist=clark, canberra_dist=canberra,
+                                                                cosine_dist=cosine,
+                                                                intersection_dist=intersection))
 
 print(att_1, att_2, att_3, att_4, att_5, att_6)
 
