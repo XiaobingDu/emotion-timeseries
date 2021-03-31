@@ -80,12 +80,21 @@ class cLSTM(nn.Module):
           hidden: hidden states from one LSTM or all LSTMs.
         '''
         if i is None:
+            print('i....', i)
             if hidden is None:
+                print('hidden.....', hidden)
                 hidden = [None for _ in range(self.p)]
             pred = [self.networks[i](X, hidden[i], truncation)
                     for i in range(self.p)]
+            print('pred shape.....', pred.shape)
+            print(pred)
             pred, hidden = zip(*pred)
+            print('pred shape.....', pred.shape)
+            print(pred)
             pred = torch.cat(pred, dim=2)
+            print('pred shape.....', pred.shape)
+            print(pred)
+
         else:
             print(self.networks)
             pred, hidden = self.networks[i](X, hidden, truncation)

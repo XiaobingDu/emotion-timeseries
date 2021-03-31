@@ -105,12 +105,20 @@ class MovieNet(nn.Module):
         self.dec_h0 = nn.Parameter(torch.rand(self.n_layers, 1, self.h_dim))
         self.dec_c0 = nn.Parameter(torch.rand(self.n_layers, 1, self.h_dim))
 
+        #---------------------with decoder---------------------#
         # Final MLP output network
-        self.out = nn.Sequential(nn.Linear(self.h_dim, 1024),#128 #h_dim 512 -> 1024
-                                #  nn.LeakyReLU(),
-                                #  nn.Linear(512, 8),
+        # self.out = nn.Sequential(nn.Linear(self.h_dim, 1024),#128 #h_dim 512 -> 1024
+        #                         #  nn.LeakyReLU(),
+        #                         #  nn.Linear(512, 8),
+        #                          nn.LeakyReLU(),
+        #                          nn.Linear(1024, self.out_layer)) #1024 -> out_layer:2048
+
+        #-----------------------without decoder----------------#
+        self.out = nn.Sequential(nn.Linear(5, 1024),  # 128 #5 -> 1024
+                                 #  nn.LeakyReLU(),
+                                 #  nn.Linear(512, 8),
                                  nn.LeakyReLU(),
-                                 nn.Linear(1024, self.out_layer)) #1024 -> out_layer:2048
+                                 nn.Linear(1024, self.out_layer))  # 1024 -> out_layer:2048
 
         # Store module in specified device (CUDA/CPU)
         self.device = (device if torch.cuda.is_available() else
@@ -199,7 +207,7 @@ class MovieNet(nn.Module):
 
         #cLSTM Encoder
         #eq.5
-        #befor  input into cLSTM
+        #befor input into cLSTM
         unimodal_Frontal_input= Frontal_features_rep
         unimodal_Frontal_input = self.unimodal_Frontal(unimodal_Frontal_input).squeeze(-1)
         unimodal_Frontal_input = torch.softmax(unimodal_Frontal_input, dim=-1)
@@ -253,46 +261,32 @@ class MovieNet(nn.Module):
         c0 = self.dec_c0.repeat(1, batch_size, 1)
 
         if target is not None:
-            # # print(target[0].shape)
-            # # exit()
-            # #target == GT labels
-            # # target_0 = target.float().reshape(batch_size, seq_len, 1)
-            # target_0 = target.unsqueeze_(dim=1)
-            # target_0 = torch.cat([target_0,target_0,target_0,target_0,target_0,target_0,target_0,target_0,target_0,target_0],dim=1) #[batch_size, seq_len, 9]
-            # target_0 = torch.nn.Parameter(target_0).cuda()
-            #
-            # #eq.9
-            # # Concatenate targets from previous timestep to context
-            # # dec_in = torch.cat([pad_shift(target_0, 1, tgt_init),pad_shift(target_1, 1, tgt_init), context], 2)
-            # target_0 #[32,9]
-            # # dec_in = torch.cat([pad_shift(target_0, 1, tgt_init), context], 2)
-            # [32,10,14]
-            # dec_in = torch.cat([target_0.float(), context.float()], dim=2)
 
-            # DO NOT ADD PREVIOUS LABEL FOR PREDICT
+            #-----------------------DO NOT ADD PREVIOUS LABEL FOR PREDICT-----------------------#
+            #-----------------------remove decoder------------------------#
             # DECODE THE CONTEXT VECTOR
             # [32,10,5]
-            dec_in = context.float()
-
+            # dec_in = context.float()
             #WITH and WITHOUT PREVIOUS LABEL
             # [32, 10, 512]
-            dec_out, _ = self.decoder(dec_in, (h0, c0)) #decoder -> nn.LSTM这里有问题
+            # dec_out, _ = self.decoder(dec_in, (h0, c0)) #decoder
             # Undo the packing
             #[320,512] <0
-            dec_out = dec_out.reshape(-1, self.h_dim) #[640,512]
+            # dec_out = dec_out.reshape(-1, self.h_dim) #[640,512]
+
+            context_feature = context.reshape(-1,5) #[320,5]
+
+            # eq.10
+            ## [32,20,2048]
+            predicted = self.out(context_feature).view(batch_size, seq_len, self.out_layer)
+            # [32,9] <0; #[32,2048]
+            predicted_last = predicted[:, -1, :]
 
             #GCN module
             #num_class = 9
-
             GCN_module = GCN(num_classes = 9, in_channel=300, t=0.4, adj_file='embedding/positiveEmotion_adj.pkl')
             GCN_output = GCN_module(inp='embedding/positiveEmotion_glove_word2vec.pkl') #[9,2048]
             GCN_output = GCN_output.transpose(0, 1).cuda() #[2048,9]
-
-            #eq.10
-            ## [32,30,2048]
-            predicted = self.out(dec_out).view(batch_size, seq_len, self.out_layer)
-            # [32,9] <0; #[32,2048]
-            predicted_last = predicted [:,-1,:]
 
             # GCN output * LSTM out lastTimestep
             ## [32,9]
