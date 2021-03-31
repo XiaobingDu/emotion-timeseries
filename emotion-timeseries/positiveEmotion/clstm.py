@@ -79,21 +79,14 @@ class cLSTM(nn.Module):
           pred: predictions from one LSTM or all LSTMs.
           hidden: hidden states from one LSTM or all LSTMs.
         '''
-        if i is None:
-            print('i....', i)
-            if hidden is None:
-                print('hidden.....', hidden)
-                hidden = [None for _ in range(self.p)]
-            pred = [self.networks[i](X, hidden[i], truncation)
+        if i is None: # i = None
+            if hidden is None: # hidden = None
+                hidden = [None for _ in range(self.p)] # self.p = 5
+            pred = [self.networks[i](X, hidden[i], truncation) #len = 5
                     for i in range(self.p)]
-            print('pred shape.....', len(pred))
-            print(pred)
-            pred, hidden = zip(*pred)
-            print('pred shape.....', len(pred))
-            print(pred)
-            pred = torch.cat(pred, dim=2)
-            print('pred shape.....', len(pred))
-            print(pred)
+            pred, hidden = zip(*pred) # pred len = 5
+            pred = torch.cat(pred, dim=2) # pred.shape =
+            print('pred shape.....', pred.shape)
 
         else:
             print(self.networks)
