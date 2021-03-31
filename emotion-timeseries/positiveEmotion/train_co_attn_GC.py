@@ -51,7 +51,7 @@ args['embed_dim'] = 512
 args['h_dim'] = 512
 args['n_layers'] = 1
 args['attn_len'] = 10
-num_epochs = 20
+num_epochs = 100 #20
 batch_size = 32
 lr =1e-4
 GC_est =None
@@ -102,7 +102,7 @@ def on_end_batch(AveragePrecisionMeter, epoch_num, output, target_gt, multiLabel
 
     if state == 'training':
         print('Epoch: [{0}]\t'
-              'MultiLabel-Loss {loss:.4f}\t'.format(epoch_num, loss=multiLabel_loss))
+              'Traning: \t MultiLabel-Loss {loss:.4f}\t'.format(epoch_num, loss=multiLabel_loss))
     elif state == 'validation':
         print('Validation: \t MultiLabel-Loss {loss:.4f}'.format(loss=multiLabel_loss))
     elif state == 'test':
@@ -119,7 +119,7 @@ def on_end_epoch(AveragePrecisionMeter, epoch_num, multiLabel_loss, state = 'tra
     OP_k, OR_k, OF1_k, CP_k, CR_k, CF1_k = AveragePrecisionMeter.overall_topk(3)
 
     if state == 'training':
-        print('Epoch: [{0}]\t'
+        print('Training: \t Epoch: [{0}]\t'
               'Loss {loss:.4f}\t'
               'mAP {map:.3f}'.format(epoch_num, loss=multiLabel_loss, map=map))
         print('OP: {OP:.4f}\t'
@@ -163,6 +163,7 @@ def on_end_epoch(AveragePrecisionMeter, epoch_num, multiLabel_loss, state = 'tra
 for epoch_num in range(num_epochs):
     #    """Sets the learning rate to the initial LR decayed by 10 every 30 epochs"""
     adjust_learning_rate(optimizer, epoch_num, lr)
+
     #start_epoch
     on_start_epoch(ap)
 
@@ -194,7 +195,7 @@ for epoch_num in range(num_epochs):
         Parietal.requires_grad_()
         Occipital.requires_grad_()
 
-        # start training batch
+        # start_batch
         target_gt = on_start_batch(dom_label)
 
         # Forward pass
@@ -234,14 +235,16 @@ for epoch_num in range(num_epochs):
         optimizer.step()
         avg_tr_loss += loss.item()
 
+        #end_batch
         on_end_batch(ap, epoch_num, emot_dis, target_gt, loss2, state= 'training')
+    #end_epoch
     on_end_epoch(ap,epoch_num, loss2, state= 'training')
 
     #emotion distribution metrics
     # euclidean
-    euclidean_dist = euclidean_dist(batch_size, dis, emot_dis)
+    euclidean_dist = euclidean_dist(dis.shape[0], dis, emot_dis)
     # chebyshev
-    chebyshev_dist = chebyshev_dist(batch_size, dis, emot_dis)
+    chebyshev_dist = chebyshev_dist(dis.shape[0], dis, emot_dis)
     # Kullback-Leibler divergence
     kldist = KL_dist(dis, emot_dis)
     # clark
@@ -274,6 +277,7 @@ for epoch_num in range(num_epochs):
     net.eval()
     val_kl = 0
     emopcc = 0
+
     # start_epoch
     on_start_epoch(ap)
 
@@ -292,7 +296,7 @@ for epoch_num in range(num_epochs):
             Parietal = torch.nn.Parameter(Parietal).cuda()
             Occipital = torch.nn.Parameter(Occipital).cuda()
 
-        # tart_batch
+        # start_batch
         target_gt = on_start_batch(dom_label)
 
         # Forward pass
@@ -317,6 +321,7 @@ for epoch_num in range(num_epochs):
         val_loss += val_loss /dis.shape[0]
 
         #measure mAP
+        #end_batch
         on_end_batch(ap, epoch_num, emot_dis, target_gt, loss2, state='validation')
 
         # Pearson correlation
@@ -329,6 +334,7 @@ for epoch_num in range(num_epochs):
     # validation loss
     val_loss = epoch_loss
 
+    #end_epoch
     on_end_epoch(ap, epoch_num, loss2, state='validation')
 
     # emotion distribution metrics
