@@ -238,9 +238,6 @@ class MovieNet(nn.Module):
         attn=torch.cat([att_1, att_2, att_3, att_4, att_5, att_6, att_7, att_8, att_9, att_10], dim=-1)
         # [32, 20, 10]
         attn = attn.reshape(batch_size, seq_len, self.attn_len)
-        print('att_1.....', att_1)
-        print('att_2.....', att_2)
-        print('attention.....', attn)
 
         # cLSTM Encoder
         #eq.6
