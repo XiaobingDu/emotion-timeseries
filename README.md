@@ -59,3 +59,9 @@ Training and Testing Codes for all three datasets.
 
 - 对于co-attention模型：
 - 修改模型：只得到 context vector，不再经过decoder layer
+- 完成：但是也没有觉得结果变好
+
+- 关于 top-3 OR_3、CR_3 的结果不如 OR、CR 结果好：
+- learning spatial regularization with image-level supervision for multi-label image classification 文章中的结果
+- top-3 label 的确低于 all label
+- 

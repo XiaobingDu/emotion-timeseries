@@ -205,9 +205,7 @@ for epoch_num in range(num_epochs):
         train_model_gista(shared_encoder, input_clstm, lam=0.5, lam_ridge=1e-4, lr=0.001, max_iter=1, check_every=1000, truncation=64)
         GC_est = shared_encoder.GC().cpu().data.numpy()
         # print('evary batch GC_est......', GC_est)
-
-        print('GC_est.....', GC_est)
-        print('training....', att_1, att_2, att_3, att_4, att_5, att_6)
+        # print('training....', att_1, att_2, att_3, att_4, att_5, att_6)
 
         emot_dis = emot_dis.squeeze(dim=0)
         dis = torch.squeeze(dis,dim=1)
