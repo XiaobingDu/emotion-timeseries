@@ -106,8 +106,13 @@ class cLSTM(nn.Module):
           GC: (p x p) matrix. Entry (i, j) indicates whether variable j is
             Granger causal of variable i.
         '''
-        GC = [torch.norm(net.lstm.weight_ih_l0, dim=0)
+        GC = [torch.norm(net.lstm.weight_ih_l0, dim=0) # net.lstm.weight_ih_l0: the parameters from input to hidden
               for net in self.networks]
+
+        for net in self.networks:
+            print('net.lstm.weight_ih_l0 shape....', net.lstm.weight_ih_l0.shape)
+            print('net.lstm.weight_ih_l0....', net.lstm.weight_ih_l0)
+
         GC = torch.stack(GC)
         return GC
         # if threshold:
