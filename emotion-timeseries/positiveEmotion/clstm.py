@@ -82,14 +82,9 @@ class cLSTM(nn.Module):
         if i is None: # i = None
             if hidden is None: # hidden = None
                 hidden = [None for _ in range(self.p)] # self.p = 5
-            # pred = [self.networks[i](X, hidden[i], truncation) #pred len = 5
-            #         for i in range(self.p)]
-
-            for i in range(self.p):
-                print('X shape.....', X.shape)
-                print('X .....', X)
-                pred = self.networks[i](X, hidden[i], truncation)
-                print('pred .....', pred)
+            # for every lstm the input X are same
+            pred = [self.networks[i](X, hidden[i], truncation) #pred len = 5
+                    for i in range(self.p)]
 
             pred, hidden = zip(*pred) # pred len = 5
             pred = torch.cat(pred, dim=2) # pred.shape = [32,20,5]
