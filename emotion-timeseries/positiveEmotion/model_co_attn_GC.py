@@ -114,11 +114,11 @@ class MovieNet(nn.Module):
         #                          nn.Linear(1024, self.out_layer)) #1024 -> out_layer:2048
 
         #-----------------------without decoder----------------#
-        self.out = nn.Sequential(nn.Linear(5, 1024),  # 128 #5 -> 1024
+        self.out = nn.Sequential(nn.Linear(5, 16),  # 128 #5 -> 1024 -> 16 same as the GCN hidden_size
                                  #  nn.LeakyReLU(),
                                  #  nn.Linear(512, 8),
                                  nn.LeakyReLU(),
-                                 nn.Linear(1024, self.out_layer))  # 1024 -> out_layer:2048
+                                 nn.Linear(16, self.out_layer))  # 1024 -> out_layer:2048
 
         # Store module in specified device (CUDA/CPU)
         self.device = (device if torch.cuda.is_available() else

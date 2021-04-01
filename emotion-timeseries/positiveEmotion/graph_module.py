@@ -49,8 +49,12 @@ class GCN(nn.Module):
         self.num_classes = num_classes
 
         #定义 GCN 2-layers
-        self.gc1 = GraphConvolution(in_channel, 1024)
-        self.gc2 = GraphConvolution(1024, 2048)
+        self.hidden_size = 16
+        self.output_size = 64
+        self.gc1 = GraphConvolution(in_channel, self.hidden_size)
+        self.gc2 = GraphConvolution(self.hidden_size, self.output_size)
+        # self.gc1 = GraphConvolution(in_channel, 1024)
+        # self.gc2 = GraphConvolution(1024, 2048)
         self.relu = nn.LeakyReLU(0.2)
 
         _adj = gen_A(num_classes, t, adj_file)
