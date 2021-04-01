@@ -206,6 +206,9 @@ for epoch_num in range(num_epochs):
         GC_est = shared_encoder.GC().cpu().data.numpy()
         # print('evary batch GC_est......', GC_est)
 
+        print('GC_est.....', GC_est)
+        print('training....', att_1, att_2, att_3, att_4, att_5, att_6)
+
         emot_dis = emot_dis.squeeze(dim=0)
         dis = torch.squeeze(dis,dim=1)
 
@@ -259,8 +262,6 @@ for epoch_num in range(num_epochs):
     # intersection
     intersection = intersection_dist(dis, emot_dis)
 
-    print('every epoch.....', GC_est)
-    print('training....', att_1, att_2, att_3, att_4, att_5, att_6)
     print("Epoch no:" ,epoch_num +1, "| Avg train loss:" ,format(avg_tr_loss /len(trSet) ,'0.4f') )
     print('euclidean_dist: {euclidean_dist:.4f}\t'
           'chebyshev_dist: {chebyshev_dist:.4f}\t'
