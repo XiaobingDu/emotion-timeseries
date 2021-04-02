@@ -117,7 +117,7 @@ if args['use_cuda']:
 optimizer = torch.optim.RMSprop(net.parameters(), lr=lr) if args['optimizer' ]== 'rmsprop' else torch.optim.Adam \
     (net.parameters() ,lr=lr, weight_decay=0.9)
 # mse = torch.nn.MSELoss(reduction='sum')
-kl_div = torch.nn.KLDivLoss(size_average=False, reduce=False, reduction = 'batchmean', log_target = True)
+kl_div = torch.nn.KLDivLoss(size_average=False, reduce=False, reduction = 'batchmean')
 #from multi-label dom_emotion predict
 MLSML = torch.nn.MultiLabelSoftMarginLoss()
 
