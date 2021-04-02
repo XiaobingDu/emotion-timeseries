@@ -117,7 +117,7 @@ if args['use_cuda']:
 optimizer = torch.optim.RMSprop(net.parameters(), lr=lr) if args['optimizer' ]== 'rmsprop' else torch.optim.Adam \
     (net.parameters() ,lr=lr, weight_decay=0.9)
 # mse = torch.nn.MSELoss(reduction='sum')
-kl_div = torch.nn.KLDivLoss(size_average = False, reduce = True, reduction = 'batchmean', log_target = True)
+kl_div = torch.nn.KLDivLoss(size_average=False, reduce=False, reduction = 'batchmean', log_target = True)
 #from multi-label dom_emotion predict
 MLSML = torch.nn.MultiLabelSoftMarginLoss()
 
@@ -252,7 +252,7 @@ for epoch_num in range(num_epochs):
         dis = torch.tensor(dis, dtype=torch.double)
         # softmax = torch.nn.Softmax(dim=1)
         # dis = softmax(dis)
-        loss1 = kl_div(emot_dis, dis)
+        loss1 = kl_div(emot_dis, dis.log())
         loss1 = Variable(loss1, requires_grad=True)
 
         #multi-labe emotion prediction loss
