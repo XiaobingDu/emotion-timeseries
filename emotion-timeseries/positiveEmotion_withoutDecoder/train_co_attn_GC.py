@@ -262,6 +262,9 @@ for epoch_num in range(num_epochs):
 
         loss = loss1 + loss2
         loss = Variable(loss, requires_grad=True)
+        print('loss1....', loss1)
+        print('loss2....', loss2)
+        print('loss....', loss)
 
         # Backprop and update weights
         optimizer.zero_grad()

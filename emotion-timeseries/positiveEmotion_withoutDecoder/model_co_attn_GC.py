@@ -80,38 +80,20 @@ class MovieNet(nn.Module):
         self.unimodal_Central = nn.Sequential(nn.Dropout(self.dropout),nn.Linear(self.h_dim, 1), nn.LeakyReLU())
         self.unimodal_Parietal = nn.Sequential(nn.Dropout(self.dropout),nn.Linear(self.h_dim, 1), nn.LeakyReLU()) #nn.Linear(self.h_dim,1)
         self.unimodal_Occipital = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.h_dim, 1),nn.LeakyReLU()) # nn.Linear(self.h_dim,1)
-        
+
         #Encoder Module
         #cLSTM module simultaneously
         self.shared_encoder = cLSTM(5,self.h_dim, batch_first=True).cuda(device=device)
-        #To ensure update parameters during training: nn.Parameter
-        #encoder: init parameters
         #shape = [1,h_dim]
         self.enc_h0 = nn.Parameter(torch.rand(self.n_layers, 1, self.h_dim))
         self.enc_c0 = nn.Parameter(torch.rand(self.n_layers, 1, self.h_dim))
 
         #Decoder Module
-        # Decodes targets and LSTM hidden states
-        # 1+self.h_dim: previous label + context
-        # self.decoder = nn.LSTM(1 + self.h_dim, self.h_dim, self.n_layers, batch_first=True)
-        #6 represents the context vector length
-        # CONTEXT + PREVIOUS LABEL: dim:5 + dim:9 = 14
-        # self.decoder = nn.LSTM(14, self.h_dim, self.n_layers, batch_first=True)
-        # WITHOUT PREVIOUS LABEL dim:5
         self.decoder = nn.LSTM(5, self.h_dim, self.n_layers, batch_first=True)
         #decoder: ini parameters
         self.dec_h0 = nn.Parameter(torch.rand(self.n_layers, 1, self.h_dim))
         self.dec_c0 = nn.Parameter(torch.rand(self.n_layers, 1, self.h_dim))
 
-        #---------------------with decoder---------------------#
-        # Final MLP output network
-        # self.out = nn.Sequential(nn.Linear(self.h_dim, 1024),#128 #h_dim 512 -> 1024
-        #                         #  nn.LeakyReLU(),
-        #                         #  nn.Linear(512, 8),
-        #                          nn.LeakyReLU(),
-        #                          nn.Linear(1024, self.out_layer)) #1024 -> out_layer:2048
-
-        #-----------------------without decoder----------------#
         self.out = nn.Sequential(nn.Linear(5, 16),  # 128 #5 -> 1024 -> 16 same as the GCN hidden_size
                                  #  nn.LeakyReLU(),
                                  #  nn.Linear(512, 8),
@@ -126,16 +108,14 @@ class MovieNet(nn.Module):
     def forward(self, x, Frontal_features, Temporal_features, Central_features, Parietal_features, Occipital_features, target=None, tgt_init=0.0):
         # Get batch dim
         x = x.float()
-        
+
         Frontal_features=Frontal_features.float()
         Temporal_features=Temporal_features.float()
         Central_features=Central_features.float()
         Parietal_features=Parietal_features.float()
         Occipital_features = Occipital_features.float()
-
         #batch_size , seq_len
         batch_size, seq_len = x.shape[0], x.shape[1]
-
         # Set initial hidden and cell states for encoder
         h0 = self.enc_h0.repeat(1, batch_size, 1) # 将enc_h0 在第一维上重复batch_size次，在第二维上重复1次
         c0 = self.enc_c0.repeat(1, batch_size, 1)
@@ -234,79 +214,36 @@ class MovieNet(nn.Module):
         attn=torch.cat([att_1, att_2, att_3, att_4, att_5, att_6, att_7, att_8, att_9, att_10], dim=-1)
         # [32, 20, 10]
         attn = attn.reshape(batch_size, seq_len, self.attn_len)
-
-        # cLSTM Encoder
         #eq.6
         # output of cLSTM
         # [32, 10, 5]
         enc_out, _ = self.shared_encoder(enc_input_unimodal_cat)
-
         #eq.8
         #context vector d
-        # Convolve output with attention weights
         # i.e. out[t] = a[t,0]*in[t] + ... + a[t,win_len-1]*in[t-(win_len-1)]
         # [32, 10, 5]
         context = convolve(enc_out, attn)
+        ## [32,10,5]
+        predicted = context
+        ##[32,5]
+        predicted_last = predicted[:, -1, :]
 
-        #Decoder
-        # Set initial hidden and cell states for decoder
-        h0 = self.dec_h0.repeat(1, batch_size, 1)
-        c0 = self.dec_c0.repeat(1, batch_size, 1)
+        #GCN module
+        #num_class = 9
+        GCN_module = GCN(num_classes = 9, in_channel=300, t=0.4, adj_file='embedding/positiveEmotion_adj.pkl')
+        GCN_output = GCN_module(inp='embedding/positiveEmotion_glove_word2vec.pkl') #[9,5]
+        GCN_output = GCN_output.transpose(0, 1).cuda() #[5,9]
 
-        if target is not None:
+        # GCN output * LSTM out lastTimestep
+        ## [32,9]
+        predict = torch.matmul(predicted_last, GCN_output)  # ML-GCN eq.4
 
-            #-----------------------DO NOT ADD PREVIOUS LABEL FOR PREDICT-----------------------#
-            #-----------------------remove decoder------------------------#
-            # DECODE THE CONTEXT VECTOR
-            # [32,10,5]
-            # dec_in = context.float()
-            #WITH and WITHOUT PREVIOUS LABEL
-            # [32, 10, 512]
-            # dec_out, _ = self.decoder(dec_in, (h0, c0)) #decoder
-            # Undo the packing
-            #[320,512] <0
-            # dec_out = dec_out.reshape(-1, self.h_dim) #[640,512]
+        # softmax layer
+        softmax = torch.nn.Softmax(dim=1)
+        predicted = softmax(predicted)
 
-            context_feature = context.reshape(-1,5) #[320,5]
+        # #log_softmax layer
+        # log_softmax = torch.nn.LogSoftmax(dim=1)
+        # predicted = log_softmax(predict)
 
-            # eq.10
-            ## [32,20,2048]
-            predicted = self.out(context_feature).view(batch_size, seq_len, self.out_layer)
-            # [32,9] <0; #[32,2048]
-            predicted_last = predicted[:, -1, :]
-
-            #GCN module
-            #num_class = 9
-            GCN_module = GCN(num_classes = 9, in_channel=300, t=0.4, adj_file='embedding/positiveEmotion_adj.pkl')
-            GCN_output = GCN_module(inp='embedding/positiveEmotion_glove_word2vec.pkl') #[9,2048]
-            GCN_output = GCN_output.transpose(0, 1).cuda() #[2048,9]
-
-            # GCN output * LSTM out lastTimestep
-            ## [32,9]
-            predict = torch.matmul(predicted_last, GCN_output)  # ML-GCN eq.4
-
-            # softmax layer
-            # softmax = torch.nn.Softmax(dim=1)
-            # predicted = softmax(predicted_last)
-
-            #log_softmax layer
-            log_softmax = torch.nn.LogSoftmax(dim=1)
-            predicted = log_softmax(predict)
-
-        else:
-            # Use earlier predictions to predict next time-steps
-            predicted = []
-            p = torch.ones(batch_size, 1).to(self.device) * tgt_init
-            h, c = h0, c0
-            for t in range(seq_len):
-                # Concatenate prediction from previous timestep to context
-                i = torch.cat([p, context[:, t, :]], dim=1).unsqueeze(1)
-                # Get next decoder LSTM state and output
-                o, (h, c) = self.decoder(i, (h, c))
-                # Computer prediction from output state
-                p = self.out(o.view(-1, self.h_dim))
-                predicted.append(p.unsqueeze(1))
-            predicted = torch.cat(predicted, dim=1) ##save the predict of every timesteps
-        # Mask target entries that exceed sequence lengths
-        # predicted = predicted * mask.float()
         return predicted, enc_input_unimodal_cat, self.shared_encoder, att_1, att_2, att_3, att_4, att_5, att_6, att_7, att_8, att_9, att_10

@@ -50,7 +50,7 @@ class GCN(nn.Module):
 
         #定义 GCN 2-layers
         self.hidden_size = 16
-        self.output_size = 64
+        self.output_size = 5
         self.gc1 = GraphConvolution(in_channel, self.hidden_size)
         self.gc2 = GraphConvolution(self.hidden_size, self.output_size)
         # self.gc1 = GraphConvolution(in_channel, 1024)
