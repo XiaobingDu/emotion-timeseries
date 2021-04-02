@@ -214,36 +214,29 @@ class MovieNet(nn.Module):
         attn=torch.cat([att_1, att_2, att_3, att_4, att_5, att_6, att_7, att_8, att_9, att_10], dim=-1)
         # [32, 20, 10]
         attn = attn.reshape(batch_size, seq_len, self.attn_len)
-        print('attn...',attn.shape)
         #eq.6
         # output of cLSTM
         # [32, 10, 5]
         enc_out, _ = self.shared_encoder(enc_input_unimodal_cat)
-        print('enc_out...',enc_out.shape)
         #eq.8
         #context vector d
         # i.e. out[t] = a[t,0]*in[t] + ... + a[t,win_len-1]*in[t-(win_len-1)]
         # [32, 10, 5]
         context = convolve(enc_out, attn)
-        print('context...',context.shape)
         ## [32,10,5]
         predicted = context
         ##[32,5]
         predicted_last = predicted[:, -1, :]
-        print('predicted_last...', predicted_last.shape)
 
         #GCN module
         #num_class = 9
         GCN_module = GCN(num_classes = 9, in_channel=300, t=0.4, adj_file='embedding/positiveEmotion_adj.pkl')
         GCN_output = GCN_module(inp='embedding/positiveEmotion_glove_word2vec.pkl') #[9,5]
-        print('GCN_output...', GCN_output.shape)
         GCN_output = GCN_output.transpose(0, 1).cuda() #[5,9]
-        print('GCN_output...', GCN_output.shape)
 
         # GCN output * LSTM out lastTimestep
         ## [32,9]
         predict = torch.matmul(predicted_last, GCN_output)  # ML-GCN eq.4
-        print('predict...', predict.shape)
         # softmax layer
         softmax = torch.nn.Softmax(dim=1)
         predicted = softmax(predict)
