@@ -2,13 +2,11 @@
 
 from __future__ import division
 import torch
-from torch.autograd import Variable
 import torch.nn as nn
-from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
+from clstm import cLSTM
+from graph_module import GCN
 import warnings
 warnings.filterwarnings('ignore')
-from clstm import cLSTM, train_model_gista, train_model_adam, cLSTMSparse
-from graph_module import GCN
 
 def pad_shift(x, shift, padv=0.0):
     """Shift 3D tensor forwards in time with padding."""
@@ -141,8 +139,6 @@ class MovieNet(nn.Module):
         # Set initial hidden and cell states for encoder
         h0 = self.enc_h0.repeat(1, batch_size, 1) # 将enc_h0 在第一维上重复batch_size次，在第二维上重复1次
         c0 = self.enc_c0.repeat(1, batch_size, 1)
-        # Convert raw features into equal-dimensional embeddings
-        # embed = self.embed(x)
 
         # 1.linear transform: dim = h_dim
         Frontal_features_rep = self.Frontal_linear(Frontal_features)
@@ -244,8 +240,6 @@ class MovieNet(nn.Module):
         # output of cLSTM
         # [32, 10, 5]
         enc_out, _ = self.shared_encoder(enc_input_unimodal_cat)
-        # Undo the packing
-        # enc_out, _ = pad_packed_sequence(enc_out, batch_first=True)
 
         #eq.8
         #context vector d

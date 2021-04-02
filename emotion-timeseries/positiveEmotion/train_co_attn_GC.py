@@ -1,26 +1,61 @@
-
 # -*-coding:utf-8-*-
 
 from __future__ import print_function
-import torch
 from model_co_attn_GC import MovieNet
 from dataManager import dataSplit, get_sample_data
-# from utils_co_attn_GC import adjust_learning_rate, MediaEvalDataset, prsn, save_ckp, load_ckp, AveragePrecisionMeter
 from utils_co_attn_GC import *
 from torch.utils.data import DataLoader
 from torch.autograd import Variable
-import time
-import math
-import warnings
-import pickle
 import numpy as np
-from matplotlib import pyplot as plt
-warnings.filterwarnings("ignore")
-from scipy.stats.stats import pearsonr
-# from block import fusions
-import torch.nn.functional as F
 from scipy.stats.mstats import pearsonr
-from clstm import cLSTM, train_model_gista, train_model_adam, cLSTMSparse
+from clstm import train_model_gista
+import time, argparse
+import warnings
+warnings.filterwarnings('ignore')
+
+parser = argparse.ArgumentParser()
+
+parser.add_argument('--path1', type=str, choices=["/home/xiaobingdu/EEG_experiments/LDL-LSTM_softmax/attn_lstm/EEG_PSD_multilabel_9_addLabel_sum1/",'/home/xiaobingdu/EEG_experiments/LDL-LSTM_softmax/attn_lstm/EEG_PSD_9_DOM/' ])
+parser.add_argument('--path2', type=str, choices=["/home/xiaobingdu/EEG_experiments/LDL-LSTM_softmax/attn_lstm/EEG_PSD_multilabel_9_win/featureAll.mat", '/home/xiaobingdu/EEG_experiments/LDL-LSTM_softmax/attn_lstm/EEG_PSD_multilabel_9_win/DOM_featureAll.mat'])
+parser.add_argument('--no-cuda', action='store_true', default=False,
+                    help='Disables CUDA training.')
+parser.add_argument('--learning_rate', type=float, default=1e-4,
+                    help='Initial learning rate.')
+parser.add_argument('--iter_num', type=int,
+                    help='Number of iterate to train.')
+parser.add_argument('--sub_id', type=int,
+                    help='The subject ID for Test.')
+parser.add_argument('--fold_id', type=int, default= 1,
+                    help='The fold id  for Test.')
+parser.add_argument('--epochs', type=int, default = 20,
+                    help='Number of epochs to train.')
+parser.add_argument('--batch_size', type=int, default=64)
+parser.add_argument('--label_num', type=int, default=9)
+parser.add_argument('--db_name', type=str, default='LDL_data')
+parser.add_argument('--strategy', type=str, default='five_fold', choices=['five_fold','ldl_loso'])
+parser.add_argument('--save_file', type=str, default= 'five-fold')
+parser.add_argument('--log_dir', type=str)
+parser.add_argument('--dropout', type=float, default=0.5,
+                    help='Dropout rate (1 - keep probability).')
+parser.add_argument('--weight_decay', type=float, default=0.001,
+                    help='Weight decay (L2 loss on parameters).')
+parser.add_argument('--bidirectional', type=bool, default=True )
+parser.add_argument('--GCN_hidden', type=int, default=16,
+                    help='Number of hidden units.')
+parser.add_argument('--LSTM_layers', type=int, default=2,
+                    help='Number of LSTM layers.')
+parser.add_argument('--LSTM_hidden', type=int, default=32,
+                    help='Number of hidden units.')
+parser.add_argument('--attn_len', type=int, default=10,
+                    help='attn_len = time_sequence')
+parser.add_argument('--out_layer', type=int, default=64)
+parser.add_argument('--encoder_size', type=int, default=64)
+parser.add_argument('--decoder_size', type=int, default=128)
+parser.add_argument('--dyn_embedding_size', type=int, default=32)
+parser.add_argument('--input_embedding_size', type=int, default=32)
+parser.add_argument('--embed_dim', type=int, default=512)
+parser.add_argument('--seed', type=int, default=42, help='Random seed.')
+FLAGS = parser.parse_args()
 
 args = {}
 
@@ -37,23 +72,23 @@ args['Temporal_len'] = 40
 args['Central_len'] = 45
 args['Parietal_len'] = 15
 args['Occipital_len'] = 15
-args['out_layer'] = 64 #9 #2048 same as GCN output_size
-args['dropout_prob'] = 0.5
 args['use_cuda'] = True
-args['encoder_size'] = 64
-args['decoder_size'] = 128
-args['dyn_embedding_size'] = 32
-args['input_embedding_size'] = 32
 args['train_flag'] = True
-args['model_path'] = 'trained_models/EEG_eval_model.tar'
 args['optimizer'] = 'adam'
-args['embed_dim'] = 512
-args['h_dim'] =  32 #512
-args['n_layers'] = 1
-args['attn_len'] = 10
-num_epochs = 20
-batch_size = 64 #32
-lr =1e-4
+args['model_path'] = 'trained_models/EEG_eval_model.tar'
+args['out_layer'] =  FLAGS.out_layer #64 #9 #2048 same as GCN output_size
+args['dropout_prob'] = FLAGS.dropout
+args['encoder_size'] = FLAGS.encoder_size
+args['decoder_size'] = FLAGS.decoder_size
+args['dyn_embedding_size'] = FLAGS.dyn_embedding_size
+args['input_embedding_size'] = FLAGS.input_embedding_size
+args['embed_dim'] = FLAGS.embed_dim
+args['h_dim'] =  FLAGS.LSTM_hidden #32 #512
+args['n_layers'] =FLAGS.LSTM_layers
+args['attn_len'] = FLAGS.attn_len
+num_epochs = FLAGS.epochs
+batch_size = FLAGS.batch_size
+lr = FLAGS.learning_rate
 GC_est =None
 # 对应5个脑区的电极idx：Frontal、Temporal、Central、Parietal、Occipital
 idx = [[0 ,1 ,2 ,3 ,4 ,5 ,6] ,[7 ,11 ,12 ,16 ,17 ,21 ,22 ,26] ,[8 ,9 ,10 ,13 ,14 ,15 ,18 ,19 ,20] ,[23 ,24 ,25]
@@ -81,8 +116,6 @@ if args['use_cuda']:
 ## Initialize optimizer
 optimizer = torch.optim.RMSprop(net.parameters(), lr=lr) if args['optimizer' ]== 'rmsprop' else torch.optim.Adam \
     (net.parameters() ,lr=lr, weight_decay=0.9)
-# scheduler = torch.optim.lr_scheduler.CyclicLR(optimizer, base_lr=0.01, max_lr=0.1)
-# crossEnt = torch.nn.BCELoss()
 # mse = torch.nn.MSELoss(reduction='sum')
 kl_div = torch.nn.KLDivLoss(size_average = False, reduce = True)
 #from multi-label dom_emotion predict
@@ -212,13 +245,11 @@ for epoch_num in range(num_epochs):
 
         # mamx-min norm
         emot_dis = (2*(emot_dis - torch.min(emot_dis))/(torch.max(emot_dis) - torch.min(emot_dis))) -1
-        # mse loss
-        # l = mse(emot_score[:,0].unsqueeze(dim=1), labels1) + mse(emot_score[:,1].unsqueeze(dim=1), labels2)
         # kldiv loss
-        emot_dis = torch.tensor(emot_dis, dtype=torch.double)  #<0
+        emot_dis = torch.tensor(emot_dis, dtype=torch.double)
 
         #emotion distribution loss
-        dis = torch.tensor(dis, dtype=torch.double) #>0
+        dis = torch.tensor(dis, dtype=torch.double)
         softmax = torch.nn.Softmax(dim=1)
         dis = softmax(dis)
         loss1 = kl_div(emot_dis, dis)
@@ -272,11 +303,8 @@ for epoch_num in range(num_epochs):
                                                                 clark_dist=clark, canberra_dist=canberra,
                                                                 cosine_dist=cosine,
                                                                 intersection_dist=intersection))
-    # _________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 
-
-
-    ## Validate:______________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+    ## Validate:
     net.eval()
     val_kl = 0
     emopcc = 0
@@ -311,9 +339,6 @@ for epoch_num in range(num_epochs):
 
         #min-max norm
         emot_dis = (2*(emot_dis - torch.min(emot_dis))/(torch.max(emot_dis) - torch.min(emot_dis))) -1
-        # 每一个batch的average mse loss相加
-        # valmse += mse(emot_score[:, 0].unsqueeze(dim=1), labels1)/labels1.shape[0]
-        # aromse += mse(emot_score[:, 1].unsqueeze(dim=1), labels2)/labels2.shape[0]
         emot_dis = torch.tensor(emot_dis, dtype=torch.double) #[32,9]
         #emotion distribution loss
         dis = torch.tensor(dis, dtype=torch.double)
@@ -431,9 +456,6 @@ for i, data in enumerate(testDataloader):
 
     # min-max norm
     emot_dis = (2*(emot_dis - torch.min(emot_dis))/(torch.max(emot_dis) - torch.min(emot_dis))) -1
-    # mse loss
-    # testmse += mse(emot_score[:, 0].unsqueeze(dim=1), labels1)/labels1.shape[0]
-    # aromse += mse(emot_score[:, 1].unsqueeze(dim=1), labels2)/labels2.shape[0]
     # kldiv loss
     emot_dis = torch.tensor(emot_dis, dtype=torch.double)  # [32,9]
 
