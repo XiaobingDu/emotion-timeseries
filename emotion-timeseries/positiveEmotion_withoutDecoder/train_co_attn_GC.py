@@ -135,14 +135,14 @@ def on_end_batch(AveragePrecisionMeter, epoch_num, output, target_gt, loss1, mul
 
     if state == 'training':
         print('Epoch: [{0}]\t'
-              'Traning: \t Loss1 {loss:.4f}\t' 
-              ' Loss2 {loss:.4f}\t'.format(epoch_num, loss1 = loss1, loss2=multiLabel_loss))
+              'Traning: \t Loss1 {loss1:.4f}\t' 
+              ' Loss2 {loss2:.4f}\t'.format(epoch_num, loss1 = loss1, loss2=multiLabel_loss))
     elif state == 'validation':
-        print('Validation: \t Loss1 {loss:.4f}\t'
-              ' Loss2 {loss:.4f}'.format(loss1 = loss1,loss2=multiLabel_loss))
+        print('Validation: \t Loss1 {loss1:.4f}\t'
+              ' Loss2 {loss2:.4f}'.format(loss1 = loss1,loss2=multiLabel_loss))
     elif state == 'test':
-        print('Test: \t Loss1 {loss:.4f}\t' 
-              'Loss2 {loss:.4f}'.format(loss1 = loss1,loss2=multiLabel_loss))
+        print('Test: \t Loss1 {loss1:.4f}\t' 
+              'Loss2 {loss2:.4f}'.format(loss1 = loss1,loss2=multiLabel_loss))
 
 
 
