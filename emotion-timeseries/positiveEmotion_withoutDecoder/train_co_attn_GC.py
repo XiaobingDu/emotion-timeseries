@@ -469,7 +469,7 @@ for epoch_num in range(num_epochs):
                                                                 cosine_dist=cosine,
                                                                 intersection_dist=intersection))
     result.write("Validation: Epoch emotion distribution KLDivLoss: {KLDivLoss: .4f}\t"
-                 "\nEpoch emotion distribution PCC: {PCC: .4f}\t".format( KLDivLoss=epoch_loss.item, PCC=epoch_pcc.item()))
+                 "\nEpoch emotion distribution PCC: {PCC: .4f}\t".format( KLDivLoss=epoch_loss, PCC=epoch_pcc))
     result.write("\n========================================\n")
     result.write('euclidean_dist: {euclidean_dist:.4f}\t'
           'chebyshev_dist: {chebyshev_dist:.4f}\t'
@@ -594,7 +594,7 @@ print('euclidean_dist: {euclidean_dist:.4f}\t'
                                                                 cosine_dist=cosine,
                                                                 intersection_dist=intersection))
 result.write("Test Emotion distribution KLDivLoss:{KLDivLoss: .4f}\t"
-             "\Test Emotion distribution PCC:{PCC: .4f}\t".format(KLDivLoss=test_testkl.item(),PCC=test_emopcc.item()))
+             "\Test Emotion distribution PCC:{PCC: .4f}\t".format(KLDivLoss=test_testkl,PCC=test_emopcc))
 result.write("\n========================================\n")
 result.write('euclidean_dist: {euclidean_dist:.4f}\t'
           'chebyshev_dist: {chebyshev_dist:.4f}\t'
