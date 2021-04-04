@@ -249,6 +249,7 @@ elif FLAGS.strategy=="five_fold":
         result.write('\n========\nfold %s\n========\n' % str(FLAGS.fold_id))
 elif FLAGS.strategy == "split":
     result.write('\n========\nsplit %s\n========\n' % '5:3:2')
+    result.write('\n========\nlamda %s\n========\n' % str(FLAGS.lamda))
 result.write('model parameters: %s' % str(FLAGS))
 result.close()
 
