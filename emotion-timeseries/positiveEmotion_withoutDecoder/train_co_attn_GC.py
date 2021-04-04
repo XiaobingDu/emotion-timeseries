@@ -23,7 +23,7 @@ parser.add_argument('--learning_rate', type=float, default=1e-4,
                     help='Initial learning rate.')
 parser.add_argument('--iter_num', type=int,
                     help='Number of iterate to train.')
-parser.add_argument('--sub_id', type=int,
+parser.add_argument('--sub_id', type=int, default=0,
                     help='The subject ID for Test.')
 parser.add_argument('--fold_id', type=int, default= 1,
                     help='The fold id  for Test.')
@@ -32,8 +32,8 @@ parser.add_argument('--epochs', type=int, default = 20,
 parser.add_argument('--batch_size', type=int, default=64)
 parser.add_argument('--label_num', type=int, default=9)
 parser.add_argument('--db_name', type=str, default='LDL_data')
-parser.add_argument('--strategy', type=str, default='five_fold', choices=['five_fold','ldl_loso'])
-parser.add_argument('--save_file', type=str, default= 'five-fold')
+parser.add_argument('--strategy', type=str, default='split', choices=['split','five_fold','ldl_loso'])
+parser.add_argument('--save_file', type=str, default= 'co_attn_GC')
 parser.add_argument('--log_dir', type=str)
 parser.add_argument('--dropout', type=float, default=0.5,
                     help='Dropout rate (1 - keep probability).')
@@ -244,6 +244,8 @@ if FLAGS.strategy=="ldl_loso":
         result.write('========\nsubject %s\n========\n' % str(FLAGS.sub_id))
 elif FLAGS.strategy=="five_fold":
         result.write('\n========\nfold %s\n========\n' % str(FLAGS.fold_id))
+elif FLAGS.strategy == "split":
+    result.write('\n========\nsplit %s\n========\n' % '5:3:2')
 result.write('model parameters: %s' % str(FLAGS))
 result.close()
 
