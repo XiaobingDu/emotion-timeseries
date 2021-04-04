@@ -129,17 +129,20 @@ def on_start_batch(target_gt):
     target_gt = target_gt
     return target_gt
 
-def on_end_batch(AveragePrecisionMeter, epoch_num, output, target_gt, multiLabel_loss, state = 'training'):
+def on_end_batch(AveragePrecisionMeter, epoch_num, output, target_gt, loss1, multiLabel_loss, state = 'training'):
     # measure mAP
     AveragePrecisionMeter.add(output, target_gt)
 
     if state == 'training':
         print('Epoch: [{0}]\t'
-              'Traning: \t MultiLabel-Loss {loss:.4f}\t'.format(epoch_num, loss=multiLabel_loss))
+              'Traning: \t Loss1 {loss:.4f}\t' 
+              ' Loss2 {loss:.4f}\t'.format(epoch_num, loss1 = loss1, loss2=multiLabel_loss))
     elif state == 'validation':
-        print('Validation: \t MultiLabel-Loss {loss:.4f}'.format(loss=multiLabel_loss))
+        print('Validation: \t Loss1 {loss:.4f}\t'
+              ' Loss2 {loss:.4f}'.format(loss1 = loss1,loss2=multiLabel_loss))
     elif state == 'test':
-        print('Test: \t MultiLabel-Loss {loss:.4f}'.format(loss=multiLabel_loss))
+        print('Test: \t Loss1 {loss:.4f}\t' 
+              'Loss2 {loss:.4f}'.format(loss1 = loss1,loss2=multiLabel_loss))
 
 
 
@@ -154,13 +157,13 @@ def on_end_epoch(AveragePrecisionMeter, epoch_num, multiLabel_loss, state = 'tra
     if state == 'training':
         print('Training: \t Epoch: [{0}]\t'
               'Loss {loss:.4f}\t'
-              'mAP {map:.3f}'.format(epoch_num, loss=multiLabel_loss, map=map))
+              'mAP {map:.3f}\t'.format(epoch_num, loss=multiLabel_loss, map=map))
         print('OP: {OP:.4f}\t'
               'OR: {OR:.4f}\t'
               'OF1: {OF1:.4f}\t'
               'CP: {CP:.4f}\t'
               'CR: {CR:.4f}\t'
-              'CF1: {CF1:.4f}'.format(OP=OP, OR=OR, OF1=OF1, CP=CP, CR=CR, CF1=CF1))
+              'CF1: {CF1:.4f}\t'.format(OP=OP, OR=OR, OF1=OF1, CP=CP, CR=CR, CF1=CF1))
     elif state == 'validation':
         print('Validation: \t Loss {loss:.4f}\t mAP {map:.3f}'.format(loss=multiLabel_loss, map=map))
         print('OP: {OP:.4f}\t'
@@ -168,27 +171,27 @@ def on_end_epoch(AveragePrecisionMeter, epoch_num, multiLabel_loss, state = 'tra
               'OF1: {OF1:.4f}\t'
               'CP: {CP:.4f}\t'
               'CR: {CR:.4f}\t'
-              'CF1: {CF1:.4f}'.format(OP=OP, OR=OR, OF1=OF1, CP=CP, CR=CR, CF1=CF1))
+              'CF1: {CF1:.4f}\t'.format(OP=OP, OR=OR, OF1=OF1, CP=CP, CR=CR, CF1=CF1))
         print('OP_3: {OP:.4f}\t'
               'OR_3: {OR:.4f}\t'
               'OF1_3: {OF1:.4f}\t'
               'CP_3: {CP:.4f}\t'
               'CR_3: {CR:.4f}\t'
-              'CF1_3: {CF1:.4f}'.format(OP=OP_k, OR=OR_k, OF1=OF1_k, CP=CP_k, CR=CR_k, CF1=CF1_k))
+              'CF1_3: {CF1:.4f}\t'.format(OP=OP_k, OR=OR_k, OF1=OF1_k, CP=CP_k, CR=CR_k, CF1=CF1_k))
     elif state == 'test':
-        print('Test: \t Loss {loss:.4f}\t mAP {map:.3f}'.format(loss=multiLabel_loss, map=map))
+        print('Test: \t Loss {loss:.4f}\t mAP {map:.3f}\t'.format(loss=multiLabel_loss, map=map))
         print('OP: {OP:.4f}\t'
               'OR: {OR:.4f}\t'
               'OF1: {OF1:.4f}\t'
               'CP: {CP:.4f}\t'
               'CR: {CR:.4f}\t'
-              'CF1: {CF1:.4f}'.format(OP=OP, OR=OR, OF1=OF1, CP=CP, CR=CR, CF1=CF1))
+              'CF1: {CF1:.4f}\t'.format(OP=OP, OR=OR, OF1=OF1, CP=CP, CR=CR, CF1=CF1))
         print('OP_3: {OP:.4f}\t'
               'OR_3: {OR:.4f}\t'
               'OF1_3: {OF1:.4f}\t'
               'CP_3: {CP:.4f}\t'
               'CR_3: {CR:.4f}\t'
-              'CF1_3: {CF1:.4f}'.format(OP=OP_k, OR=OR_k, OF1=OF1_k, CP=CP_k, CR=CR_k, CF1=CF1_k))
+              'CF1_3: {CF1:.4f}\t'.format(OP=OP_k, OR=OR_k, OF1=OF1_k, CP=CP_k, CR=CR_k, CF1=CF1_k))
 
     return map
 
@@ -242,12 +245,7 @@ for epoch_num in range(num_epochs):
 
         emot_dis = emot_dis.squeeze(dim=0)
         dis = torch.squeeze(dis,dim=1)
-
-        # mamx-min norm
-        # emot_dis = (2*(emot_dis - torch.min(emot_dis))/(torch.max(emot_dis) - torch.min(emot_dis))) -1
-        # kldiv loss
         emot_dis = torch.tensor(emot_dis, dtype=torch.double)
-
         #emotion distribution loss
         dis = torch.tensor(dis, dtype=torch.double)
         # softmax = torch.nn.Softmax(dim=1)
@@ -262,9 +260,6 @@ for epoch_num in range(num_epochs):
 
         loss = loss1 + loss2
         loss = Variable(loss, requires_grad=True)
-        print('loss1....', loss1)
-        print('loss2....', loss2)
-        print('loss....', loss)
 
         # Backprop and update weights
         optimizer.zero_grad()
@@ -274,7 +269,7 @@ for epoch_num in range(num_epochs):
         avg_tr_loss += loss.item()
         if i % 100 == 0:
             #end_batch
-            on_end_batch(ap, epoch_num+1, emot_dis, target_gt, loss2, state= 'training')
+            on_end_batch(ap, epoch_num+1, emot_dis, target_gt, loss1, loss2, state= 'training')
     #end_epoch
     on_end_epoch(ap,epoch_num+1, loss2, state= 'training')
 
@@ -339,9 +334,6 @@ for epoch_num in range(num_epochs):
 
         emot_dis = emot_dis.squeeze(dim=0)
         dis = torch.squeeze(dis,dim=1)
-
-        #min-max norm
-        # emot_dis = (2*(emot_dis - torch.min(emot_dis))/(torch.max(emot_dis) - torch.min(emot_dis))) -1
         emot_dis = torch.tensor(emot_dis, dtype=torch.double) #[32,9]
         #emotion distribution loss
         dis = torch.tensor(dis, dtype=torch.double)
@@ -355,7 +347,7 @@ for epoch_num in range(num_epochs):
         if i % 100 == 0:
             #measure mAP
             #end_batch
-            on_end_batch(ap, epoch_num+1, emot_dis, target_gt, loss2, state='validation')
+            on_end_batch(ap, epoch_num+1, emot_dis, target_gt, loss1, loss2, state='validation')
 
         # Pearson correlation
         emopcc += pearsonr(emot_dis.cpu().detach().numpy(), dis.cpu().detach().numpy())[0]
@@ -456,10 +448,6 @@ for i, data in enumerate(testDataloader):
     # print(att_1, att_2, att_3, att_4, att_5, att_6)
     emot_dis = emot_dis.squeeze(dim=0)
     dis = torch.squeeze(dis, dim=1)
-
-    # min-max norm
-    # emot_dis = (2*(emot_dis - torch.min(emot_dis))/(torch.max(emot_dis) - torch.min(emot_dis))) -1
-
     emot_dis = torch.tensor(emot_dis, dtype=torch.double)  # [32,9]
     #emotion distribution loss
     dis = torch.tensor(dis, dtype=torch.double)
@@ -473,7 +461,7 @@ for i, data in enumerate(testDataloader):
 
     if i % 100 == 0:
         # measure mAP
-        on_end_batch(ap, epoch_num+1, emot_dis, target_gt, loss2, state= 'test')
+        on_end_batch(ap, epoch_num+1, emot_dis, target_gt, loss1, loss2, state= 'test')
 
     # pearson correlation
     emopcc += pearsonr(emot_dis.cpu().detach().numpy(), dis.cpu().detach().numpy())[0]
