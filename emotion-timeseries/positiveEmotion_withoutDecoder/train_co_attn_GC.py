@@ -246,13 +246,13 @@ for epoch_num in range(num_epochs):
         # mamx-min norm
         # emot_dis = (2*(emot_dis - torch.min(emot_dis))/(torch.max(emot_dis) - torch.min(emot_dis))) -1
         # kldiv loss
-        emot_dis = torch.tensor(emot_dis, dtype=torch.double).log()
+        emot_dis = torch.tensor(emot_dis, dtype=torch.double)
 
         #emotion distribution loss
         dis = torch.tensor(dis, dtype=torch.double)
         # softmax = torch.nn.Softmax(dim=1)
         # dis = softmax(dis)
-        loss1 = kl_div(emot_dis, dis)
+        loss1 = kl_div(emot_dis.log(), dis)
         loss1 = Variable(loss1, requires_grad=True)
 
         #multi-labe emotion prediction loss
@@ -341,11 +341,11 @@ for epoch_num in range(num_epochs):
         dis = torch.squeeze(dis,dim=1)
 
         #min-max norm
-        emot_dis = (2*(emot_dis - torch.min(emot_dis))/(torch.max(emot_dis) - torch.min(emot_dis))) -1
+        # emot_dis = (2*(emot_dis - torch.min(emot_dis))/(torch.max(emot_dis) - torch.min(emot_dis))) -1
         emot_dis = torch.tensor(emot_dis, dtype=torch.double) #[32,9]
         #emotion distribution loss
         dis = torch.tensor(dis, dtype=torch.double)
-        loss1 = kl_div(emot_dis, dis)
+        loss1 = kl_div(emot_dis.log(), dis)
         #multi-label emotion prediction loss
         target_gt = torch.tensor(target_gt, dtype=torch.double)
         loss2 = MLSML(emot_dis.cuda(), target_gt.cuda())
@@ -458,13 +458,12 @@ for i, data in enumerate(testDataloader):
     dis = torch.squeeze(dis, dim=1)
 
     # min-max norm
-    emot_dis = (2*(emot_dis - torch.min(emot_dis))/(torch.max(emot_dis) - torch.min(emot_dis))) -1
-    # kldiv loss
-    emot_dis = torch.tensor(emot_dis, dtype=torch.double)  # [32,9]
+    # emot_dis = (2*(emot_dis - torch.min(emot_dis))/(torch.max(emot_dis) - torch.min(emot_dis))) -1
 
+    emot_dis = torch.tensor(emot_dis, dtype=torch.double)  # [32,9]
     #emotion distribution loss
     dis = torch.tensor(dis, dtype=torch.double)
-    loss1 = kl_div(emot_dis, dis)
+    loss1 = kl_div(emot_dis.log(), dis)
     #multi-label emotion predictation loss
     target_gt = torch.tensor(target_gt, dtype=torch.double)
     loss2 = MLSML(emot_dis.cuda(), target_gt.cuda())
