@@ -252,7 +252,7 @@ for epoch_num in range(num_epochs):
         dis = torch.tensor(dis, dtype=torch.double)
         # softmax = torch.nn.Softmax(dim=1)
         # dis = softmax(dis)
-        loss1 = kl_div(emot_dis, dis)
+        loss1 = kl_div(emot_dis, dis.log())
         loss1 = Variable(loss1, requires_grad=True)
 
         #multi-labe emotion prediction loss
@@ -345,7 +345,7 @@ for epoch_num in range(num_epochs):
         emot_dis = torch.tensor(emot_dis, dtype=torch.double) #[32,9]
         #emotion distribution loss
         dis = torch.tensor(dis, dtype=torch.double)
-        loss1 = kl_div(emot_dis, dis)
+        loss1 = kl_div(emot_dis, dis.log())
         #multi-label emotion prediction loss
         target_gt = torch.tensor(target_gt, dtype=torch.double)
         loss2 = MLSML(emot_dis.cuda(), target_gt.cuda())
@@ -464,7 +464,7 @@ for i, data in enumerate(testDataloader):
 
     #emotion distribution loss
     dis = torch.tensor(dis, dtype=torch.double)
-    loss1 = kl_div(emot_dis, dis)
+    loss1 = kl_div(emot_dis, dis.log())
     #multi-label emotion predictation loss
     target_gt = torch.tensor(target_gt, dtype=torch.double)
     loss2 = MLSML(emot_dis.cuda(), target_gt.cuda())
