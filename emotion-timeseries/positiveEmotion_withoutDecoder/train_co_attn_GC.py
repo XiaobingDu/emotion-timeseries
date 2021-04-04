@@ -23,6 +23,8 @@ parser.add_argument('--learning_rate', type=float, default=1e-4,
                     help='Initial learning rate.')
 parser.add_argument('--iter_num', type=int,
                     help='Number of iterate to train.')
+parser.add_argument('--lamda', type=int, default=0.6,
+                    help='The lamda is the weight to control the trade-off between two type losses.')
 parser.add_argument('--sub_id', type=int, default=0,
                     help='The subject ID for Test.')
 parser.add_argument('--fold_id', type=int, default= 1,
@@ -89,6 +91,7 @@ args['attn_len'] = FLAGS.attn_len
 num_epochs = FLAGS.epochs
 batch_size = FLAGS.batch_size
 lr = FLAGS.learning_rate
+lamda = FLAGS.lamda
 GC_est =None
 # 对应5个脑区的电极idx：Frontal、Temporal、Central、Parietal、Occipital
 idx = [[0 ,1 ,2 ,3 ,4 ,5 ,6] ,[7 ,11 ,12 ,16 ,17 ,21 ,22 ,26] ,[8 ,9 ,10 ,13 ,14 ,15 ,18 ,19 ,20] ,[23 ,24 ,25]
@@ -313,7 +316,7 @@ for epoch_num in range(num_epochs):
         loss2 = MLSML(emot_dis.cuda(), target_gt.cuda())
         loss2 = Variable(loss2, requires_grad=True)
 
-        loss = loss1 + loss2
+        loss = lamda*loss1 + (1 - lamda)*loss2
         loss = Variable(loss, requires_grad=True)
 
         # Backprop and update weights
@@ -411,7 +414,8 @@ for epoch_num in range(num_epochs):
         #multi-label emotion prediction loss
         target_gt = torch.tensor(target_gt, dtype=torch.double)
         loss2 = MLSML(emot_dis.cuda(), target_gt.cuda())
-        val_loss = loss1 + loss2
+        loss = lamda * loss1 + (1 - lamda) * loss2
+        val_loss = loss
         val_loss += val_loss /dis.shape[0]
 
         if i % 100 == 0:
@@ -538,8 +542,8 @@ for i, data in enumerate(testDataloader):
     #multi-label emotion predictation loss
     target_gt = torch.tensor(target_gt, dtype=torch.double)
     loss2 = MLSML(emot_dis.cuda(), target_gt.cuda())
-
-    test_loss = loss1 + loss2
+    loss = lamda * loss1 + (1 - lamda) * loss2
+    test_loss = loss
     test_loss += test_loss / dis.shape[0]
 
     if i % 100 == 0:
