@@ -252,7 +252,7 @@ for epoch_num in range(num_epochs):
         dis = torch.tensor(dis, dtype=torch.double)
         # softmax = torch.nn.Softmax(dim=1)
         # dis = softmax(dis)
-        loss1 = kl_div(emot_dis, dis.log())
+        loss1 = kl_div(emot_dis, dis)
         loss1 = Variable(loss1, requires_grad=True)
 
         #multi-labe emotion prediction loss
