@@ -350,7 +350,7 @@ for epoch_num in range(num_epochs):
     # intersection
     intersection = intersection_dist(dis, emot_dis)
 
-    print("Epoch no:" ,epoch_num +1, "| Avg train loss:" ,format(avg_tr_loss /len(trSet) ,'0.4f') )
+    print("Epoch no:" ,epoch_num +1, "| Avg train loss:" .format(avg_tr_loss /len(trSet) ,'0.4f') )
     print('euclidean_dist: {euclidean_dist:.4f}\t'
           'chebyshev_dist: {chebyshev_dist:.4f}\t'
           'kldist: {kldist:.4f}\t'
@@ -363,7 +363,9 @@ for epoch_num in range(num_epochs):
                                                                 cosine_dist=cosine,
                                                                 intersection_dist=intersection))
     result.write("\n------------------------------------------------------------------\n")
-    result.write("Epoch no:" ,epoch_num +1, "| Avg train loss:" ,format(avg_tr_loss /len(trSet) ,'0.4f'))
+    result.write("Epoch no: {epoch: .4f}\t"  
+                 "| Avg train loss: {loss:.4f}\t" .format( epoch = epoch_num +1, loss = avg_tr_loss /len(trSet)))
+    result.write("\n========================================\n")
     result.write('euclidean_dist: {euclidean_dist:.4f}\t'
           'chebyshev_dist: {chebyshev_dist:.4f}\t'
           'kldist: {kldist:.4f}\t'
@@ -466,7 +468,9 @@ for epoch_num in range(num_epochs):
                                                                 clark_dist=clark, canberra_dist=canberra,
                                                                 cosine_dist=cosine,
                                                                 intersection_dist=intersection))
-    result.write("Validation: Epoch emotion distribution KLDivLoss:", epoch_loss.item() , "\nEpoch emotion distribution PCC:", epoch_pcc.item() ,"\n", "==========================")
+    result.write("Validation: Epoch emotion distribution KLDivLoss: {KLDivLoss: .4f}\t"
+                 "\nEpoch emotion distribution PCC: {PCC: .4f}\t".format( KLDivLoss=epoch_loss.item, PCC=epoch_pcc.item()))
+    result.write("\n========================================\n")
     result.write('euclidean_dist: {euclidean_dist:.4f}\t'
           'chebyshev_dist: {chebyshev_dist:.4f}\t'
           'kldist: {kldist:.4f}\t'
@@ -589,8 +593,9 @@ print('euclidean_dist: {euclidean_dist:.4f}\t'
                                                                 clark_dist=clark, canberra_dist=canberra,
                                                                 cosine_dist=cosine,
                                                                 intersection_dist=intersection))
-result.write("Test Emotion distribution KLDivLoss:", test_testkl.item(), "\Test Emotion distribution PCC:", test_emopcc.item(),
-      "\n", "==========================")
+result.write("Test Emotion distribution KLDivLoss:{KLDivLoss: .4f}\t"
+             "\Test Emotion distribution PCC:{PCC: .4f}\t".format(KLDivLoss=test_testkl.item(),PCC=test_emopcc.item()))
+result.write("\n========================================\n")
 result.write('euclidean_dist: {euclidean_dist:.4f}\t'
           'chebyshev_dist: {chebyshev_dist:.4f}\t'
           'kldist: {kldist:.4f}\t'
