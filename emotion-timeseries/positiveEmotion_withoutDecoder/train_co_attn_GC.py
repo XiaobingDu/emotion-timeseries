@@ -244,9 +244,9 @@ for epoch_num in range(num_epochs):
         dis = torch.squeeze(dis,dim=1)
 
         # mamx-min norm
-        emot_dis = (2*(emot_dis - torch.min(emot_dis))/(torch.max(emot_dis) - torch.min(emot_dis))) -1
+        # emot_dis = (2*(emot_dis - torch.min(emot_dis))/(torch.max(emot_dis) - torch.min(emot_dis))) -1
         # kldiv loss
-        emot_dis = torch.tensor(emot_dis, dtype=torch.double)
+        emot_dis = torch.tensor(emot_dis, dtype=torch.double).log()
 
         #emotion distribution loss
         dis = torch.tensor(dis, dtype=torch.double)

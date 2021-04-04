@@ -238,11 +238,11 @@ class MovieNet(nn.Module):
         ## [32,9]
         predict = torch.matmul(predicted_last, GCN_output)  # ML-GCN eq.4
         # softmax layer
-        # softmax = torch.nn.Softmax(dim=1)
-        # predicted = softmax(predict)
+        softmax = torch.nn.Softmax(dim=1)
+        predicted = softmax(predict)
 
         # #log_softmax layer
-        log_softmax = torch.nn.LogSoftmax(dim=1)
-        predicted = log_softmax(predict)
+        # log_softmax = torch.nn.LogSoftmax(dim=1)
+        # predicted = log_softmax(predict)
 
         return predicted, enc_input_unimodal_cat, self.shared_encoder, att_1, att_2, att_3, att_4, att_5, att_6, att_7, att_8, att_9, att_10
