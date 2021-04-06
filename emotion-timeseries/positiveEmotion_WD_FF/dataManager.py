@@ -355,7 +355,7 @@ def dataSplit(path1,all_sub,db_name ):
 
 #20210406
 #20210406
-def five_fold(path1, all_sub, fold_id, db_name):
+def five_fold(all_sub, fold_id, db_name):
     sub_num, clip_num, channels, time_steps, fea_dim = get_num(db_name)
     data = all_sub
     # five fold cross-valid
