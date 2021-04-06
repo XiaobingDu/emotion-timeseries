@@ -29,7 +29,7 @@ parser.add_argument('--iter_num', type=int,
                     help='Number of iterate to train.')
 parser.add_argument('--lamda', type=float, default=0.6,
                     help='The lamda is the weight to control the trade-off between two type losses.')
-parser.add_argument('--overlap', type=bool, default=False,
+parser.add_argument('--overlap', type=str, default='with', choices=['with','without'],
                     help='Get the samples with/without time overlap.')
 parser.add_argument('--sub_id', type=int, default=0,
                     help='The subject ID for Test.')
@@ -108,10 +108,10 @@ idx = [[0 ,1 ,2 ,3 ,4 ,5 ,6] ,[7 ,11 ,12 ,16 ,17 ,21 ,22 ,26] ,[8 ,9 ,10 ,13 ,14
        ,[27 ,28 ,29]]
 
 # load train, val, test data
-if overlap:
+if overlap == 'with':
     print('------overlap True------')
     data_set = get_sample_data(path1,path2)
-else:
+elif overlap == 'without':
     print('------overlap False------')
     data_set = get_sample_data_withoutOverlap(path1, path2)
 train_data, val_data,train_dis, val_dis, train_dom_label, val_dom_label = five_fold(data_set, fold_id, db_name)
