@@ -109,9 +109,10 @@ idx = [[0 ,1 ,2 ,3 ,4 ,5 ,6] ,[7 ,11 ,12 ,16 ,17 ,21 ,22 ,26] ,[8 ,9 ,10 ,13 ,14
 
 # load train, val, test data
 if overlap:
+    print('------overlap True------')
     data_set = get_sample_data(path1,path2)
 else:
-    print('------overlap false------')
+    print('------overlap False------')
     data_set = get_sample_data_withoutOverlap(path1, path2)
 train_data, val_data,train_dis, val_dis, train_dom_label, val_dom_label = five_fold(data_set, fold_id, db_name)
 test_data = val_data
