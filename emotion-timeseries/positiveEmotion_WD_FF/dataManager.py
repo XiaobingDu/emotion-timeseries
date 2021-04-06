@@ -5,17 +5,17 @@ import os
 import math
 import random
 
-# return time-steps, fea_dim, hidden_dim, n_labels
+# return channels, tmie-steps, fea_dim, hidden_dim, n_labels
 def get_dim(db_name):
 
     if db_name=='LDL_data':
-        return 20, 150, 32, 9
+        return 30, 20, 5, 32, 9
 
-# return sub_num, clip_num, time-steps, fea_dim
+# return sub_num, clip_num, channels, time-steps, fea_dim
 def get_num(db_name):
 
     if db_name=='LDL_data':
-        return 194, 9, 20, 150
+        return 194, 9, 30, 20, 5
 
 def data_preprocess(data, db_name):
     sub_num, clip_num, channels, fea_dim = get_num(db_name)
@@ -158,7 +158,7 @@ def get_sample_data(path1,path2):
 
 #20210320
 def dataSplit(path1,all_sub,db_name ):
-    sub_num, clip_num, channels, fea_dim = get_num(db_name)
+    sub_num, clip_num, channels, time_steps, fea_dim = get_num(db_name)
     _, info = get_data_info(path1)
     data = all_sub
     info = info
@@ -275,7 +275,7 @@ def dataSplit(path1,all_sub,db_name ):
 
 
 def five_fold(path1, all_sub, fold_id, db_name):
-    sub_num, clip_num, channels, fea_dim = get_num(db_name)
+    sub_num, clip_num, channels, time_steps, fea_dim = get_num(db_name)
     _, info = get_data_info(path1)
     data = all_sub
     info = info
@@ -333,7 +333,7 @@ def five_fold(path1, all_sub, fold_id, db_name):
                             train_v_len = train_v_len + train_v_list[t_v_n]
 
 
-    test_data = np.empty((test_v_len, 20, 150))
+    test_data = np.empty((test_v_len, time_steps, 150))
     test_label = np.empty((test_v_len, 9))
     test_dis = np.empty((test_v_len, 9))
     test_dom = np.empty((test_v_len, 9))
@@ -379,9 +379,9 @@ def five_fold(path1, all_sub, fold_id, db_name):
     print('test_score shape.....:', test_score.shape)
     print('test_label shape......', test_label.shape)
     print('test_dom shape......', test_dom.shape)
-    test_data = np.reshape(test_data, (test_data.shape[0], channels, fea_dim))
+    test_data = np.reshape(test_data, (test_data.shape[0], time_steps, channels*fea_dim))
 
-    train_data = np.empty((train_v_len, 20, 150))
+    train_data = np.empty((train_v_len, time_steps, 150))
     train_label = np.empty((train_v_len, 9))
     train_dis = np.empty((train_v_len, 9))
     train_dom = np.empty((train_v_len, 9))
@@ -428,7 +428,7 @@ def five_fold(path1, all_sub, fold_id, db_name):
     print('train_label shape.....', train_label.shape)
     print('train_dom shape.....', train_dom.shape)
 
-    train_data = np.reshape(train_data,(train_data.shape[0],channels,fea_dim))
+    train_data = np.reshape(train_data,(train_data.shape[0],time_steps, channels*fea_dim))
 
 
     return train_data, test_data, train_dis, test_dis, train_dom, test_dom
