@@ -154,7 +154,84 @@ def get_sample_data(path1,path2):
 
     return all_sub
 
-# def sataSplit(path1,all_sub,db_name ):
+#20210406
+def get_sample_data_wihtoutOverlap(path1,path2):
+
+    data,info  = get_data_info(path1)###########
+    win_size = 20 #choices=[10  20  30]
+    strides = win_size
+
+    n_feature = sio.loadmat(path2)['feature_arr'] #'EEG_PSD_multilabel_9_win/featureAll.mat
+
+    f = 0
+    all_sub = []
+    for n_s in range(len(info)):
+        sin_sub = []
+        for n_len in range(info[n_s][1]):
+            f_num = info[n_s][2][n_len]
+            feature = n_feature[f:f + f_num, :]
+            data[n_s][n_len]['feature_arr'] = feature
+            f = f + f_num
+
+            # split samples by window_size
+            t_len = data[n_s][n_len]['feature_arr'].shape[0]
+
+            sub_sample = []
+            sub_label = []
+            sub_dis = []
+            sub_dom_label = []
+            sub_score = []
+
+            s_len = t_len
+            start = 0
+            end = 0
+            count = 0
+            while end <= s_len:
+                count = count + 1
+                end = start + win_size
+                if end > s_len:
+                    break
+                sample_feature = data[n_s][n_len]['feature_arr'][start:end, :]
+                sample_label = data[n_s][n_len]['label_arr'][start:start + 1, :]  ##############
+                sample_dis = data[n_s][n_len]['dis_arr'][start:start + 1, :]
+                sample_dom_label = data[n_s][n_len]['primary_arr'][start:start + 1, :]
+                sample_score = data[n_s][n_len]['score_arr'][start:start + 1, :]
+                start = start + strides
+
+                sub_sample.append(sample_feature)
+                sub_label.append(sample_label)
+                sub_dis.append(sample_dis)
+                sub_dom_label.append(sample_dom_label)
+                sub_score.append(sample_score)
+
+            sub_sample = np.asarray(sub_sample)
+            sub_label = np.reshape(np.asarray(sub_label), [np.asarray(sub_label).shape[0],
+                                                           np.asarray(sub_label).shape[1] * np.asarray(sub_label).shape[
+                                                               2]])
+            sub_dis = np.asarray(sub_dis)
+            sub_dis = np.reshape(np.asarray(sub_dis), [np.asarray(sub_dis).shape[0],
+                                                       np.asarray(sub_dis).shape[1] * np.asarray(sub_dis).shape[2]])
+            sub_dom_label = np.asarray(sub_dom_label)
+            sub_dom_label = np.reshape(np.asarray(sub_dom_label), [np.asarray(sub_dom_label).shape[0],
+                                                       np.asarray(sub_dom_label).shape[1] * np.asarray(sub_dom_label).shape[2]])
+            sub_score = np.asarray(sub_score)
+            sub_score = np.reshape(np.asarray(sub_score), [np.asarray(sub_score).shape[0],
+                                                           np.asarray(sub_score).shape[1] * np.asarray(sub_score).shape[
+                                                               2]])
+
+            data[n_s][n_len]['feature_arr'] = sub_sample
+            data[n_s][n_len]['label_arr'] = sub_label
+            data[n_s][n_len]['dis_arr'] = sub_dis
+            data[n_s][n_len]['primary_arr'] = sub_dom_label
+            data[n_s][n_len]['score_arr'] = sub_score
+
+            sin_sub.append(data[n_s][n_len])
+
+        all_sub.append(sin_sub)
+
+    return all_sub
+
+
 
 #20210320
 def dataSplit(path1,all_sub,db_name ):
@@ -273,7 +350,7 @@ def dataSplit(path1,all_sub,db_name ):
 
     return train_data, val_data,test_data, train_dis, val_dis, test_dis,train_dom_label, val_dom_label, test_dom_label
 
-
+#20210406
 def five_fold(path1, all_sub, fold_id, db_name):
     sub_num, clip_num, channels, time_steps, fea_dim = get_num(db_name)
     _, info = get_data_info(path1)
