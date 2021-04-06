@@ -191,6 +191,7 @@ def get_sample_data_wihtoutOverlap(path1,path2):
                 end = start + win_size
                 if end > s_len:
                     break
+                print('sample nums....', count)
                 sample_feature = data[n_s][n_len]['feature_arr'][start:end, :]
                 sample_label = data[n_s][n_len]['label_arr'][start:start + 1, :]  ##############
                 sample_dis = data[n_s][n_len]['dis_arr'][start:start + 1, :]
@@ -204,6 +205,7 @@ def get_sample_data_wihtoutOverlap(path1,path2):
                 sub_dom_label.append(sample_dom_label)
                 sub_score.append(sample_score)
 
+            print('sub_sample len....', len(sub_sample))
             sub_sample = np.asarray(sub_sample)
             sub_label = np.reshape(np.asarray(sub_label), [np.asarray(sub_label).shape[0],
                                                            np.asarray(sub_label).shape[1] * np.asarray(sub_label).shape[
@@ -228,6 +230,9 @@ def get_sample_data_wihtoutOverlap(path1,path2):
             sin_sub.append(data[n_s][n_len])
 
         all_sub.append(sin_sub)
+        print('all sub....', all_sub[0][0]['feature_arr'].shape)
+        print('all sub....', all_sub[0][1]['feature_arr'].shape)
+        print('all sub....', all_sub[0][2]['feature_arr'].shape)
 
     return all_sub
 
@@ -236,9 +241,7 @@ def get_sample_data_wihtoutOverlap(path1,path2):
 #20210320
 def dataSplit(path1,all_sub,db_name ):
     sub_num, clip_num, channels, time_steps, fea_dim = get_num(db_name)
-    _, info = get_data_info(path1)
     data = all_sub
-    info = info
     print('all_sub len:',len(data))
     # # train:validation:test = 5:3:2
     fold = 10
@@ -351,12 +354,10 @@ def dataSplit(path1,all_sub,db_name ):
     return train_data, val_data,test_data, train_dis, val_dis, test_dis,train_dom_label, val_dom_label, test_dom_label
 
 #20210406
+#20210406
 def five_fold(path1, all_sub, fold_id, db_name):
     sub_num, clip_num, channels, time_steps, fea_dim = get_num(db_name)
-    _, info = get_data_info(path1)
     data = all_sub
-    info = info
-
     # five fold cross-valid
     fold = 5
     fold_id = fold_id
@@ -391,11 +392,9 @@ def five_fold(path1, all_sub, fold_id, db_name):
                 test_clip = len(data[s])
                 if test_clip != 0:
                     tt_data.append(data[ss])
-                    test_v_list = info[s][2]
-                    test_v_num = len(test_v_list)
-
+                    test_v_num = len(data[ss])
                     for test_v_n in range(test_v_num):
-                        test_v_len = test_v_len + test_v_list[test_v_n]
+                        test_v_len = test_v_len + data[ss][test_v_n]['feature_arr'].shape[0]
             else:
                 if count == fold_e - fold_s and tag == 0:
                     # print('*********')
@@ -403,11 +402,9 @@ def five_fold(path1, all_sub, fold_id, db_name):
                     t_clip = len(data[s])
                     if t_clip != 0:
                         t_data.append(data[s])
-                        train_v_list = info[s][2]
-                        train_v_num = len(train_v_list)
-
+                        train_v_num = len(data[s])
                         for t_v_n in range(train_v_num):
-                            train_v_len = train_v_len + train_v_list[t_v_n]
+                            train_v_len = train_v_len + data[s][t_v_n]['feature_arr'].shape[0]
 
 
     test_data = np.empty((test_v_len, time_steps, 150))
@@ -435,7 +432,6 @@ def five_fold(path1, all_sub, fold_id, db_name):
 
                 dd_len = feature.shape[0]
                 _end = _start + dd_len
-
                 test_data[_start:_end, :, :] = feature
                 test_label[_start:_end, :] = label
                 test_dis[_start:_end, :] = dis
