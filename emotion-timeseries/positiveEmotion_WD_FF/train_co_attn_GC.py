@@ -2,7 +2,7 @@
 
 from __future__ import print_function
 from model_co_attn_GC import MovieNet
-from dataManager import five_fold, dataSplit, get_sample_data
+from dataManager import five_fold, dataSplit, get_sample_data, get_sample_data_wihtoutOverlap
 from utils_co_attn_GC import *
 from torch.utils.data import DataLoader
 from torch.autograd import Variable
@@ -25,6 +25,8 @@ parser.add_argument('--iter_num', type=int,
                     help='Number of iterate to train.')
 parser.add_argument('--lamda', type=float, default=0.6,
                     help='The lamda is the weight to control the trade-off between two type losses.')
+parser.add_argument('--overlap', type=bool, default=True,
+                    help='Get the samples with/without time overlap.')
 parser.add_argument('--sub_id', type=int, default=0,
                     help='The subject ID for Test.')
 parser.add_argument('--fold_id', type=int, default= 1,
@@ -92,6 +94,7 @@ num_epochs = FLAGS.epochs
 batch_size = FLAGS.batch_size
 lr = FLAGS.learning_rate
 lamda = FLAGS.lamda
+overlap = FLAGS.overlap
 fold_id = FLAGS.fold_id
 GC_est =None
 # 对应5个脑区的电极idx：Frontal、Temporal、Central、Parietal、Occipital
@@ -99,7 +102,10 @@ idx = [[0 ,1 ,2 ,3 ,4 ,5 ,6] ,[7 ,11 ,12 ,16 ,17 ,21 ,22 ,26] ,[8 ,9 ,10 ,13 ,14
        ,[27 ,28 ,29]]
 
 # load train, val, test data
-data_set = get_sample_data(path1 ,path2)
+if overlap == True:
+    data_set = get_sample_data(path1 ,path2)
+elif overlap == False:
+    data_set = get_sample_data_wihtoutOverlap(path1, path2)
 train_data, val_data,train_dis, val_dis, train_dom_label, val_dom_label = five_fold(path1 ,data_set, fold_id, db_name)
 test_data = val_data
 test_dis = val_dis
