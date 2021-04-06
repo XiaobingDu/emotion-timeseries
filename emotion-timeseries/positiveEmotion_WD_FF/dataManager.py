@@ -5,17 +5,17 @@ import os
 import math
 import random
 
-# return channels, fea_dim, hidden_dim, n_labels
+# return time-steps, fea_dim, hidden_dim, n_labels
 def get_dim(db_name):
 
     if db_name=='LDL_data':
-        return 30, 50, 32, 9
+        return 20, 150, 32, 9
 
-# return sub_num, clip_num, channels, fea_dim
+# return sub_num, clip_num, time-steps, fea_dim
 def get_num(db_name):
 
     if db_name=='LDL_data':
-        return 194, 9, 30, 50
+        return 194, 9, 20, 150
 
 def data_preprocess(data, db_name):
     sub_num, clip_num, channels, fea_dim = get_num(db_name)
