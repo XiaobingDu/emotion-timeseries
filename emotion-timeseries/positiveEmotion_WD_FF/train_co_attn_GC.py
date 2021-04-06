@@ -2,7 +2,7 @@
 
 from __future__ import print_function
 from model_co_attn_GC import MovieNet
-from dataManager import five_fold, dataSplit, get_sample_data, get_sample_data_wihtoutOverlap
+from dataManager import five_fold, dataSplit, get_sample_data, get_sample_data_withoutOverlap
 from utils_co_attn_GC import *
 from torch.utils.data import DataLoader
 from torch.autograd import Variable
@@ -111,7 +111,8 @@ idx = [[0 ,1 ,2 ,3 ,4 ,5 ,6] ,[7 ,11 ,12 ,16 ,17 ,21 ,22 ,26] ,[8 ,9 ,10 ,13 ,14
 if overlap == True:
     data_set = get_sample_data(path1,path2)
 elif overlap == False:
-    data_set = get_sample_data_wihtoutOverlap(path1, path2)
+    print('------overlap false------')
+    data_set = get_sample_data_withoutOverlap(path1, path2)
 train_data, val_data,train_dis, val_dis, train_dom_label, val_dom_label = five_fold(data_set, fold_id, db_name)
 test_data = val_data
 test_dis = val_dis

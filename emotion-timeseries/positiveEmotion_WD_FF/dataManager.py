@@ -155,7 +155,7 @@ def get_sample_data(path1,path2):
     return all_sub
 
 #20210406
-def get_sample_data_wihtoutOverlap(path1,path2):
+def get_sample_data_withoutOverlap(path1,path2):
 
     data,info  = get_data_info(path1)###########
     win_size = 20 #choices=[10  20  30]
