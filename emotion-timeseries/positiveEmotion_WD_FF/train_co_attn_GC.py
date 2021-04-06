@@ -67,8 +67,10 @@ FLAGS = parser.parse_args()
 
 args = {}
 
-path1 = '/home/xiaobingdu/EEG_experiments/LDL-LSTM_softmax/attn_lstm/EEG_PSD_9_DOM/'
-path2 = '/home/xiaobingdu/EEG_experiments/LDL-LSTM_softmax/attn_lstm/EEG_PSD_multilabel_9_win/DOM_featureAll.mat'
+# path1 = '/home/xiaobingdu/EEG_experiments/LDL-LSTM_softmax/attn_lstm/EEG_PSD_9_DOM/'
+# path2 = '/home/xiaobingdu/EEG_experiments/LDL-LSTM_softmax/attn_lstm/EEG_PSD_multilabel_9_win/DOM_featureAll.mat'
+path1 = FLAGS.path1
+path2 = FLAGS.path2
 db_name = 'LDL_data'
 best_model_path ="./best_model"
 checkpoint_path ="./checkpoints"
