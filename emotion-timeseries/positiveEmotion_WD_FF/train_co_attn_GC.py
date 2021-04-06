@@ -29,7 +29,7 @@ parser.add_argument('--iter_num', type=int,
                     help='Number of iterate to train.')
 parser.add_argument('--lamda', type=float, default=0.6,
                     help='The lamda is the weight to control the trade-off between two type losses.')
-parser.add_argument('--overlap', type=bool, default=True,
+parser.add_argument('--overlap', type=bool, default=False,
                     help='Get the samples with/without time overlap.')
 parser.add_argument('--sub_id', type=int, default=0,
                     help='The subject ID for Test.')
