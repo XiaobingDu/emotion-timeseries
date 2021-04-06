@@ -333,7 +333,7 @@ def five_fold(path1, all_sub, fold_id, db_name):
                             train_v_len = train_v_len + train_v_list[t_v_n]
 
 
-    test_data = np.empty((test_v_len, 10, 150))
+    test_data = np.empty((test_v_len, 20, 150))
     test_label = np.empty((test_v_len, 9))
     test_dis = np.empty((test_v_len, 9))
     test_dom = np.empty((test_v_len, 9))
@@ -381,7 +381,7 @@ def five_fold(path1, all_sub, fold_id, db_name):
     print('test_dom shape......', test_dom.shape)
     test_data = np.reshape(test_data, (test_data.shape[0], channels, fea_dim))
 
-    train_data = np.empty((train_v_len, 10, 150))
+    train_data = np.empty((train_v_len, 20, 150))
     train_label = np.empty((train_v_len, 9))
     train_dis = np.empty((train_v_len, 9))
     train_dom = np.empty((train_v_len, 9))
