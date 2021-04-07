@@ -393,7 +393,7 @@ for epoch_num in range(num_epochs):
             result.write('%s\n' % GC_est)
             result.write('Training co-attention:\n ')
             result.write('att_1: \t')
-            result.write('%s\n' % np.asarray(att_1))
+            result.write('%s\n' % att_1.detach().numpy())
             result.write('att_2: \t')
             result.write('%s\n' % np.asarray(att_2))
             result.write('att_3: \t')
