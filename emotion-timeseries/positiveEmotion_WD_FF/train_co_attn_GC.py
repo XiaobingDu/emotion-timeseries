@@ -432,7 +432,7 @@ for epoch_num in range(num_epochs):
                                                                         clark_dist=clark, canberra_dist=canberra,
                                                                         cosine_dist=cosine,
                                                                         intersection_dist=intersection))
-    # end_epoch
+    # end_epoch nnn
     on_end_epoch(ap, epoch_num + 1, loss2, state='training')
 
     ## Validate:
