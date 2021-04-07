@@ -504,11 +504,6 @@ for epoch_num in range(num_epochs):
             #end_batch
             on_end_batch(ap, epoch_num+1, emot_dis, target_gt, loss1, loss2, state='validation')
 
-
-
-            #end_epoch
-            on_end_epoch(ap, epoch_num+1, loss2, state='validation')
-
             # emotion distribution metrics
             # euclidean
             euclidean = euclidean_dist(dis.shape[0], dis, emot_dis)
@@ -551,8 +546,6 @@ for epoch_num in range(num_epochs):
                                                                         clark_dist=clark, canberra_dist=canberra,
                                                                         cosine_dist=cosine,
                                                                         intersection_dist=intersection))
-
-
         # Pearson correlation
         emopcc += pearsonr(emot_dis.cpu().detach().numpy(), dis.cpu().detach().numpy())[0]
     # 每一个epoch loss平均
@@ -561,6 +554,9 @@ for epoch_num in range(num_epochs):
     epoch_pcc = emopcc / len(valSet)
     # validation loss
     val_loss = epoch_loss
+
+    # end_epoch
+    on_end_epoch(ap, epoch_num + 1, loss2, state='validation')
 
     # checkpoint
     checkpoint = {
@@ -658,8 +654,6 @@ for i, data in enumerate(testDataloader):
     if i % 10 == 0:
         # measure mAP
         on_end_batch(ap, epoch_num+1, emot_dis, target_gt, loss1, loss2, state= 'test')
-        #end epoch
-        on_end_epoch(ap, epoch_num+1, loss2, state= 'test')
 
         # emotion distribution metrics
         # euclidean
@@ -712,6 +706,9 @@ print("Test Emotion distribution KLDivLoss:", test_testkl.item(), "\Test Emotion
 result.write("\n============================================\n")
 result.write("Test Emotion distribution KLDivLoss:{KLDivLoss: .4f}\n"
              "Test Emotion distribution PCC:{PCC: .4f}\t".format(KLDivLoss=test_testkl,PCC=test_emopcc))
+
+#end epoch
+on_end_epoch(ap, epoch_num+1, loss2, state= 'test')
 
 print(att_1, att_2, att_3, att_4, att_5, att_6, att_7, att_8, att_9, att_10)
 
