@@ -329,20 +329,28 @@ for epoch_num in range(num_epochs):
 
         result = codecs.open(FLAGS.save_file, 'a', 'utf-8')
         result.write("\n------------------------------------------------------------------\n")
-        result.write("Training GC_est: {GC: .4f}\t".format(GC=GC_est ))
-        result.write('Training co-attention\t '
-                     'att_1: {att_1:.4f}\t'
-                     'att_2: {att_2:.4f}\t'
-                     'att_3: {att_3:.4f}\t'
-                     'att_4: {att_4:.4f}\t'
-                     'att_5: {att_5:.4f}\t'
-                     'att_6: {att_6:.4f}\t'
-                     'att_7: {att_7:.4f}\t'
-                     'att_8: {att_8:.4f}\t'
-                     'att_9: {att_9:.4f}\t'
-                     'att_10: {att_10:.4f}\t'.format(att_1=att_1,att_2=att_2,att_3=att_3,
-                                                    att_4=att_4, att_5=att_5,att_6=att_6,
-                                                    att_7=att_7, att_8=att_8, att_9=att_9,att_10=att_10))
+        result.write("Training GC_est:\n", GC_est)
+        result.write('Training co-attention:\n ')
+        result.write('att_1: \t', att_1)
+        result.write('\n')
+        result.write('att_2: \t', att_2)
+        result.write('\n')
+        result.write('att_3: \t', att_3)
+        result.write('\n')
+        result.write('att_4: \t', att_4)
+        result.write('\n')
+        result.write('att_5: \t', att_5)
+        result.write('\n')
+        result.write('att_6: \t', att_6)
+        result.write('\n')
+        result.write('att_7: \t', att_7)
+        result.write('\n')
+        result.write('att_8: \t', att_8)
+        result.write('\n')
+        result.write('att_9: \t', att_9)
+        result.write('\n')
+        result.write('att_10: \t', att_10)
+        result.write('\n')
 
         emot_dis = emot_dis.squeeze(dim=0)
         dis = torch.squeeze(dis,dim=1)
@@ -452,19 +460,27 @@ for epoch_num in range(num_epochs):
             net(val, Frontal, Temporal, Central, Parietal, Occipital, dis)
 
         result.write("\n------------------------------------------------------------------\n")
-        result.write('Valiodation co-attention\t '
-                     'att_1: {att_1:.4f}\t'
-                     'att_2: {att_2:.4f}\t'
-                     'att_3: {att_3:.4f}\t'
-                     'att_4: {att_4:.4f}\t'
-                     'att_5: {att_5:.4f}\t'
-                     'att_6: {att_6:.4f}\t'
-                     'att_7: {att_7:.4f}\t'
-                     'att_8: {att_8:.4f}\t'
-                     'att_9: {att_9:.4f}\t'
-                     'att_10: {att_10:.4f}\t'.format(att_1=att_1, att_2=att_2, att_3=att_3,
-                                                     att_4=att_4, att_5=att_5, att_6=att_6,
-                                                     att_7=att_7, att_8=att_8, att_9=att_9, att_10=att_10))
+        result.write('Training co-attention:\n ')
+        result.write('att_1: \t', att_1)
+        result.write('\n')
+        result.write('att_2: \t', att_2)
+        result.write('\n')
+        result.write('att_3: \t', att_3)
+        result.write('\n')
+        result.write('att_4: \t', att_4)
+        result.write('\n')
+        result.write('att_5: \t', att_5)
+        result.write('\n')
+        result.write('att_6: \t', att_6)
+        result.write('\n')
+        result.write('att_7: \t', att_7)
+        result.write('\n')
+        result.write('att_8: \t', att_8)
+        result.write('\n')
+        result.write('att_9: \t', att_9)
+        result.write('\n')
+        result.write('att_10: \t', att_10)
+        result.write('\n')
 
         emot_dis = emot_dis.squeeze(dim=0)
         dis = torch.squeeze(dis,dim=1)
@@ -601,19 +617,27 @@ for i, data in enumerate(testDataloader):
 
     result = codecs.open(FLAGS.save_file, 'a', 'utf-8')
     result.write("\n------------------------------------------------------------------\n")
-    result.write('Test co-attention\t '
-                 'att_1: {att_1:.4f}\t'
-                 'att_2: {att_2:.4f}\t'
-                 'att_3: {att_3:.4f}\t'
-                 'att_4: {att_4:.4f}\t'
-                 'att_5: {att_5:.4f}\t'
-                 'att_6: {att_6:.4f}\t'
-                 'att_7: {att_7:.4f}\t'
-                 'att_8: {att_8:.4f}\t'
-                 'att_9: {att_9:.4f}\t'
-                 'att_10: {att_10:.4f}\t'.format(att_1=att_1, att_2=att_2, att_3=att_3,
-                                                 att_4=att_4, att_5=att_5, att_6=att_6,
-                                                 att_7=att_7, att_8=att_8, att_9=att_9, att_10=att_10))
+    result.write('Training co-attention:\n ')
+    result.write('att_1: \t', att_1)
+    result.write('\n')
+    result.write('att_2: \t', att_2)
+    result.write('\n')
+    result.write('att_3: \t', att_3)
+    result.write('\n')
+    result.write('att_4: \t', att_4)
+    result.write('\n')
+    result.write('att_5: \t', att_5)
+    result.write('\n')
+    result.write('att_6: \t', att_6)
+    result.write('\n')
+    result.write('att_7: \t', att_7)
+    result.write('\n')
+    result.write('att_8: \t', att_8)
+    result.write('\n')
+    result.write('att_9: \t', att_9)
+    result.write('\n')
+    result.write('att_10: \t', att_10)
+    result.write('\n')
 
     emot_dis = emot_dis.squeeze(dim=0)
     dis = torch.squeeze(dis, dim=1)
