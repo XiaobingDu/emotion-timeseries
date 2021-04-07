@@ -9,13 +9,13 @@ import random
 def get_dim(db_name):
 
     if db_name=='LDL_data':
-        return 30, 20, 5, 32, 9
+        return 30, 30, 5, 32, 9
 
 # return sub_num, clip_num, channels, time-steps, fea_dim
 def get_num(db_name):
 
     if db_name=='LDL_data':
-        return 194, 9, 30, 20, 5
+        return 194, 9, 30, 30, 5
 
 def data_preprocess(data, db_name):
     sub_num, clip_num, channels, fea_dim = get_num(db_name)
@@ -83,8 +83,8 @@ def get_data_info(path):
 def get_sample_data(path1,path2):
 
     data,info  = get_data_info(path1)###########
-    win_size = 20 #choices=[10  20  30]
-    strides = 1
+    win_size = 30 #choices=[10,20,30]
+    strides = 20 #choices=[1,10,20]
 
     n_feature = sio.loadmat(path2)['feature_arr'] #'EEG_PSD_multilabel_9_win/featureAll.mat
 
@@ -111,9 +111,12 @@ def get_sample_data(path1,path2):
             start = 0
             end = 0
             count = 0
-            while end != s_len:
+            while end <= s_len:
                 count = count + 1
                 end = start + win_size
+                if end > s_len:
+                    break
+                print('sample nums....', count)
                 sample_feature = data[n_s][n_len]['feature_arr'][start:end, :]
                 sample_label = data[n_s][n_len]['label_arr'][start:start + 1, :]  ##############
                 sample_dis = data[n_s][n_len]['dis_arr'][start:start + 1, :]
@@ -151,6 +154,9 @@ def get_sample_data(path1,path2):
             sin_sub.append(data[n_s][n_len])
 
         all_sub.append(sin_sub)
+        print('all sub....', all_sub[0][0]['feature_arr'].shape)
+        print('all sub....', all_sub[0][1]['feature_arr'].shape)
+        print('all sub....', all_sub[0][2]['feature_arr'].shape)
 
     return all_sub
 
@@ -158,7 +164,7 @@ def get_sample_data(path1,path2):
 def get_sample_data_withoutOverlap(path1,path2):
 
     data,info  = get_data_info(path1)###########
-    win_size = 20 #choices=[10  20  30]
+    win_size = 30 #choices=[10  20  30]
     strides = win_size
 
     n_feature = sio.loadmat(path2)['feature_arr'] #'EEG_PSD_multilabel_9_win/featureAll.mat

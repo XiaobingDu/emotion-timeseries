@@ -101,6 +101,7 @@ batch_size = FLAGS.batch_size
 lr = FLAGS.learning_rate
 lamda = FLAGS.lamda
 overlap = FLAGS.overlap
+strategy = FLAGS.strategy
 fold_id = FLAGS.fold_id
 GC_est =None
 # 对应5个脑区的电极idx：Frontal、Temporal、Central、Parietal、Occipital
@@ -109,15 +110,21 @@ idx = [[0 ,1 ,2 ,3 ,4 ,5 ,6] ,[7 ,11 ,12 ,16 ,17 ,21 ,22 ,26] ,[8 ,9 ,10 ,13 ,14
 
 # load train, val, test data
 if overlap == 'with':
-    print('------overlap True------')
+    print('------overlap: True------')
     data_set = get_sample_data(path1,path2)
 elif overlap == 'without':
-    print('------overlap False------')
+    print('------overlap: False------')
     data_set = get_sample_data_withoutOverlap(path1, path2)
-train_data, val_data,train_dis, val_dis, train_dom_label, val_dom_label = five_fold(data_set, fold_id, db_name)
-test_data = val_data
-test_dis = val_dis
-test_dom_label = val_dom_label
+
+if strategy == 'five_fold':
+    print('------strategy: five_fold------')
+    train_data, val_data, train_dis, val_dis, train_dom_label, val_dom_label = five_fold(data_set, fold_id, db_name)
+    test_data = val_data
+    test_dis = val_dis
+    test_dom_label = val_dom_label
+elif strategy == 'split':
+    print('------strategy: split------')
+    train_data, val_data, test_data, train_dis, val_dis, test_dis, train_dom_label, val_dom_label, test_dom_label = dataSplit(path1, data_set, db_name)
 
 #通过 MediaEvalDataset 将数据进行加载，返回Dataset对象，包含data和labels
 trSet = MediaEvalDataset(train_data, train_dis, train_dom_label, idx)
@@ -159,8 +166,9 @@ def on_end_batch(AveragePrecisionMeter, epoch_num, output, target_gt, loss1, mul
               'Traning: \t Loss1 {loss1:.4f}\t' 
               ' Loss2 {loss2:.4f}\t'.format(epoch_num, loss1 = loss1, loss2=multiLabel_loss))
     elif state == 'validation':
-        print('Validation: \t Loss1 {loss1:.4f}\t'
-              ' Loss2 {loss2:.4f}'.format(loss1 = loss1,loss2=multiLabel_loss))
+        print('Epoch: [{0}]\t'
+              'Validation: \t Loss1 {loss1:.4f}\t'
+              ' Loss2 {loss2:.4f}'.format(epoch_num, loss1 = loss1,loss2=multiLabel_loss))
     elif state == 'test':
         print('Test: \t Loss1 {loss1:.4f}\t' 
               'Loss2 {loss2:.4f}'.format(loss1 = loss1,loss2=multiLabel_loss))
@@ -184,7 +192,7 @@ def on_end_epoch(AveragePrecisionMeter, epoch_num, multiLabel_loss, state = 'tra
               'OF1: {OF1:.4f}\t'
               'CP: {CP:.4f}\t'
               'CR: {CR:.4f}\t'
-              'CF1: {CF1:.4f}\t'.format(OP=OP, OR=OR, OF1=OF1, CP=CP, CR=CR, CF1=CF1))
+              'CF1: {CF1:.4f}\n'.format(OP=OP, OR=OR, OF1=OF1, CP=CP, CR=CR, CF1=CF1))
         result.write("\n------------------------------------------------------------------\n")
         result.write('Epoch: [{0}]\t'
                      'Training: \t Loss {loss:.4f}\t'
@@ -195,9 +203,9 @@ def on_end_epoch(AveragePrecisionMeter, epoch_num, multiLabel_loss, state = 'tra
             'OF1: {OF1:.4f}\t'
             'CP: {CP:.4f}\t'
             'CR: {CR:.4f}\t'
-            'CF1: {CF1:.4f}\t'.format(OP=OP, OR=OR, OF1=OF1, CP=CP, CR=CR, CF1=CF1))
+            'CF1: {CF1:.4f}\n'.format(OP=OP, OR=OR, OF1=OF1, CP=CP, CR=CR, CF1=CF1))
     elif state == 'validation':
-        print('Validation: \t Loss {loss:.4f}\t mAP {map:.3f}'.format(loss=multiLabel_loss, map=map))
+        print('Validation: \t Epoch: [{0}]\t Loss {loss:.4f}\t mAP {map:.3f}'.format(epoch_num, loss=multiLabel_loss, map=map))
         print('OP: {OP:.4f}\t'
               'OR: {OR:.4f}\t'
               'OF1: {OF1:.4f}\t'
@@ -209,7 +217,7 @@ def on_end_epoch(AveragePrecisionMeter, epoch_num, multiLabel_loss, state = 'tra
               'OF1_3: {OF1:.4f}\t'
               'CP_3: {CP:.4f}\t'
               'CR_3: {CR:.4f}\t'
-              'CF1_3: {CF1:.4f}\t'.format(OP=OP_k, OR=OR_k, OF1=OF1_k, CP=CP_k, CR=CR_k, CF1=CF1_k))
+              'CF1_3: {CF1:.4f}\n'.format(OP=OP_k, OR=OR_k, OF1=OF1_k, CP=CP_k, CR=CR_k, CF1=CF1_k))
         result.write("\n------------------------------------------------------------------\n")
         result.write('Epoch: [{0}]\t'
                      'Validation: \t Loss {loss:.4f}\t'
@@ -225,7 +233,7 @@ def on_end_epoch(AveragePrecisionMeter, epoch_num, multiLabel_loss, state = 'tra
                      'OF1_3: {OF1:.4f}\t'
                      'CP_3: {CP:.4f}\t'
                      'CR_3: {CR:.4f}\t'
-                     'CF1_3: {CF1:.4f}\t'.format(OP=OP_k, OR=OR_k, OF1=OF1_k, CP=CP_k, CR=CR_k, CF1=CF1_k))
+                     'CF1_3: {CF1:.4f}\n'.format(OP=OP_k, OR=OR_k, OF1=OF1_k, CP=CP_k, CR=CR_k, CF1=CF1_k))
     elif state == 'test':
         print('Test: \t Loss {loss:.4f}\t mAP {map:.3f}\t'.format(loss=multiLabel_loss, map=map))
         print('OP: {OP:.4f}\t'
@@ -239,7 +247,7 @@ def on_end_epoch(AveragePrecisionMeter, epoch_num, multiLabel_loss, state = 'tra
               'OF1_3: {OF1:.4f}\t'
               'CP_3: {CP:.4f}\t'
               'CR_3: {CR:.4f}\t'
-              'CF1_3: {CF1:.4f}\t'.format(OP=OP_k, OR=OR_k, OF1=OF1_k, CP=CP_k, CR=CR_k, CF1=CF1_k))
+              'CF1_3: {CF1:.4f}\n'.format(OP=OP_k, OR=OR_k, OF1=OF1_k, CP=CP_k, CR=CR_k, CF1=CF1_k))
         result.write("\n------------------------------------------------------------------\n")
         result.write('Epoch: [{0}]\t'
                      'Test: \t Loss {loss:.4f}\t'
@@ -255,7 +263,7 @@ def on_end_epoch(AveragePrecisionMeter, epoch_num, multiLabel_loss, state = 'tra
                      'OF1_3: {OF1:.4f}\t'
                      'CP_3: {CP:.4f}\t'
                      'CR_3: {CR:.4f}\t'
-                     'CF1_3: {CF1:.4f}\t'.format(OP=OP_k, OR=OR_k, OF1=OF1_k, CP=CP_k, CR=CR_k, CF1=CF1_k))
+                     'CF1_3: {CF1:.4f}\n'.format(OP=OP_k, OR=OR_k, OF1=OF1_k, CP=CP_k, CR=CR_k, CF1=CF1_k))
 
     return map
 
@@ -318,8 +326,23 @@ for epoch_num in range(num_epochs):
         #get GC
         train_model_gista(shared_encoder, input_clstm, lam=0.5, lam_ridge=1e-4, lr=0.001, max_iter=1, check_every=1000, truncation=64)
         GC_est = shared_encoder.GC().cpu().data.numpy()
-        # print('evary batch GC_est......', GC_est)
-        # print('training....', att_1, att_2, att_3, att_4, att_5, att_6)
+
+        result = codecs.open(FLAGS.save_file, 'a', 'utf-8')
+        result.write("\n------------------------------------------------------------------\n")
+        result.write("Training GC_est: {GC: .4f}\t".format(GC=GC_est ))
+        result.write('Training co-attention\t '
+                     'att_1: {att_1:.4f}\t'
+                     'att_2: {att_2:.4f}\t'
+                     'att_3: {att_3:.4f}\t'
+                     'att_4: {att_4:.4f}\t'
+                     'att_5: {att_5:.4f}\t'
+                     'att_6: {att_6:.4f}\t'
+                     'att_7: {att_7:.4f}\t'
+                     'att_8: {att_8:.4f}\t'
+                     'att_9: {att_9:.4f}\t'
+                     'att_10: {att_10:.4f}\t'.format(att_1=att_1,att_2=att_2,att_3=att_3,
+                                                    att_4=att_4, att_5=att_5,att_6=att_6,
+                                                    att_7=att_7, att_8=att_8, att_9=att_9,att_10=att_10))
 
         emot_dis = emot_dis.squeeze(dim=0)
         dis = torch.squeeze(dis,dim=1)
@@ -345,57 +368,58 @@ for epoch_num in range(num_epochs):
         a = torch.nn.utils.clip_grad_norm_(net.parameters(), 10)
         optimizer.step()
         avg_tr_loss += loss.item()
-        if i % 100 == 0:
+
+        #results
+        if i % 10 == 0:
             #end_batch
             on_end_batch(ap, epoch_num+1, emot_dis, target_gt, loss1, loss2, state= 'training')
+            #输出每一个batch的结果，分析一下结果变化趋势
+            #end_epoch
+            on_end_epoch(ap,epoch_num+1, loss2, state= 'training')
 
-    result = codecs.open(FLAGS.save_file, 'a', 'utf-8')
-    #end_epoch
-    on_end_epoch(ap,epoch_num+1, loss2, state= 'training')
+            #emotion distribution metrics
+            # euclidean
+            euclidean = euclidean_dist(dis.shape[0], dis, emot_dis)
+            # chebyshev
+            chebyshev = chebyshev_dist(dis.shape[0], dis, emot_dis)
+            # Kullback-Leibler divergence
+            kldist = KL_dist(dis, emot_dis)
+            # clark
+            clark = clark_dist(dis, emot_dis)
+            # canberra
+            canberra = canberra_dist(dis, emot_dis)
+            # cosine
+            cosine = cosine_dist(dis, emot_dis)
+            # intersection
+            intersection = intersection_dist(dis, emot_dis)
 
-    #emotion distribution metrics
-    # euclidean
-    euclidean = euclidean_dist(dis.shape[0], dis, emot_dis)
-    # chebyshev
-    chebyshev = chebyshev_dist(dis.shape[0], dis, emot_dis)
-    # Kullback-Leibler divergence
-    kldist = KL_dist(dis, emot_dis)
-    # clark
-    clark = clark_dist(dis, emot_dis)
-    # canberra
-    canberra = canberra_dist(dis, emot_dis)
-    # cosine
-    cosine = cosine_dist(dis, emot_dis)
-    # intersection
-    intersection = intersection_dist(dis, emot_dis)
-
-    print("Epoch no:" ,epoch_num +1, "| Avg train loss:" .format(avg_tr_loss /len(trSet) ,'0.4f') )
-    print('euclidean_dist: {euclidean_dist:.4f}\t'
-          'chebyshev_dist: {chebyshev_dist:.4f}\t'
-          'kldist: {kldist:.4f}\t'
-          'clark_dist: {clark_dist:.4f}\t'
-          'canberra_dist: {canberra_dist:.4f}\t'
-          'cosine_dist: {cosine_dist:.4f}\t'
-          'intersection_dist: {intersection_dist:.4f}\t'.format(euclidean_dist=euclidean,
-                                                                chebyshev_dist=chebyshev, kldist=kldist,
-                                                                clark_dist=clark, canberra_dist=canberra,
-                                                                cosine_dist=cosine,
-                                                                intersection_dist=intersection))
-    result.write("\n------------------------------------------------------------------\n")
-    result.write("Epoch no: {epoch: .4f}\t"  
-                 "| Avg train loss: {loss:.4f}\t" .format( epoch = epoch_num +1, loss = avg_tr_loss /len(trSet)))
-    result.write("\n========================================\n")
-    result.write('euclidean_dist: {euclidean_dist:.4f}\t'
-          'chebyshev_dist: {chebyshev_dist:.4f}\t'
-          'kldist: {kldist:.4f}\t'
-          'clark_dist: {clark_dist:.4f}\t'
-          'canberra_dist: {canberra_dist:.4f}\t'
-          'cosine_dist: {cosine_dist:.4f}\t'
-          'intersection_dist: {intersection_dist:.4f}\t'.format(euclidean_dist=euclidean,
-                                                                chebyshev_dist=chebyshev, kldist=kldist,
-                                                                clark_dist=clark, canberra_dist=canberra,
-                                                                cosine_dist=cosine,
-                                                                intersection_dist=intersection))
+            print("Epoch no:" ,epoch_num +1, "| Avg train loss:" .format(avg_tr_loss /len(trSet) ,'0.4f') )
+            print('euclidean_dist: {euclidean_dist:.4f}\t'
+                  'chebyshev_dist: {chebyshev_dist:.4f}\t'
+                  'kldist: {kldist:.4f}\t'
+                  'clark_dist: {clark_dist:.4f}\t'
+                  'canberra_dist: {canberra_dist:.4f}\t'
+                  'cosine_dist: {cosine_dist:.4f}\t'
+                  'intersection_dist: {intersection_dist:.4f}\t'.format(euclidean_dist=euclidean,
+                                                                        chebyshev_dist=chebyshev, kldist=kldist,
+                                                                        clark_dist=clark, canberra_dist=canberra,
+                                                                        cosine_dist=cosine,
+                                                                        intersection_dist=intersection))
+            result.write("\n------------------------------------------------------------------\n")
+            result.write("Epoch no: {epoch: .4f}\t"  
+                         "| Avg train loss: {loss:.4f}\t" .format( epoch = epoch_num +1, loss = avg_tr_loss /len(trSet)))
+            result.write("\n========================================\n")
+            result.write('euclidean_dist: {euclidean_dist:.4f}\t'
+                  'chebyshev_dist: {chebyshev_dist:.4f}\t'
+                  'kldist: {kldist:.4f}\t'
+                  'clark_dist: {clark_dist:.4f}\t'
+                  'canberra_dist: {canberra_dist:.4f}\t'
+                  'cosine_dist: {cosine_dist:.4f}\t'
+                  'intersection_dist: {intersection_dist:.4f}\t'.format(euclidean_dist=euclidean,
+                                                                        chebyshev_dist=chebyshev, kldist=kldist,
+                                                                        clark_dist=clark, canberra_dist=canberra,
+                                                                        cosine_dist=cosine,
+                                                                        intersection_dist=intersection))
 
     ## Validate:
     net.eval()
@@ -427,6 +451,21 @@ for epoch_num in range(num_epochs):
         emot_dis, input_clstm, shared_encoder, att_1, att_2, att_3, att_4, att_5, att_6, att_7, att_8, att_9, att_10 = \
             net(val, Frontal, Temporal, Central, Parietal, Occipital, dis)
 
+        result.write("\n------------------------------------------------------------------\n")
+        result.write('Valiodation co-attention\t '
+                     'att_1: {att_1:.4f}\t'
+                     'att_2: {att_2:.4f}\t'
+                     'att_3: {att_3:.4f}\t'
+                     'att_4: {att_4:.4f}\t'
+                     'att_5: {att_5:.4f}\t'
+                     'att_6: {att_6:.4f}\t'
+                     'att_7: {att_7:.4f}\t'
+                     'att_8: {att_8:.4f}\t'
+                     'att_9: {att_9:.4f}\t'
+                     'att_10: {att_10:.4f}\t'.format(att_1=att_1, att_2=att_2, att_3=att_3,
+                                                     att_4=att_4, att_5=att_5, att_6=att_6,
+                                                     att_7=att_7, att_8=att_8, att_9=att_9, att_10=att_10))
+
         emot_dis = emot_dis.squeeze(dim=0)
         dis = torch.squeeze(dis,dim=1)
         emot_dis = torch.tensor(emot_dis, dtype=torch.double) #[32,9]
@@ -440,67 +479,69 @@ for epoch_num in range(num_epochs):
         val_loss = loss
         val_loss += val_loss /dis.shape[0]
 
-        if i % 100 == 0:
+        #results
+        if i % 10 == 0:
             #measure mAP
             #end_batch
             on_end_batch(ap, epoch_num+1, emot_dis, target_gt, loss1, loss2, state='validation')
 
+
+
+            #end_epoch
+            on_end_epoch(ap, epoch_num+1, loss2, state='validation')
+
+            # emotion distribution metrics
+            # euclidean
+            euclidean = euclidean_dist(dis.shape[0], dis, emot_dis)
+            # chebyshev
+            chebyshev = chebyshev_dist(dis.shape[0], dis, emot_dis)
+            # Kullback-Leibler divergence
+            kldist = KL_dist(dis, emot_dis)
+            # clark
+            clark = clark_dist(dis, emot_dis)
+            # canberra
+            canberra = canberra_dist(dis, emot_dis)
+            # cosine
+            cosine = cosine_dist(dis, emot_dis)
+            # intersection
+            intersection = intersection_dist(dis, emot_dis)
+
+            print("Validation: Epoch emotion distribution KLDivLoss:", epoch_loss.item() , "\nEpoch emotion distribution PCC:", epoch_pcc.item() ,"\n", "==========================")
+            print('euclidean_dist: {euclidean_dist:.4f}\t'
+                  'chebyshev_dist: {chebyshev_dist:.4f}\t'
+                  'kldist: {kldist:.4f}\t'
+                  'clark_dist: {clark_dist:.4f}\t'
+                  'canberra_dist: {canberra_dist:.4f}\t'
+                  'cosine_dist: {cosine_dist:.4f}\t'
+                  'intersection_dist: {intersection_dist:.4f}\t'.format(euclidean_dist=euclidean,
+                                                                        chebyshev_dist=chebyshev, kldist=kldist,
+                                                                        clark_dist=clark, canberra_dist=canberra,
+                                                                        cosine_dist=cosine,
+                                                                        intersection_dist=intersection))
+            result.write("Validation: Epoch emotion distribution KLDivLoss: {KLDivLoss: .4f}\t"
+                         "\nEpoch emotion distribution PCC: {PCC: .4f}\t".format( KLDivLoss=epoch_loss, PCC=epoch_pcc))
+            result.write("\n========================================\n")
+            result.write('euclidean_dist: {euclidean_dist:.4f}\t'
+                  'chebyshev_dist: {chebyshev_dist:.4f}\t'
+                  'kldist: {kldist:.4f}\t'
+                  'clark_dist: {clark_dist:.4f}\t'
+                  'canberra_dist: {canberra_dist:.4f}\t'
+                  'cosine_dist: {cosine_dist:.4f}\t'
+                  'intersection_dist: {intersection_dist:.4f}\t'.format(euclidean_dist=euclidean,
+                                                                        chebyshev_dist=chebyshev, kldist=kldist,
+                                                                        clark_dist=clark, canberra_dist=canberra,
+                                                                        cosine_dist=cosine,
+                                                                        intersection_dist=intersection))
+
+
         # Pearson correlation
         emopcc += pearsonr(emot_dis.cpu().detach().numpy(), dis.cpu().detach().numpy())[0]
-
     # 每一个epoch loss平均
-    epoch_loss = val_loss /len(valSet)
+    epoch_loss = val_loss / len(valSet)
     # 每一个epoch pcc平均
     epoch_pcc = emopcc / len(valSet)
     # validation loss
     val_loss = epoch_loss
-
-    #end_epoch
-    on_end_epoch(ap, epoch_num+1, loss2, state='validation')
-
-    # emotion distribution metrics
-    # euclidean
-    euclidean = euclidean_dist(dis.shape[0], dis, emot_dis)
-    # chebyshev
-    chebyshev = chebyshev_dist(dis.shape[0], dis, emot_dis)
-    # Kullback-Leibler divergence
-    kldist = KL_dist(dis, emot_dis)
-    # clark
-    clark = clark_dist(dis, emot_dis)
-    # canberra
-    canberra = canberra_dist(dis, emot_dis)
-    # cosine
-    cosine = cosine_dist(dis, emot_dis)
-    # intersection
-    intersection = intersection_dist(dis, emot_dis)
-
-    # print('validation.....', att_1, att_2, att_3, att_4, att_5, att_6)
-    print("Validation: Epoch emotion distribution KLDivLoss:", epoch_loss.item() , "\nEpoch emotion distribution PCC:", epoch_pcc.item() ,"\n", "==========================")
-    print('euclidean_dist: {euclidean_dist:.4f}\t'
-          'chebyshev_dist: {chebyshev_dist:.4f}\t'
-          'kldist: {kldist:.4f}\t'
-          'clark_dist: {clark_dist:.4f}\t'
-          'canberra_dist: {canberra_dist:.4f}\t'
-          'cosine_dist: {cosine_dist:.4f}\t'
-          'intersection_dist: {intersection_dist:.4f}\t'.format(euclidean_dist=euclidean,
-                                                                chebyshev_dist=chebyshev, kldist=kldist,
-                                                                clark_dist=clark, canberra_dist=canberra,
-                                                                cosine_dist=cosine,
-                                                                intersection_dist=intersection))
-    result.write("Validation: Epoch emotion distribution KLDivLoss: {KLDivLoss: .4f}\t"
-                 "\nEpoch emotion distribution PCC: {PCC: .4f}\t".format( KLDivLoss=epoch_loss, PCC=epoch_pcc))
-    result.write("\n========================================\n")
-    result.write('euclidean_dist: {euclidean_dist:.4f}\t'
-          'chebyshev_dist: {chebyshev_dist:.4f}\t'
-          'kldist: {kldist:.4f}\t'
-          'clark_dist: {clark_dist:.4f}\t'
-          'canberra_dist: {canberra_dist:.4f}\t'
-          'cosine_dist: {cosine_dist:.4f}\t'
-          'intersection_dist: {intersection_dist:.4f}\t'.format(euclidean_dist=euclidean,
-                                                                chebyshev_dist=chebyshev, kldist=kldist,
-                                                                clark_dist=clark, canberra_dist=canberra,
-                                                                cosine_dist=cosine,
-                                                                intersection_dist=intersection))
 
     # checkpoint
     checkpoint = {
@@ -556,7 +597,24 @@ for i, data in enumerate(testDataloader):
     # Forward pass
     emot_dis, input_clstm, shared_encoder, att_1, att_2, att_3, att_4, att_5, att_6, att_7, att_8, att_9, att_10 = \
         net(test, Frontal, Temporal, Central, Parietal, Occipital, dis)
-    # print(att_1, att_2, att_3, att_4, att_5, att_6)
+    # print(att_1, att_2, att_3, att_4, att_5, att_6, att_7, att_8, att_9, att_10)
+
+    result = codecs.open(FLAGS.save_file, 'a', 'utf-8')
+    result.write("\n------------------------------------------------------------------\n")
+    result.write('Test co-attention\t '
+                 'att_1: {att_1:.4f}\t'
+                 'att_2: {att_2:.4f}\t'
+                 'att_3: {att_3:.4f}\t'
+                 'att_4: {att_4:.4f}\t'
+                 'att_5: {att_5:.4f}\t'
+                 'att_6: {att_6:.4f}\t'
+                 'att_7: {att_7:.4f}\t'
+                 'att_8: {att_8:.4f}\t'
+                 'att_9: {att_9:.4f}\t'
+                 'att_10: {att_10:.4f}\t'.format(att_1=att_1, att_2=att_2, att_3=att_3,
+                                                 att_4=att_4, att_5=att_5, att_6=att_6,
+                                                 att_7=att_7, att_8=att_8, att_9=att_9, att_10=att_10))
+
     emot_dis = emot_dis.squeeze(dim=0)
     dis = torch.squeeze(dis, dim=1)
     emot_dis = torch.tensor(emot_dis, dtype=torch.double)  # [32,9]
@@ -570,64 +628,65 @@ for i, data in enumerate(testDataloader):
     test_loss = loss
     test_loss += test_loss / dis.shape[0]
 
-    if i % 100 == 0:
+    if i % 10 == 0:
         # measure mAP
         on_end_batch(ap, epoch_num+1, emot_dis, target_gt, loss1, loss2, state= 'test')
+        #end epoch
+        on_end_epoch(ap, epoch_num+1, loss2, state= 'test')
 
+        # emotion distribution metrics
+        # euclidean
+        euclidean = euclidean_dist(dis.shape[0], dis, emot_dis)
+        # chebyshev
+        chebyshev = chebyshev_dist(dis.shape[0], dis, emot_dis)
+        # Kullback-Leibler divergence
+        kldist = KL_dist(dis, emot_dis)
+        # clark
+        clark = clark_dist(dis, emot_dis)
+        # canberra
+        canberra = canberra_dist(dis, emot_dis)
+        # cosine
+        cosine = cosine_dist(dis, emot_dis)
+        # intersection
+        intersection = intersection_dist(dis, emot_dis)
+
+        print('euclidean_dist: {euclidean_dist:.4f}\t'
+                  'chebyshev_dist: {chebyshev_dist:.4f}\t'
+                  'kldist: {kldist:.4f}\t'
+                  'clark_dist: {clark_dist:.4f}\t'
+                  'canberra_dist: {canberra_dist:.4f}\t'
+                  'cosine_dist: {cosine_dist:.4f}\t'
+                  'intersection_dist: {intersection_dist:.4f}\n'.format(euclidean_dist=euclidean,
+                                                                        chebyshev_dist=chebyshev, kldist=kldist,
+                                                                        clark_dist=clark, canberra_dist=canberra,
+                                                                        cosine_dist=cosine,
+                                                                        intersection_dist=intersection))
+        print("\n========================================\n")
+
+        result.write("\n========================================\n")
+        result.write('euclidean_dist: {euclidean_dist:.4f}\t'
+                  'chebyshev_dist: {chebyshev_dist:.4f}\t'
+                  'kldist: {kldist:.4f}\t'
+                  'clark_dist: {clark_dist:.4f}\t'
+                  'canberra_dist: {canberra_dist:.4f}\t'
+                  'cosine_dist: {cosine_dist:.4f}\t'
+                  'intersection_dist: {intersection_dist:.4f}\t'.format(euclidean_dist=euclidean,
+                                                                        chebyshev_dist=chebyshev, kldist=kldist,
+                                                                        clark_dist=clark, canberra_dist=canberra,
+                                                                        cosine_dist=cosine,
+                                                                        intersection_dist=intersection))
     # pearson correlation
     emopcc += pearsonr(emot_dis.cpu().detach().numpy(), dis.cpu().detach().numpy())[0]
 # average loss
 test_testkl = test_loss / len(testSet)
 # average pcc
 test_emopcc = emopcc / len(testSet)
+print("Test Emotion distribution KLDivLoss:", test_testkl.item(), "\Test Emotion distribution PCC:", test_emopcc.item())
+result.write("\n============================================\n")
+result.write("Test Emotion distribution KLDivLoss:{KLDivLoss: .4f}\n"
+             "Test Emotion distribution PCC:{PCC: .4f}\t".format(KLDivLoss=test_testkl,PCC=test_emopcc))
 
-on_end_epoch(ap, epoch_num+1, loss2, state= 'test')
-
-# emotion distribution metrics
-# euclidean
-euclidean = euclidean_dist(dis.shape[0], dis, emot_dis)
-# chebyshev
-chebyshev = chebyshev_dist(dis.shape[0], dis, emot_dis)
-# Kullback-Leibler divergence
-kldist = KL_dist(dis, emot_dis)
-# clark
-clark = clark_dist(dis, emot_dis)
-# canberra
-canberra = canberra_dist(dis, emot_dis)
-# cosine
-cosine = cosine_dist(dis, emot_dis)
-# intersection
-intersection = intersection_dist(dis, emot_dis)
-
-print("Test Emotion distribution KLDivLoss:", test_testkl.item(), "\Test Emotion distribution PCC:", test_emopcc.item(),
-      "\n", "==========================")
-print('euclidean_dist: {euclidean_dist:.4f}\t'
-          'chebyshev_dist: {chebyshev_dist:.4f}\t'
-          'kldist: {kldist:.4f}\t'
-          'clark_dist: {clark_dist:.4f}\t'
-          'canberra_dist: {canberra_dist:.4f}\t'
-          'cosine_dist: {cosine_dist:.4f}\t'
-          'intersection_dist: {intersection_dist:.4f}\t'.format(euclidean_dist=euclidean,
-                                                                chebyshev_dist=chebyshev, kldist=kldist,
-                                                                clark_dist=clark, canberra_dist=canberra,
-                                                                cosine_dist=cosine,
-                                                                intersection_dist=intersection))
-result.write("Test Emotion distribution KLDivLoss:{KLDivLoss: .4f}\t"
-             "\Test Emotion distribution PCC:{PCC: .4f}\t".format(KLDivLoss=test_testkl,PCC=test_emopcc))
-result.write("\n========================================\n")
-result.write('euclidean_dist: {euclidean_dist:.4f}\t'
-          'chebyshev_dist: {chebyshev_dist:.4f}\t'
-          'kldist: {kldist:.4f}\t'
-          'clark_dist: {clark_dist:.4f}\t'
-          'canberra_dist: {canberra_dist:.4f}\t'
-          'cosine_dist: {cosine_dist:.4f}\t'
-          'intersection_dist: {intersection_dist:.4f}\t'.format(euclidean_dist=euclidean,
-                                                                chebyshev_dist=chebyshev, kldist=kldist,
-                                                                clark_dist=clark, canberra_dist=canberra,
-                                                                cosine_dist=cosine,
-                                                                intersection_dist=intersection))
-
-print(att_1, att_2, att_3, att_4, att_5, att_6)
+print(att_1, att_2, att_3, att_4, att_5, att_6, att_7, att_8, att_9, att_10)
 
 import csv
 

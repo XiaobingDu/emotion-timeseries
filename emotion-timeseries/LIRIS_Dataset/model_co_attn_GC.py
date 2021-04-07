@@ -87,7 +87,7 @@ class MovieNet(nn.Module):
         #Decoder Module
         # Decodes targets and LSTM hidden states
         # self.decoder = nn.LSTM(1 + self.h_dim, self.h_dim, self.n_layers, batch_first=True)
-        #6 represents the context vector length
+        #6 represents the context vector length 4+2=6
         self.decoder = nn.LSTM(6, self.h_dim, self.n_layers, batch_first=True)
         #decoder: ini parameters
         self.dec_h0 = nn.Parameter(torch.rand(self.n_layers, 1, self.h_dim))
