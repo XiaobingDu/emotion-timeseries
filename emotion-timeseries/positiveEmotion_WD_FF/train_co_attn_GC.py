@@ -520,7 +520,6 @@ for epoch_num in range(num_epochs):
             # intersection
             intersection = intersection_dist(dis, emot_dis)
 
-            print("Validation: Epoch emotion distribution KLDivLoss:", epoch_loss.item() , "\nEpoch emotion distribution PCC:", epoch_pcc.item() ,"\n", "==========================")
             print('euclidean_dist: {euclidean_dist:.4f}\t'
                   'chebyshev_dist: {chebyshev_dist:.4f}\t'
                   'kldist: {kldist:.4f}\t'
@@ -532,8 +531,7 @@ for epoch_num in range(num_epochs):
                                                                         clark_dist=clark, canberra_dist=canberra,
                                                                         cosine_dist=cosine,
                                                                         intersection_dist=intersection))
-            result.write("Validation: Epoch emotion distribution KLDivLoss: {KLDivLoss: .4f}\t"
-                         "\nEpoch emotion distribution PCC: {PCC: .4f}\t".format( KLDivLoss=epoch_loss, PCC=epoch_pcc))
+
             result.write("\n========================================\n")
             result.write('euclidean_dist: {euclidean_dist:.4f}\t'
                   'chebyshev_dist: {chebyshev_dist:.4f}\t'
@@ -554,6 +552,10 @@ for epoch_num in range(num_epochs):
     epoch_pcc = emopcc / len(valSet)
     # validation loss
     val_loss = epoch_loss
+    print("Validation: Epoch emotion distribution KLDivLoss:", epoch_loss.item(), "\nEpoch emotion distribution PCC:",
+          epoch_pcc.item(), "\n", "==========================")
+    result.write('Epoch: [{0}]\t' "Validation: Epoch emotion distribution KLDivLoss: {KLDivLoss: .4f}\t"
+                 "\nEpoch emotion distribution PCC: {PCC: .4f}\t".format(epoch_num +1, KLDivLoss=epoch_loss, PCC=epoch_pcc))
 
     # end_epoch
     on_end_epoch(ap, epoch_num + 1, loss2, state='validation')
@@ -704,8 +706,8 @@ test_testkl = test_loss / len(testSet)
 test_emopcc = emopcc / len(testSet)
 print("Test Emotion distribution KLDivLoss:", test_testkl.item(), "\Test Emotion distribution PCC:", test_emopcc.item())
 result.write("\n============================================\n")
-result.write("Test Emotion distribution KLDivLoss:{KLDivLoss: .4f}\n"
-             "Test Emotion distribution PCC:{PCC: .4f}\t".format(KLDivLoss=test_testkl,PCC=test_emopcc))
+result.write('Epoch: [{0}]\t' "Test Emotion distribution KLDivLoss:{KLDivLoss: .4f}\n"
+             "Test Emotion distribution PCC:{PCC: .4f}\t".format(epoch_num+1, KLDivLoss=test_testkl,PCC=test_emopcc))
 
 #end epoch
 on_end_epoch(ap, epoch_num+1, loss2, state= 'test')
