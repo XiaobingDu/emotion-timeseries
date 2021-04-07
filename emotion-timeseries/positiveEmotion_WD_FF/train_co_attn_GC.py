@@ -465,6 +465,7 @@ for epoch_num in range(num_epochs):
         dis = torch.squeeze(dis,dim=1)
         emot_dis = torch.tensor(emot_dis, dtype=torch.double) #[32,9]
         print('emot_dis....', emot_dis)
+        print('target_gt...', target_gt)
         #emotion distribution loss
         dis = torch.tensor(dis, dtype=torch.double)
         loss1 = kl_div(emot_dis.log(), dis)
