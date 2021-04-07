@@ -159,9 +159,6 @@ def on_start_batch(target_gt):
 
 def on_end_batch(AveragePrecisionMeter, epoch_num, output, target_gt, loss1, multiLabel_loss, state = 'training'):
     # measure mAP
-    print('target_gt..', target_gt.shape)
-    print('target_gt..', target_gt)
-    print('output...', output)
     AveragePrecisionMeter.add(output, target_gt)
 
     if state == 'training':
