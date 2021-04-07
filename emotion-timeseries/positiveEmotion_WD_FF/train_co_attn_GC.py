@@ -388,8 +388,6 @@ for epoch_num in range(num_epochs):
             #end_batch
             on_end_batch(ap, epoch_num+1, emot_dis, target_gt, loss1, loss2, state= 'training')
             #输出每一个batch的结果，分析一下结果变化趋势
-            #end_epoch
-            on_end_epoch(ap,epoch_num+1, loss2, state= 'training')
 
             #emotion distribution metrics
             # euclidean
@@ -434,6 +432,8 @@ for epoch_num in range(num_epochs):
                                                                         clark_dist=clark, canberra_dist=canberra,
                                                                         cosine_dist=cosine,
                                                                         intersection_dist=intersection))
+    # end_epoch
+    on_end_epoch(ap, epoch_num + 1, loss2, state='training')
 
     ## Validate:
     net.eval()
