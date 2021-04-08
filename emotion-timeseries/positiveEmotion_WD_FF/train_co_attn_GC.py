@@ -130,6 +130,18 @@ elif strategy == 'split':
     print('------strategy: split------')
     train_data, val_data, test_data, train_dis, val_dis, test_dis, train_dom_label, val_dom_label, test_dom_label = dataSplit(path1, data_set, db_name)
 
+train_data = train_data.astype(np.float32)
+val_data = val_data.astype(np.float32)
+test_data = test_data.astype(np.float32)
+
+train_dis = train_dis.astype(np.float32)
+val_dis = val_dis.astype(np.float32)
+test_dis = test_dis.astype(np.float32)
+
+train_dom_label = train_dom_label.astype(np.float32)
+val_dom_label = val_dom_label.astype(np.float32)
+test_dom_label = test_dom_label.astype(np.float32)
+
 #通过 MediaEvalDataset 将数据进行加载，返回Dataset对象，包含data和labels
 trSet = MediaEvalDataset(train_data, train_dis, train_dom_label, idx)
 valSet = MediaEvalDataset(val_data, val_dis, val_dom_label, idx)
@@ -330,24 +342,23 @@ for epoch_num in range(num_epochs):
         #get GC
         train_model_gista(shared_encoder, input_clstm, lam=0.5, lam_ridge=1e-4, lr=0.001, max_iter=1, check_every=1000, truncation=64)
         GC_est = shared_encoder.GC().cpu().data.numpy()
-
         emot_dis = emot_dis.squeeze(dim=0)
         dis = torch.squeeze(dis,dim=1)
-        emot_dis = torch.tensor(emot_dis, dtype=torch.double)
+        # emot_dis = torch.tensor(emot_dis, dtype=torch.double)
         #emotion distribution loss
-        dis = torch.tensor(dis, dtype=torch.double)
+        # dis = torch.tensor(dis, dtype=torch.double)
         # softmax = torch.nn.Softmax(dim=1)
         # dis = softmax(dis)
         loss1 = kl_div(emot_dis.log(), dis)
-        loss1 = Variable(loss1, requires_grad=True)
+        # loss1 = Variable(loss1, requires_grad=True)
 
         #multi-labe emotion prediction loss
-        target_gt = torch.tensor(target_gt, dtype=torch.double)
+        # target_gt = torch.tensor(target_gt, dtype=torch.double)
         loss2 = MLSML(emot_dis.cuda(), target_gt.cuda())
-        loss2 = Variable(loss2, requires_grad=True)
+        # loss2 = Variable(loss2, requires_grad=True)
 
         loss = lamda*loss1 + (1 - lamda)*loss2
-        loss = Variable(loss, requires_grad=True)
+        # loss = Variable(loss, requires_grad=True)
 
         # Backprop and update weights
         optimizer.zero_grad()
@@ -527,17 +538,16 @@ for epoch_num in range(num_epochs):
         # Forward pass
         emot_dis, input_clstm, shared_encoder, att_1, att_2, att_3, att_4, att_5, att_6, att_7, att_8, att_9, att_10 = \
             net(val, Frontal, Temporal, Central, Parietal, Occipital, dis)
-
         emot_dis = emot_dis.squeeze(dim=0)
         dis = torch.squeeze(dis,dim=1)
-        emot_dis = torch.tensor(emot_dis, dtype=torch.double) #[32,9]
+        # emot_dis = torch.tensor(emot_dis, dtype=torch.double) #[32,9]
         print('emot_dis....', emot_dis)
         print('target_gt...', target_gt)
         #emotion distribution loss
-        dis = torch.tensor(dis, dtype=torch.double)
+        # dis = torch.tensor(dis, dtype=torch.double)
         loss1 = kl_div(emot_dis.log(), dis)
         #multi-label emotion prediction loss
-        target_gt = torch.tensor(target_gt, dtype=torch.double)
+        # target_gt = torch.tensor(target_gt, dtype=torch.double)
         loss2 = MLSML(emot_dis.cuda(), target_gt.cuda())
         loss = lamda * loss1 + (1 - lamda) * loss2
         val_loss = loss
@@ -747,14 +757,14 @@ for i, data in enumerate(testDataloader):
         net(test, Frontal, Temporal, Central, Parietal, Occipital, dis)
     # print(att_1, att_2, att_3, att_4, att_5, att_6, att_7, att_8, att_9, att_10)
 
-    emot_dis = emot_dis.squeeze(dim=0)
+    emot_dis = emot_dis.squeeze(dim=0)# [32,9]
     dis = torch.squeeze(dis, dim=1)
-    emot_dis = torch.tensor(emot_dis, dtype=torch.double)  # [32,9]
+    # emot_dis = torch.tensor(emot_dis, dtype=torch.double)
     #emotion distribution loss
-    dis = torch.tensor(dis, dtype=torch.double)
+    # dis = torch.tensor(dis, dtype=torch.double)
     loss1 = kl_div(emot_dis.log(), dis)
     #multi-label emotion predictation loss
-    target_gt = torch.tensor(target_gt, dtype=torch.double)
+    # target_gt = torch.tensor(target_gt, dtype=torch.double)
     loss2 = MLSML(emot_dis.cuda(), target_gt.cuda())
     loss = lamda * loss1 + (1 - lamda) * loss2
     test_loss = loss
