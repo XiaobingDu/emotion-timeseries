@@ -113,6 +113,8 @@ def precision(y_test, predictions):
     precision : float
         Precision of our model
     """
+    y_test = y_test.cpu().detach().numpy()
+    predictions = predictions.cpu().detach().numpy()
     predict_label = np.array(predictions > 0.485, dtype=float)
 
     precision = 0.0
