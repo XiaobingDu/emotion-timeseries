@@ -149,7 +149,8 @@ def recall(y_test, predictions):
     recall : float
         recall of our model
     """
-
+    y_test = y_test.cpu().detach().numpy()
+    predictions = predictions.cpu().detach().numpy()
     predict_label = np.array(predictions > 0.485, dtype=float)
 
     recall = 0.0
