@@ -16,14 +16,14 @@ def subsetAccuracy(y_test, predictions):
     """
     y_test = y_test.cpu().detach().numpy()
     predictions = predictions.cpu().detach().numpy()
-    y_test = np.array(y_test > 0.5, dtype=float)
+    predict_label = np.array(predictions > 0.485, dtype=float)
 
     subsetaccuracy = 0.0
 
     for i in range(y_test.shape[0]):
         same = True
         for j in range(y_test.shape[1]):
-            if y_test[i, j] != predictions[i, j]:
+            if y_test[i, j] != predict_label[i, j]:
                 same = False
                 break
         if same:
@@ -48,13 +48,13 @@ def hammingLoss(y_test, predictions):
     """
     y_test = y_test.cpu().detach().numpy()
     predictions = predictions.cpu().detach().numpy()
-    y_test = np.array(y_test > 0.5, dtype=float)
+    predict_label = np.array(predictions > 0.485, dtype=float)
 
     hammingloss = 0.0
     for i in range(y_test.shape[0]):
         aux = 0.0
         for j in range(y_test.shape[1]):
-            if int(y_test[i, j]) != int(predictions[i, j]):
+            if int(y_test[i, j]) != int(predict_label[i, j]):
                 aux = aux + 1.0
         aux = aux / y_test.shape[1]
         hammingloss = hammingloss + aux
@@ -78,7 +78,7 @@ def accuracy(y_test, predictions):
     """
     y_test = y_test.cpu().detach().numpy()
     predictions = predictions.cpu().detach().numpy()
-    y_test = np.array(y_test > 0.5, dtype=float)
+    predict_label = np.array(predictions > 0.485, dtype=float)
 
     accuracy = 0.0
 
@@ -86,9 +86,9 @@ def accuracy(y_test, predictions):
         intersection = 0.0
         union = 0.0
         for j in range(y_test.shape[1]):
-            if int(y_test[i, j]) == 1 or int(predictions[i, j]) == 1:
+            if int(y_test[i, j]) == 1 or int(predict_label[i, j]) == 1:
                 union += 1
-            if int(y_test[i, j]) == 1 and int(predictions[i, j]) == 1:
+            if int(y_test[i, j]) == 1 and int(predict_label[i, j]) == 1:
                 intersection += 1
 
         if union != 0:
@@ -113,7 +113,7 @@ def precision(y_test, predictions):
     precision : float
         Precision of our model
     """
-    y_test = np.array(y_test > 0.5, dtype=float)
+    predict_label = np.array(predictions > 0.485, dtype=float)
 
     precision = 0.0
 
@@ -121,8 +121,8 @@ def precision(y_test, predictions):
         intersection = 0.0
         hXi = 0.0
         for j in range(y_test.shape[1]):
-            hXi = hXi + int(predictions[i, j])
-            if int(y_test[i, j]) == 1 and int(predictions[i, j]) == 1:
+            hXi = hXi + int(predict_label[i, j])
+            if int(y_test[i, j]) == 1 and int(predict_label[i, j]) == 1:
                 intersection += 1
 
         if hXi != 0:
@@ -148,7 +148,7 @@ def recall(y_test, predictions):
         recall of our model
     """
 
-    y_test = np.array(y_test > 0.5, dtype=float)
+    predict_label = np.array(predictions > 0.485, dtype=float)
 
     recall = 0.0
 
@@ -158,7 +158,7 @@ def recall(y_test, predictions):
         for j in range(y_test.shape[1]):
             Yi = Yi + int(y_test[i, j])
 
-            if y_test[i, j] == 1 and int(predictions[i, j]) == 1:
+            if y_test[i, j] == 1 and int(predict_label[i, j]) == 1:
                 intersection = intersection + 1
 
         if Yi != 0:
@@ -182,10 +182,10 @@ def fbeta(y_test, predictions, beta=1):
     fbeta : float
         fbeta of our model
     """
-    y_test = np.array(y_test > 0.5, dtype=float)
+    predict_label = np.array(predictions > 0.485, dtype=float)
 
-    pr = precision(y_test, predictions)
-    re = recall(y_test, predictions)
+    pr = precision(y_test, predict_label)
+    re = recall(y_test, predict_label)
 
     num = float((1 + pow(beta, 2)) * pr * re)
     den = float(pow(beta, 2) * pr + re)
