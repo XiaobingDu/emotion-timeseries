@@ -164,6 +164,7 @@ optimizer = torch.optim.RMSprop(net.parameters(), lr=lr) if args['optimizer' ]==
 kl_div = torch.nn.KLDivLoss(size_average = True, reduce = True)
 #from multi-label dom_emotion predict
 MLSML = torch.nn.MultiLabelSoftMarginLoss()
+mutilabel_criterion = torch.nn.BCELoss()
 
 # measure mAP
 difficult_examples = False
@@ -339,17 +340,30 @@ for epoch_num in range(num_epochs):
         target_gt = on_start_batch(dom_label)
 
         # Forward pass
-        emot_dis, input_clstm, shared_encoder, att_1, att_2, att_3, att_4, att_5, att_6, att_7, att_8, att_9, att_10 \
+        predict, input_clstm, shared_encoder, att_1, att_2, att_3, att_4, att_5, att_6, att_7, att_8, att_9, att_10 \
             = net(train, Frontal, Temporal, Central, Parietal, Occipital, dis)
         #get GC
         train_model_gista(shared_encoder, input_clstm, lam=0.5, lam_ridge=1e-4, lr=0.001, max_iter=1, check_every=1000, truncation=64)
         GC_est = shared_encoder.GC().cpu().data.numpy()
 
-        emot_dis = emot_dis.squeeze(dim=0)
-        dis = torch.squeeze(dis,dim=1)
-        loss1 = kl_div(emot_dis.log(), dis)
-        loss2 = MLSML(emot_dis.cuda(), target_gt.cuda())
-        loss = lamda*loss1 + (1 - lamda)*loss2
+        # for loss1
+        # softmax layer
+        softmax = torch.nn.Softmax(dim=1)
+        dis_prediction = softmax(predict)
+        dis_prediction = dis_prediction.squeeze(dim=0)  # [32,9]
+        dis = torch.squeeze(dis, dim=1)
+        # loss1: KLDivLoss
+        loss1 = kl_div(dis_prediction.log(), dis)
+        # for loss2
+        label_prediction = torch.sigmoid(predict)
+        # loss2: BCELoss
+        loss2 = mutilabel_criterion(label_prediction, target_gt)
+        print('*' * 100)
+        print('predict label...', label_prediction)
+        # loss2: MLSML
+        # loss2 = MLSML(label_prediction.cuda(), target_gt.cuda())
+        loss = lamda * loss1 + (1 - lamda) * loss2
+
         # Backprop and update weights
         optimizer.zero_grad()
         loss.backward()
@@ -357,59 +371,59 @@ for epoch_num in range(num_epochs):
         optimizer.step()
         avg_tr_loss += loss.item()
 
-        print('emot_dis....', emot_dis)
+        print('dis_prediction....', dis_prediction)
         print('target_gt...', target_gt)
 
         # emotion distribution metrics
         # euclidean
-        euclidean = euclidean_dist(dis.shape[0], dis, emot_dis)
+        euclidean = euclidean_dist(dis.shape[0], dis, dis_prediction)
         # chebyshev
-        chebyshev = chebyshev_dist(dis.shape[0], dis, emot_dis)
+        chebyshev = chebyshev_dist(dis.shape[0], dis, dis_prediction)
         # Kullback-Leibler divergence
-        kldist = KL_dist(dis, emot_dis)
+        kldist = KL_dist(dis, dis_prediction)
         # clark
-        clark = clark_dist(dis, emot_dis)
+        clark = clark_dist(dis, dis_prediction)
         # canberra
-        canberra = canberra_dist(dis, emot_dis)
+        canberra = canberra_dist(dis, dis_prediction)
         # cosine
-        cosine = cosine_dist(dis, emot_dis)
+        cosine = cosine_dist(dis, dis_prediction)
         # intersection
-        intersection = intersection_dist(dis, emot_dis)
+        intersection = intersection_dist(dis, dis_prediction)
 
         # for multilabel prediction
         # example-based-classification
-        train_subsetAccuracy = subsetAccuracy(target_gt, emot_dis)
-        train_hammingLoss = hammingLoss(target_gt, emot_dis)
-        train_eb_accuracy = accuracy(target_gt, emot_dis)
-        train_eb_precision = precision(target_gt, emot_dis)
-        train_eb_recall = recall(target_gt, emot_dis)
-        train_eb_fbeta = fbeta(target_gt, emot_dis)
+        train_subsetAccuracy = subsetAccuracy(target_gt, label_prediction)
+        train_hammingLoss = hammingLoss(target_gt, label_prediction)
+        train_eb_accuracy = accuracy(target_gt, label_prediction)
+        train_eb_precision = precision(target_gt, label_prediction)
+        train_eb_recall = recall(target_gt, label_prediction)
+        train_eb_fbeta = fbeta(target_gt, label_prediction)
 
         # example-based-ranking
-        train_oneError = oneError(target_gt, emot_dis)
-        train_coverage = coverage(target_gt, emot_dis)
-        train_averagePrecision = averagePrecision(target_gt, emot_dis)
-        train_rankingLoss = rankingLoss(target_gt, emot_dis)
+        train_oneError = oneError(target_gt, label_prediction)
+        train_coverage = coverage(target_gt, label_prediction)
+        train_averagePrecision = averagePrecision(target_gt, label_prediction)
+        train_rankingLoss = rankingLoss(target_gt, label_prediction)
 
         # label-based-classification
-        train_accuracyMacro = accuracyMacro(target_gt, emot_dis)
-        train_accuracyMicro = accuracyMicro(target_gt, emot_dis)
-        train_precisionMacro = precisionMacro(target_gt, emot_dis)
-        train_precisionMicro = precisionMicro(target_gt, emot_dis)
-        train_recallMacro = recallMacro(target_gt, emot_dis)
-        train_recallMicro = recallMicro(target_gt, emot_dis)
-        train_fbetaMacro = fbetaMacro(target_gt, emot_dis)
-        train_fbetaMicro = fbetaMicro(target_gt, emot_dis)
+        train_accuracyMacro = accuracyMacro(target_gt, label_prediction)
+        train_accuracyMicro = accuracyMicro(target_gt, label_prediction)
+        train_precisionMacro = precisionMacro(target_gt, label_prediction)
+        train_precisionMicro = precisionMicro(target_gt, label_prediction)
+        train_recallMacro = recallMacro(target_gt, label_prediction)
+        train_recallMicro = recallMicro(target_gt, label_prediction)
+        train_fbetaMacro = fbetaMacro(target_gt, label_prediction)
+        train_fbetaMicro = fbetaMicro(target_gt, label_prediction)
 
         # label-based-ranking
-        train_aucMacro = aucMacro(target_gt, emot_dis)
-        train_aucMicro = aucMicro(target_gt, emot_dis)
-        train_aucInstance = aucInstance(target_gt, emot_dis)
+        train_aucMacro = aucMacro(target_gt, label_prediction)
+        train_aucMicro = aucMicro(target_gt, label_prediction)
+        train_aucInstance = aucInstance(target_gt, label_prediction)
 
         #results
         if i % 10 == 0:
             #end_batch
-            on_end_batch(ap, epoch_num+1, emot_dis, target_gt, loss1, loss2, state= 'training')
+            on_end_batch(ap, epoch_num+1, label_prediction, target_gt, loss1, loss2, state= 'training')
             #输出每一个batch的结果，分析一下结果变化趋势
 
             print("Epoch no:" ,epoch_num +1, "| Avg train loss:" .format(avg_tr_loss /len(trSet) ,'0.4f') )
@@ -529,70 +543,79 @@ for epoch_num in range(num_epochs):
         target_gt = on_start_batch(dom_label)
 
         # Forward pass
-        emot_dis, input_clstm, shared_encoder, att_1, att_2, att_3, att_4, att_5, att_6, att_7, att_8, att_9, att_10 = \
+        predict, input_clstm, shared_encoder, att_1, att_2, att_3, att_4, att_5, att_6, att_7, att_8, att_9, att_10 = \
             net(val, Frontal, Temporal, Central, Parietal, Occipital, dis)
-        emot_dis = emot_dis.squeeze(dim=0)
-        dis = torch.squeeze(dis,dim=1)
-        print('emot_dis....', emot_dis)
-        print('target_gt...', target_gt)
 
-        loss1 = kl_div(emot_dis.log(), dis)
-        loss2 = MLSML(emot_dis.cuda(), target_gt.cuda())
+        # for loss1
+        # softmax layer
+        softmax = torch.nn.Softmax(dim=1)
+        dis_prediction = softmax(predict)
+        dis_prediction = dis_prediction.squeeze(dim=0)  # [32,9]
+        dis = torch.squeeze(dis, dim=1)
+        # loss1: KLDivLoss
+        loss1 = kl_div(dis_prediction.log(), dis)
+        # for loss2
+        label_prediction = torch.sigmoid(predict)
+        # loss2: BCELoss
+        loss2 = mutilabel_criterion(label_prediction, target_gt)
+        print('*' * 100)
+        print('predict label...', label_prediction)
+        # loss2: MLSML
+        # loss2 = MLSML(label_prediction.cuda(), target_gt.cuda())
         loss = lamda * loss1 + (1 - lamda) * loss2
-        val_loss = loss
         val_loss += val_loss /dis.shape[0]
 
         # emotion distribution metrics
         # euclidean
-        euclidean = euclidean_dist(dis.shape[0], dis, emot_dis)
+        euclidean = euclidean_dist(dis.shape[0], dis, dis_prediction)
         # chebyshev
-        chebyshev = chebyshev_dist(dis.shape[0], dis, emot_dis)
+        chebyshev = chebyshev_dist(dis.shape[0], dis, dis_prediction)
         # Kullback-Leibler divergence
-        kldist = KL_dist(dis, emot_dis)
+        kldist = KL_dist(dis, dis_prediction)
         # clark
-        clark = clark_dist(dis, emot_dis)
+        clark = clark_dist(dis, dis_prediction)
         # canberra
-        canberra = canberra_dist(dis, emot_dis)
+        canberra = canberra_dist(dis, dis_prediction)
         # cosine
-        cosine = cosine_dist(dis, emot_dis)
+        cosine = cosine_dist(dis, dis_prediction)
         # intersection
-        intersection = intersection_dist(dis, emot_dis)
+        intersection = intersection_dist(dis, dis_prediction)
 
         # for multilabel prediction
         # example-based-classification
-        val_subsetAccuracy = subsetAccuracy(target_gt, emot_dis)
-        val_hammingLoss = hammingLoss(target_gt, emot_dis)
-        val_eb_accuracy = accuracy(target_gt, emot_dis)
-        val_eb_precision = precision(target_gt, emot_dis)
-        val_eb_recall = recall(target_gt, emot_dis)
-        val_eb_fbeta = fbeta(target_gt, emot_dis)
+        val_subsetAccuracy = subsetAccuracy(target_gt, label_prediction)
+        val_hammingLoss = hammingLoss(target_gt, label_prediction)
+        val_eb_accuracy = accuracy(target_gt, label_prediction)
+        val_eb_precision = precision(target_gt, label_prediction)
+        val_eb_recall = recall(target_gt, label_prediction)
+        val_eb_fbeta = fbeta(target_gt, label_prediction)
 
         # example-based-ranking
-        val_oneError = oneError(target_gt, emot_dis)
-        val_coverage = coverage(target_gt, emot_dis)
-        val_averagePrecision = averagePrecision(target_gt, emot_dis)
-        val_rankingLoss = rankingLoss(target_gt, emot_dis)
+        val_oneError = oneError(target_gt, label_prediction)
+        val_coverage = coverage(target_gt, label_prediction)
+        val_averagePrecision = averagePrecision(target_gt, label_prediction)
+        val_rankingLoss = rankingLoss(target_gt, label_prediction)
 
         # label-based-classification
-        val_accuracyMacro = accuracyMacro(target_gt, emot_dis)
-        val_accuracyMicro = accuracyMicro(target_gt, emot_dis)
-        val_precisionMacro = precisionMacro(target_gt, emot_dis)
-        val_precisionMicro = precisionMicro(target_gt, emot_dis)
-        val_recallMacro = recallMacro(target_gt, emot_dis)
-        val_recallMicro = recallMicro(target_gt, emot_dis)
-        val_fbetaMacro = fbetaMacro(target_gt, emot_dis)
-        val_fbetaMicro = fbetaMicro(target_gt, emot_dis)
+        val_accuracyMacro = accuracyMacro(target_gt, label_prediction)
+        val_accuracyMicro = accuracyMicro(target_gt, label_prediction)
+        val_precisionMacro = precisionMacro(target_gt, label_prediction)
+        val_precisionMicro = precisionMicro(target_gt, label_prediction)
+        val_recallMacro = recallMacro(target_gt, label_prediction)
+        val_recallMicro = recallMicro(target_gt, label_prediction)
+        val_fbetaMacro = fbetaMacro(target_gt, label_prediction)
+        val_fbetaMicro = fbetaMicro(target_gt, label_prediction)
 
         # label-based-ranking
-        val_aucMacro = aucMacro(target_gt, emot_dis)
-        val_aucMicro = aucMicro(target_gt, emot_dis)
-        val_aucInstance = aucInstance(target_gt, emot_dis)
+        val_aucMacro = aucMacro(target_gt, label_prediction)
+        val_aucMicro = aucMicro(target_gt, label_prediction)
+        val_aucInstance = aucInstance(target_gt, label_prediction)
 
         #results
         if i % 10 == 0:
             #measure mAP
             #end_batch
-            on_end_batch(ap, epoch_num+1, emot_dis, target_gt, loss1, loss2, state='validation')
+            on_end_batch(ap, epoch_num+1, label_prediction, target_gt, loss1, loss2, state='validation')
 
             print('euclidean_dist: {euclidean_dist:.4f}\t'
                   'chebyshev_dist: {chebyshev_dist:.4f}\t'
@@ -675,7 +698,7 @@ for epoch_num in range(num_epochs):
                                                                         cosine_dist=cosine,
                                                                         intersection_dist=intersection))
         # Pearson correlation
-        emopcc += pearsonr(emot_dis.cpu().detach().numpy(), dis.cpu().detach().numpy())[0]
+        emopcc += pearsonr(dis_prediction.cpu().detach().numpy(), dis.cpu().detach().numpy())[0]
     # 每一个epoch loss平均
     epoch_loss = val_loss / len(valSet)
     # 每一个epoch pcc平均
@@ -740,68 +763,80 @@ for i, data in enumerate(testDataloader):
 
     # start batch
     target_gt = on_start_batch(dom_label)
-
     # Forward pass
-    emot_dis, input_clstm, shared_encoder, att_1, att_2, att_3, att_4, att_5, att_6, att_7, att_8, att_9, att_10 = \
+    predict, input_clstm, shared_encoder, att_1, att_2, att_3, att_4, att_5, att_6, att_7, att_8, att_9, att_10 = \
         net(test, Frontal, Temporal, Central, Parietal, Occipital, dis)
     # print(att_1, att_2, att_3, att_4, att_5, att_6, att_7, att_8, att_9, att_10)
-    emot_dis = emot_dis.squeeze(dim=0)# [32,9]
+
+    #for loss1
+    # softmax layer
+    softmax = torch.nn.Softmax(dim=1)
+    dis_prediction = softmax(predict)
+    dis_prediction = dis_prediction.squeeze(dim=0)# [32,9]
     dis = torch.squeeze(dis, dim=1)
-    loss1 = kl_div(emot_dis.log(), dis)
-    loss2 = MLSML(emot_dis.cuda(), target_gt.cuda())
+    #loss1: KLDivLoss
+    loss1 = kl_div(dis_prediction.log(), dis)
+    #for loss2
+    label_prediction = torch.sigmoid(predict)
+    #loss2: BCELoss
+    loss2 = mutilabel_criterion(label_prediction, target_gt)
+    print('*'*100)
+    print('predict label...', label_prediction)
+    #loss2: MLSML
+    # loss2 = MLSML(label_prediction.cuda(), target_gt.cuda())
     loss = lamda * loss1 + (1 - lamda) * loss2
     test_loss = loss
     test_loss += test_loss / dis.shape[0]
 
     # emotion distribution metrics
     # euclidean
-    euclidean = euclidean_dist(dis.shape[0], dis, emot_dis)
+    euclidean = euclidean_dist(dis.shape[0], dis, dis_prediction)
     # chebyshev
-    chebyshev = chebyshev_dist(dis.shape[0], dis, emot_dis)
+    chebyshev = chebyshev_dist(dis.shape[0], dis, dis_prediction)
     # Kullback-Leibler divergence
-    kldist = KL_dist(dis, emot_dis)
+    kldist = KL_dist(dis, dis_prediction)
     # clark
-    clark = clark_dist(dis, emot_dis)
+    clark = clark_dist(dis, dis_prediction)
     # canberra
-    canberra = canberra_dist(dis, emot_dis)
+    canberra = canberra_dist(dis, dis_prediction)
     # cosine
-    cosine = cosine_dist(dis, emot_dis)
+    cosine = cosine_dist(dis, dis_prediction)
     # intersection
-    intersection = intersection_dist(dis, emot_dis)
+    intersection = intersection_dist(dis, dis_prediction)
 
     # for multilabel prediction
     # example-based-classification
-    test_subsetAccuracy = subsetAccuracy(target_gt, emot_dis)
-    test_hammingLoss = hammingLoss(target_gt, emot_dis)
-    test_eb_accuracy = accuracy(target_gt, emot_dis)
-    test_eb_precision = precision(target_gt, emot_dis)
-    test_eb_recall = recall(target_gt, emot_dis)
-    test_eb_fbeta = fbeta(target_gt, emot_dis)
+    test_subsetAccuracy = subsetAccuracy(target_gt, label_prediction)
+    test_hammingLoss = hammingLoss(target_gt, label_prediction)
+    test_eb_accuracy = accuracy(target_gt, label_prediction)
+    test_eb_precision = precision(target_gt, label_prediction)
+    test_eb_recall = recall(target_gt, label_prediction)
+    test_eb_fbeta = fbeta(target_gt, label_prediction)
 
     # example-based-ranking
-    test_oneError = oneError(target_gt, emot_dis)
-    test_coverage = coverage(target_gt, emot_dis)
-    test_averagePrecision = averagePrecision(target_gt, emot_dis)
-    test_rankingLoss = rankingLoss(target_gt, emot_dis)
+    test_oneError = oneError(target_gt, label_prediction)
+    test_coverage = coverage(target_gt, label_prediction)
+    test_averagePrecision = averagePrecision(target_gt, label_prediction)
+    test_rankingLoss = rankingLoss(target_gt, label_prediction)
 
     # label-based-classification
-    test_accuracyMacro = accuracyMacro(target_gt, emot_dis)
-    test_accuracyMicro = accuracyMicro(target_gt, emot_dis)
-    test_precisionMacro = precisionMacro(target_gt, emot_dis)
-    test_precisionMicro = precisionMicro(target_gt, emot_dis)
-    test_recallMacro = recallMacro(target_gt, emot_dis)
-    test_recallMicro = recallMicro(target_gt, emot_dis)
-    test_fbetaMacro = fbetaMacro(target_gt, emot_dis)
-    test_fbetaMicro = fbetaMicro(target_gt, emot_dis)
+    test_accuracyMacro = accuracyMacro(target_gt, label_prediction)
+    test_accuracyMicro = accuracyMicro(target_gt, label_prediction)
+    test_precisionMacro = precisionMacro(target_gt, label_prediction)
+    test_precisionMicro = precisionMicro(target_gt, label_prediction)
+    test_recallMacro = recallMacro(target_gt, label_prediction)
+    test_recallMicro = recallMicro(target_gt, label_prediction)
+    test_fbetaMacro = fbetaMacro(target_gt, label_prediction)
+    test_fbetaMicro = fbetaMicro(target_gt, label_prediction)
 
     # label-based-ranking
-    test_aucMacro = aucMacro(target_gt, emot_dis)
-    test_aucMicro = aucMicro(target_gt, emot_dis)
-    test_aucInstance = aucInstance(target_gt, emot_dis)
+    test_aucMacro = aucMacro(target_gt, label_prediction)
+    test_aucMicro = aucMicro(target_gt, label_prediction)
+    test_aucInstance = aucInstance(target_gt, label_prediction)
 
     if i % 10 == 0:
         # measure mAP
-        on_end_batch(ap, epoch_num+1, emot_dis, target_gt, loss1, loss2, state= 'test')
+        on_end_batch(ap, epoch_num+1, label_prediction, target_gt, loss1, loss2, state= 'test')
 
         print('euclidean_dist: {euclidean_dist:.4f}\t'
                   'chebyshev_dist: {chebyshev_dist:.4f}\t'
@@ -884,7 +919,7 @@ for i, data in enumerate(testDataloader):
                                                                         cosine_dist=cosine,
                                                                         intersection_dist=intersection))
     # pearson correlation
-    emopcc += pearsonr(emot_dis.cpu().detach().numpy(), dis.cpu().detach().numpy())[0]
+    emopcc += pearsonr(dis_prediction.cpu().detach().numpy(), dis.cpu().detach().numpy())[0]
 # average loss
 test_testkl = test_loss / len(testSet)
 # average pcc

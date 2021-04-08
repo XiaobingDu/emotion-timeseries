@@ -1,3 +1,4 @@
+import numpy as np
 
 def subsetAccuracy(y_test, predictions):
     """
@@ -15,6 +16,7 @@ def subsetAccuracy(y_test, predictions):
     """
     y_test = y_test.cpu().detach().numpy()
     predictions = predictions.cpu().detach().numpy()
+    y_test = np.array(y_test > 0.5, dtype=float)
 
     subsetaccuracy = 0.0
 
@@ -46,6 +48,7 @@ def hammingLoss(y_test, predictions):
     """
     y_test = y_test.cpu().detach().numpy()
     predictions = predictions.cpu().detach().numpy()
+    y_test = np.array(y_test > 0.5, dtype=float)
 
     hammingloss = 0.0
     for i in range(y_test.shape[0]):
@@ -75,6 +78,7 @@ def accuracy(y_test, predictions):
     """
     y_test = y_test.cpu().detach().numpy()
     predictions = predictions.cpu().detach().numpy()
+    y_test = np.array(y_test > 0.5, dtype=float)
 
     accuracy = 0.0
 
@@ -109,6 +113,7 @@ def precision(y_test, predictions):
     precision : float
         Precision of our model
     """
+    y_test = np.array(y_test > 0.5, dtype=float)
 
     precision = 0.0
 
@@ -143,6 +148,8 @@ def recall(y_test, predictions):
         recall of our model
     """
 
+    y_test = np.array(y_test > 0.5, dtype=float)
+
     recall = 0.0
 
     for i in range(y_test.shape[0]):
@@ -175,6 +182,7 @@ def fbeta(y_test, predictions, beta=1):
     fbeta : float
         fbeta of our model
     """
+    y_test = np.array(y_test > 0.5, dtype=float)
 
     pr = precision(y_test, predictions)
     re = recall(y_test, predictions)
