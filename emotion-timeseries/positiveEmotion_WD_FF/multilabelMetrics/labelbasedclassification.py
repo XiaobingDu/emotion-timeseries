@@ -1,5 +1,5 @@
 from .functions import multilabelConfussionMatrix, multilabelMicroConfussionMatrix
-
+import numpy as np
 
 def accuracyMacro(y_test, predictions):
     """
@@ -15,8 +15,12 @@ def accuracyMacro(y_test, predictions):
     accuracymacro : float
         Accuracy Macro of our model
     """
+    y_test = y_test.cpu().detach().numpy()
+    predictions = predictions.cpu().detach().numpy()
+    predict_label = np.array(predictions > 0.500, dtype=float)
+
     accuracymacro = 0.0
-    TP, FP, TN, FN = multilabelConfussionMatrix(y_test, predictions)
+    TP, FP, TN, FN = multilabelConfussionMatrix(y_test, predict_label)
     for i in range(len(TP)):
         accuracymacro = accuracymacro + ((TP[i] + TN[i]) / (TP[i] + FP[i] + TN[i] + FN[i]))
 
@@ -39,8 +43,12 @@ def accuracyMicro(y_test, predictions):
     accuracymicro : float
         Accuracy Micro of our model
     """
+    y_test = y_test.cpu().detach().numpy()
+    predictions = predictions.cpu().detach().numpy()
+    predict_label = np.array(predictions > 0.500, dtype=float)
+
     accuracymicro = 0.0
-    TP, FP, TN, FN = multilabelConfussionMatrix(y_test, predictions)
+    TP, FP, TN, FN = multilabelConfussionMatrix(y_test, predict_label)
     TPMicro, FPMicro, TNMicro, FNMicro = multilabelMicroConfussionMatrix(TP, FP, TN, FN)
 
     if (TPMicro + FPMicro + TNMicro + FNMicro) != 0:
@@ -63,8 +71,12 @@ def precisionMacro(y_test, predictions):
     precisionmacro : float
         Precision macro of our model
     """
+    y_test = y_test.cpu().detach().numpy()
+    predictions = predictions.cpu().detach().numpy()
+    predict_label = np.array(predictions > 0.500, dtype=float)
+
     precisionmacro = 0.0
-    TP, FP, TN, FN = multilabelConfussionMatrix(y_test, predictions)
+    TP, FP, TN, FN = multilabelConfussionMatrix(y_test, predict_label)
     for i in range(len(TP)):
         if TP[i] + FP[i] != 0:
             precisionmacro = precisionmacro + (TP[i] / (TP[i] + FP[i]))
@@ -87,8 +99,12 @@ def precisionMicro(y_test, predictions):
     precisionmicro : float
         Precision micro of our model
     """
+    y_test = y_test.cpu().detach().numpy()
+    predictions = predictions.cpu().detach().numpy()
+    predict_label = np.array(predictions > 0.500, dtype=float)
+
     precisionmicro = 0.0
-    TP, FP, TN, FN = multilabelConfussionMatrix(y_test, predictions)
+    TP, FP, TN, FN = multilabelConfussionMatrix(y_test, predict_label)
     TPMicro, FPMicro, TNMicro, FNMicro = multilabelMicroConfussionMatrix(TP, FP, TN, FN)
     if (TPMicro + FPMicro) != 0:
         precisionmicro = float(TPMicro / (TPMicro + FPMicro))
@@ -110,8 +126,12 @@ def recallMacro(y_test, predictions):
     recallmacro : float
         Recall Macro of our model
     """
+    y_test = y_test.cpu().detach().numpy()
+    predictions = predictions.cpu().detach().numpy()
+    predict_label = np.array(predictions > 0.500, dtype=float)
+
     recallmacro = 0.0
-    TP, FP, TN, FN = multilabelConfussionMatrix(y_test, predictions)
+    TP, FP, TN, FN = multilabelConfussionMatrix(y_test, predict_label)
     for i in range(len(TP)):
         if TP[i] + FN[i] != 0:
             recallmacro = recallmacro + (TP[i] / (TP[i] + FN[i]))
@@ -134,8 +154,12 @@ def recallMicro(y_test, predictions):
     recallmicro : float
         Recall Micro of our model
     """
+    y_test = y_test.cpu().detach().numpy()
+    predictions = predictions.cpu().detach().numpy()
+    predict_label = np.array(predictions > 0.500, dtype=float)
+
     recallmicro = 0.0
-    TP, FP, TN, FN = multilabelConfussionMatrix(y_test, predictions)
+    TP, FP, TN, FN = multilabelConfussionMatrix(y_test, predict_label)
     TPMicro, FPMicro, TNMicro, FNMicro = multilabelMicroConfussionMatrix(TP, FP, TN, FN)
 
     if (TPMicro + FNMicro) != 0:
@@ -158,8 +182,12 @@ def fbetaMacro(y_test, predictions, beta=1):
     fbetamacro : float
         FBeta Macro of our model
     """
+    y_test = y_test.cpu().detach().numpy()
+    predictions = predictions.cpu().detach().numpy()
+    predict_label = np.array(predictions > 0.500, dtype=float)
+
     fbetamacro = 0.0
-    TP, FP, TN, FN = multilabelConfussionMatrix(y_test, predictions)
+    TP, FP, TN, FN = multilabelConfussionMatrix(y_test, predict_label)
 
     for i in range(len(TP)):
         num = float((1 + pow(beta, 2)) * TP[i])
@@ -185,8 +213,12 @@ def fbetaMicro(y_test, predictions, beta=1):
     fbetamicro : float
         FBeta Micro of our model
     """
+    y_test = y_test.cpu().detach().numpy()
+    predictions = predictions.cpu().detach().numpy()
+    predict_label = np.array(predictions > 0.500, dtype=float)
+
     fbetamicro = 0.0
-    TP, FP, TN, FN = multilabelConfussionMatrix(y_test, predictions)
+    TP, FP, TN, FN = multilabelConfussionMatrix(y_test, predict_label)
     TPMicro, FPMicro, TNMicro, FNMicro = multilabelMicroConfussionMatrix(TP, FP, TN, FN)
 
     num = float((1 + pow(beta, 2)) * TPMicro)

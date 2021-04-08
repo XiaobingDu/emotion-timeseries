@@ -359,8 +359,8 @@ for epoch_num in range(num_epochs):
         # loss2: BCELoss
         target_gt = target_gt.detach()
         loss2 = mutilabel_criterion(label_prediction, target_gt)
-        print('*' * 100)
-        print('predict label...', label_prediction)
+        # print('*' * 100)
+        # print('predict label...', label_prediction)
         # loss2: MLSML
         # loss2 = MLSML(label_prediction.cuda(), target_gt.cuda())
         loss = lamda * loss1 + (1 - lamda) * loss2
@@ -371,9 +371,8 @@ for epoch_num in range(num_epochs):
         a = torch.nn.utils.clip_grad_norm_(net.parameters(), 10)
         optimizer.step()
         avg_tr_loss += loss.item()
-
-        print('dis_prediction....', dis_prediction)
-        print('target_gt...', target_gt)
+        # print('dis_prediction....', dis_prediction)
+        # print('target_gt...', target_gt)
 
         # emotion distribution metrics
         # euclidean
@@ -560,8 +559,8 @@ for epoch_num in range(num_epochs):
         # loss2: BCELoss
         dom_label = dom_label.detach()
         loss2 = mutilabel_criterion(label_prediction, dom_label)
-        print('*' * 100)
-        print('predict label...', label_prediction)
+        # print('*' * 100)
+        # print('predict label...', label_prediction)
         # loss2: MLSML
         # loss2 = MLSML(label_prediction.cuda(), target_gt.cuda())
         loss = lamda * loss1 + (1 - lamda) * loss2
@@ -783,8 +782,8 @@ for i, data in enumerate(testDataloader):
     #loss2: BCELoss
     dom_label = dom_label.detach()
     loss2 = mutilabel_criterion(label_prediction, dom_label)
-    print('*'*100)
-    print('predict label...', label_prediction)
+    # print('*'*100)
+    # print('predict label...', label_prediction)
     #loss2: MLSML
     # loss2 = MLSML(label_prediction.cuda(), target_gt.cuda())
     loss = lamda * loss1 + (1 - lamda) * loss2
