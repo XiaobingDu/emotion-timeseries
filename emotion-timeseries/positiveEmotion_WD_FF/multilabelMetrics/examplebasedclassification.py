@@ -113,11 +113,7 @@ def precision(y_test, predictions):
     precision : float
         Precision of our model
     """
-    # y_test = y_test.cpu().detach().numpy()
-    print('*'*100)
-    print('y_test')
-    print(y_test.dtype)
-    print(y_test.device)
+    y_test = y_test.cpu().detach().numpy()
     predictions = predictions.cpu().detach().numpy()
     predict_label = np.array(predictions > 0.485, dtype=float)
 
@@ -189,12 +185,9 @@ def fbeta(y_test, predictions, beta=1):
     fbeta : float
         fbeta of our model
     """
-    y_test = y_test.cpu().detach().numpy()
-    predictions = predictions.cpu().detach().numpy()
-    predict_label = np.array(predictions > 0.485, dtype=float)
 
-    pr = precision(y_test, predict_label)
-    re = recall(y_test, predict_label)
+    pr = precision(y_test, predictions)
+    re = recall(y_test, predictions)
 
     num = float((1 + pow(beta, 2)) * pr * re)
     den = float(pow(beta, 2) * pr + re)
