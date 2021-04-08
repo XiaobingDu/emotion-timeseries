@@ -11,6 +11,10 @@ from scipy.stats.mstats import pearsonr
 from clstm import train_model_gista
 import time, argparse
 import codecs
+from multilabelMetrics.examplebasedclassification import *
+from multilabelMetrics.examplebasedranking import *
+from multilabelMetrics.labelbasedclassification import *
+from multilabelMetrics.labelbasedranking import *
 import warnings
 warnings.filterwarnings('ignore')
 parser = argparse.ArgumentParser()
@@ -352,27 +356,57 @@ for epoch_num in range(num_epochs):
         optimizer.step()
         avg_tr_loss += loss.item()
 
+        # emotion distribution metrics
+        # euclidean
+        euclidean = euclidean_dist(dis.shape[0], dis, emot_dis)
+        # chebyshev
+        chebyshev = chebyshev_dist(dis.shape[0], dis, emot_dis)
+        # Kullback-Leibler divergence
+        kldist = KL_dist(dis, emot_dis)
+        # clark
+        clark = clark_dist(dis, emot_dis)
+        # canberra
+        canberra = canberra_dist(dis, emot_dis)
+        # cosine
+        cosine = cosine_dist(dis, emot_dis)
+        # intersection
+        intersection = intersection_dist(dis, emot_dis)
+
+        # for multilabel prediction
+        # example-based-classification
+        train_subsetAccuracy = subsetAccuracy(target_gt, emot_dis)
+        train_hammingLoss = hammingLoss(target_gt, emot_dis)
+        train_eb_accuracy = accuracy(target_gt, emot_dis)
+        train_eb_precision = precision(target_gt, emot_dis)
+        train_eb_recall = recall(target_gt, emot_dis)
+        train_eb_fbeta = fbeta(target_gt, emot_dis)
+
+        # example-based-ranking
+        train_oneError = oneError(target_gt, emot_dis)
+        train_coverage = coverage(target_gt, emot_dis)
+        train_averagePrecision = averagePrecision(target_gt, emot_dis)
+        train_rankingLoss = rankingLoss(target_gt, emot_dis)
+
+        # label-based-classification
+        train_accuracyMacro = accuracyMacro(target_gt, emot_dis)
+        train_accuracyMicro = accuracyMicro(target_gt, emot_dis)
+        train_precisionMacro = precisionMacro(target_gt, emot_dis)
+        train_precisionMicro = precisionMicro(target_gt, emot_dis)
+        train_recallMacro = recallMacro(target_gt, emot_dis)
+        train_recallMicro = recallMicro(target_gt, emot_dis)
+        train_fbetaMacro = fbetaMacro(target_gt, emot_dis)
+        train_fbetaMicro = fbetaMicro(target_gt, emot_dis)
+
+        # label-based-ranking
+        train_aucMacro = aucMacro(target_gt, emot_dis)
+        train_aucMicro = aucMicro(target_gt, emot_dis)
+        train_aucInstance = aucInstance(target_gt, emot_dis)
+
         #results
         if i % 10 == 0:
             #end_batch
             on_end_batch(ap, epoch_num+1, emot_dis, target_gt, loss1, loss2, state= 'training')
             #输出每一个batch的结果，分析一下结果变化趋势
-
-            #emotion distribution metrics
-            # euclidean
-            euclidean = euclidean_dist(dis.shape[0], dis, emot_dis)
-            # chebyshev
-            chebyshev = chebyshev_dist(dis.shape[0], dis, emot_dis)
-            # Kullback-Leibler divergence
-            kldist = KL_dist(dis, emot_dis)
-            # clark
-            clark = clark_dist(dis, emot_dis)
-            # canberra
-            canberra = canberra_dist(dis, emot_dis)
-            # cosine
-            cosine = cosine_dist(dis, emot_dis)
-            # intersection
-            intersection = intersection_dist(dis, emot_dis)
 
             print("Epoch no:" ,epoch_num +1, "| Avg train loss:" .format(avg_tr_loss /len(trSet) ,'0.4f') )
             print('euclidean_dist: {euclidean_dist:.4f}\t'
@@ -386,6 +420,39 @@ for epoch_num in range(num_epochs):
                                                                         clark_dist=clark, canberra_dist=canberra,
                                                                         cosine_dist=cosine,
                                                                         intersection_dist=intersection))
+
+            print("Training set results:\n",
+                  'Multilabel metrics: example-based-classification:\n',
+                  "subsetAccuracy= {:.4f}".format(train_subsetAccuracy),
+                  "hammingLoss= {:.4f}".format(train_hammingLoss),
+                  "accuracy= {:.4f}".format(train_eb_accuracy),
+                  "precision= {:.4f}".format(train_eb_precision),
+                  "recall= {:.4f}".format(train_eb_recall),
+                  "fbeta= {:.4f}".format(train_eb_fbeta))
+
+            print("Training set results:\n",
+                  'Multilabel metrics: example-based-ranking:\n',
+                  "oneError= {:.4f}".format(train_oneError),
+                  "coverage= {:.4f}".format(train_coverage),
+                  "averagePrecision= {:.4f}".format(train_averagePrecision),
+                  "rankingLoss= {:.4f}".format(train_rankingLoss))
+
+            print("Training set results:\n",
+                  'Multilabel metrics: label-based-classification:\n',
+                  "accuracyMacro= {:.4f}".format(train_accuracyMacro),
+                  "accuracyMicro= {:.4f}".format(train_accuracyMicro),
+                  "precisionMacro= {:.4f}".format(train_precisionMacro),
+                  "precisionMicro= {:.4f}".format(train_precisionMicro),
+                  "recallMacro= {:.4f}".format(train_recallMacro),
+                  "recallMicro= {:.4f}".format(train_recallMicro),
+                  "fbetaMacro= {:.4f}".format(train_fbetaMacro),
+                  "fbetaMicro= {:.4f}".format(train_fbetaMicro))
+
+            print("Training set results:\n",
+                  'Multilabel metrics: label-based-ranking:\n',
+                  "aucMacro= {:.4f}".format(train_aucMacro),
+                  "aucMicro= {:.4f}".format(train_aucMicro),
+                  "aucInstance={:.4f}".format(train_aucInstance))
 
             result = codecs.open(FLAGS.save_file, 'a', 'utf-8')
             result.write("\n------------------------------------------------------------------\n")
@@ -476,27 +543,57 @@ for epoch_num in range(num_epochs):
         val_loss = loss
         val_loss += val_loss /dis.shape[0]
 
+        # emotion distribution metrics
+        # euclidean
+        euclidean = euclidean_dist(dis.shape[0], dis, emot_dis)
+        # chebyshev
+        chebyshev = chebyshev_dist(dis.shape[0], dis, emot_dis)
+        # Kullback-Leibler divergence
+        kldist = KL_dist(dis, emot_dis)
+        # clark
+        clark = clark_dist(dis, emot_dis)
+        # canberra
+        canberra = canberra_dist(dis, emot_dis)
+        # cosine
+        cosine = cosine_dist(dis, emot_dis)
+        # intersection
+        intersection = intersection_dist(dis, emot_dis)
+
+        # for multilabel prediction
+        # example-based-classification
+        val_subsetAccuracy = subsetAccuracy(target_gt, emot_dis)
+        val_hammingLoss = hammingLoss(target_gt, emot_dis)
+        val_eb_accuracy = accuracy(target_gt, emot_dis)
+        val_eb_precision = precision(target_gt, emot_dis)
+        val_eb_recall = recall(target_gt, emot_dis)
+        val_eb_fbeta = fbeta(target_gt, emot_dis)
+
+        # example-based-ranking
+        val_oneError = oneError(target_gt, emot_dis)
+        val_coverage = coverage(target_gt, emot_dis)
+        val_averagePrecision = averagePrecision(target_gt, emot_dis)
+        val_rankingLoss = rankingLoss(target_gt, emot_dis)
+
+        # label-based-classification
+        val_accuracyMacro = accuracyMacro(target_gt, emot_dis)
+        val_accuracyMicro = accuracyMicro(target_gt, emot_dis)
+        val_precisionMacro = precisionMacro(target_gt, emot_dis)
+        val_precisionMicro = precisionMicro(target_gt, emot_dis)
+        val_recallMacro = recallMacro(target_gt, emot_dis)
+        val_recallMicro = recallMicro(target_gt, emot_dis)
+        val_fbetaMacro = fbetaMacro(target_gt, emot_dis)
+        val_fbetaMicro = fbetaMicro(target_gt, emot_dis)
+
+        # label-based-ranking
+        val_aucMacro = aucMacro(target_gt, emot_dis)
+        val_aucMicro = aucMicro(target_gt, emot_dis)
+        val_aucInstance = aucInstance(target_gt, emot_dis)
+
         #results
         if i % 10 == 0:
             #measure mAP
             #end_batch
             on_end_batch(ap, epoch_num+1, emot_dis, target_gt, loss1, loss2, state='validation')
-
-            # emotion distribution metrics
-            # euclidean
-            euclidean = euclidean_dist(dis.shape[0], dis, emot_dis)
-            # chebyshev
-            chebyshev = chebyshev_dist(dis.shape[0], dis, emot_dis)
-            # Kullback-Leibler divergence
-            kldist = KL_dist(dis, emot_dis)
-            # clark
-            clark = clark_dist(dis, emot_dis)
-            # canberra
-            canberra = canberra_dist(dis, emot_dis)
-            # cosine
-            cosine = cosine_dist(dis, emot_dis)
-            # intersection
-            intersection = intersection_dist(dis, emot_dis)
 
             print('euclidean_dist: {euclidean_dist:.4f}\t'
                   'chebyshev_dist: {chebyshev_dist:.4f}\t'
@@ -509,6 +606,39 @@ for epoch_num in range(num_epochs):
                                                                         clark_dist=clark, canberra_dist=canberra,
                                                                         cosine_dist=cosine,
                                                                         intersection_dist=intersection))
+
+            print("Validation set results:\n",
+                  'Multilabel metrics: example-based-classification:\n',
+                  "subsetAccuracy= {:.4f}".format(val_subsetAccuracy),
+                  "hammingLoss= {:.4f}".format(val_hammingLoss),
+                  "accuracy= {:.4f}".format(val_eb_accuracy),
+                  "precision= {:.4f}".format(val_eb_precision),
+                  "recall= {:.4f}".format(val_eb_recall),
+                  "fbeta= {:.4f}".format(val_eb_fbeta))
+
+            print(
+                  'Multilabel metrics: example-based-ranking:\n',
+                  "oneError= {:.4f}".format(val_oneError),
+                  "coverage= {:.4f}".format(val_coverage),
+                  "averagePrecision= {:.4f}".format(val_averagePrecision),
+                  "rankingLoss= {:.4f}".format(val_rankingLoss))
+
+            print(
+                  'Multilabel metrics: label-based-classification:\n',
+                  "accuracyMacro= {:.4f}".format(val_accuracyMacro),
+                  "accuracyMicro= {:.4f}".format(val_accuracyMicro),
+                  "precisionMacro= {:.4f}".format(val_precisionMacro),
+                  "precisionMicro= {:.4f}".format(val_precisionMicro),
+                  "recallMacro= {:.4f}".format(val_recallMacro),
+                  "recallMicro= {:.4f}".format(val_recallMicro),
+                  "fbetaMacro= {:.4f}".format(val_fbetaMacro),
+                  "fbetaMicro= {:.4f}".format(val_fbetaMicro))
+
+            print(
+                  'Multilabel metrics: label-based-ranking:\n',
+                  "aucMacro= {:.4f}".format(val_aucMacro),
+                  "aucMicro= {:.4f}".format(val_aucMicro),
+                  "aucInstance={:.4f}".format(val_aucInstance))
 
             result.write("\n------------------------------------------------------------------\n")
             result.write('Training co-attention:\n ')
@@ -630,25 +760,55 @@ for i, data in enumerate(testDataloader):
     test_loss = loss
     test_loss += test_loss / dis.shape[0]
 
+    # emotion distribution metrics
+    # euclidean
+    euclidean = euclidean_dist(dis.shape[0], dis, emot_dis)
+    # chebyshev
+    chebyshev = chebyshev_dist(dis.shape[0], dis, emot_dis)
+    # Kullback-Leibler divergence
+    kldist = KL_dist(dis, emot_dis)
+    # clark
+    clark = clark_dist(dis, emot_dis)
+    # canberra
+    canberra = canberra_dist(dis, emot_dis)
+    # cosine
+    cosine = cosine_dist(dis, emot_dis)
+    # intersection
+    intersection = intersection_dist(dis, emot_dis)
+
+    # for multilabel prediction
+    # example-based-classification
+    test_subsetAccuracy = subsetAccuracy(target_gt, emot_dis)
+    test_hammingLoss = hammingLoss(target_gt, emot_dis)
+    test_eb_accuracy = accuracy(target_gt, emot_dis)
+    test_eb_precision = precision(target_gt, emot_dis)
+    test_eb_recall = recall(target_gt, emot_dis)
+    test_eb_fbeta = fbeta(target_gt, emot_dis)
+
+    # example-based-ranking
+    test_oneError = oneError(target_gt, emot_dis)
+    test_coverage = coverage(target_gt, emot_dis)
+    test_averagePrecision = averagePrecision(target_gt, emot_dis)
+    test_rankingLoss = rankingLoss(target_gt, emot_dis)
+
+    # label-based-classification
+    test_accuracyMacro = accuracyMacro(target_gt, emot_dis)
+    test_accuracyMicro = accuracyMicro(target_gt, emot_dis)
+    test_precisionMacro = precisionMacro(target_gt, emot_dis)
+    test_precisionMicro = precisionMicro(target_gt, emot_dis)
+    test_recallMacro = recallMacro(target_gt, emot_dis)
+    test_recallMicro = recallMicro(target_gt, emot_dis)
+    test_fbetaMacro = fbetaMacro(target_gt, emot_dis)
+    test_fbetaMicro = fbetaMicro(target_gt, emot_dis)
+
+    # label-based-ranking
+    test_aucMacro = aucMacro(target_gt, emot_dis)
+    test_aucMicro = aucMicro(target_gt, emot_dis)
+    test_aucInstance = aucInstance(target_gt, emot_dis)
+
     if i % 10 == 0:
         # measure mAP
         on_end_batch(ap, epoch_num+1, emot_dis, target_gt, loss1, loss2, state= 'test')
-
-        # emotion distribution metrics
-        # euclidean
-        euclidean = euclidean_dist(dis.shape[0], dis, emot_dis)
-        # chebyshev
-        chebyshev = chebyshev_dist(dis.shape[0], dis, emot_dis)
-        # Kullback-Leibler divergence
-        kldist = KL_dist(dis, emot_dis)
-        # clark
-        clark = clark_dist(dis, emot_dis)
-        # canberra
-        canberra = canberra_dist(dis, emot_dis)
-        # cosine
-        cosine = cosine_dist(dis, emot_dis)
-        # intersection
-        intersection = intersection_dist(dis, emot_dis)
 
         print('euclidean_dist: {euclidean_dist:.4f}\t'
                   'chebyshev_dist: {chebyshev_dist:.4f}\t'
@@ -661,6 +821,39 @@ for i, data in enumerate(testDataloader):
                                                                         clark_dist=clark, canberra_dist=canberra,
                                                                         cosine_dist=cosine,
                                                                         intersection_dist=intersection))
+
+        print("Test set results:\n",
+              'Multilabel metrics: example-based-classification:\n',
+              "subsetAccuracy= {:.4f}".format(test_subsetAccuracy),
+              "hammingLoss= {:.4f}".format(test_hammingLoss),
+              "accuracy= {:.4f}".format(test_eb_accuracy),
+              "precision= {:.4f}".format(test_eb_precision),
+              "recall= {:.4f}".format(test_eb_recall),
+              "fbeta= {:.4f}".format(test_eb_fbeta))
+
+        print("Test set results:\n",
+              'Multilabel metrics: example-based-ranking:\n',
+              "oneError= {:.4f}".format(test_oneError),
+              "coverage= {:.4f}".format(test_coverage),
+              "averagePrecision= {:.4f}".format(test_averagePrecision),
+              "rankingLoss= {:.4f}".format(test_rankingLoss))
+
+        print("Test set results:\n",
+              'Multilabel metrics: label-based-classification:\n',
+              "accuracyMacro= {:.4f}".format(test_accuracyMacro),
+              "accuracyMicro= {:.4f}".format(test_accuracyMicro),
+              "precisionMacro= {:.4f}".format(test_precisionMacro),
+              "precisionMicro= {:.4f}".format(test_precisionMicro),
+              "recallMacro= {:.4f}".format(test_recallMacro),
+              "recallMicro= {:.4f}".format(test_recallMicro),
+              "fbetaMacro= {:.4f}".format(test_fbetaMacro),
+              "fbetaMicro= {:.4f}".format(test_fbetaMicro))
+
+        print("Test set results:\n",
+              'Multilabel metrics: label-based-ranking:\n',
+              "aucMacro= {:.4f}".format(test_aucMacro),
+              "aucMicro= {:.4f}".format(test_aucMicro),
+              "aucInstance={:.4f}".format(test_aucInstance))
 
         result.write("\n------------------------------------------------------------------\n")
         result.write('Training co-attention:\n ')

@@ -1,14 +1,14 @@
-from .auxiliar_functions import multilabelConfussionMatrix, multilabelMicroConfussionMatrix
-from decimal import Decimal
-def accuracyMacro(y_test, y_pred):
+from .functions import multilabelConfussionMatrix, multilabelMicroConfussionMatrix
+
+
+def accuracyMacro(y_test, predictions):
     """
     Accuracy Macro of our model
-
     Params
     ======
     y_test : sparse or dense matrix (n_samples, n_labels)
         Matrix of labels used in the test phase
-    y_pred: sparse or dense matrix (n_samples, n_labels)
+    predictions: sparse or dense matrix (n_samples, n_labels)
         Matrix of predicted labels given by our model
     Returns
     =======
@@ -16,24 +16,23 @@ def accuracyMacro(y_test, y_pred):
         Accuracy Macro of our model
     """
     accuracymacro = 0.0
-    TP, FP, TN, FN = multilabelConfussionMatrix(y_test, y_pred)
+    TP, FP, TN, FN = multilabelConfussionMatrix(y_test, predictions)
     for i in range(len(TP)):
-        accuracymacro = Decimal(accuracymacro) + Decimal(TP[i] + TN[i])/Decimal(TP[i] + FP[i] + TN[i] + FN[i])
-    
-    accuracymacro = Decimal(accuracymacro)/Decimal(y_test.shape[1])
+        accuracymacro = accuracymacro + ((TP[i] + TN[i]) / (TP[i] + FP[i] + TN[i] + FN[i]))
+
+    accuracymacro = float(accuracymacro / len(TP))
 
     return accuracymacro
 
 
-def accuracyMicro(y_test, y_pred):
+def accuracyMicro(y_test, predictions):
     """
     Accuracy Micro of our model
-
     Params
     ======
     y_test : sparse or dense matrix (n_samples, n_labels)
         Matrix of labels used in the test phase
-    y_pred: sparse or dense matrix (n_samples, n_labels)
+    predictions: sparse or dense matrix (n_samples, n_labels)
         Matrix of predicted labels given by our model
     Returns
     =======
@@ -41,23 +40,23 @@ def accuracyMicro(y_test, y_pred):
         Accuracy Micro of our model
     """
     accuracymicro = 0.0
-    TP, FP, TN, FN = multilabelConfussionMatrix(y_test, y_pred)
+    TP, FP, TN, FN = multilabelConfussionMatrix(y_test, predictions)
     TPMicro, FPMicro, TNMicro, FNMicro = multilabelMicroConfussionMatrix(TP, FP, TN, FN)
 
-    accuracymicro = Decimal(TPMicro+TNMicro)/Decimal(y_test.shape[0])
+    if (TPMicro + FPMicro + TNMicro + FNMicro) != 0:
+        accuracymicro = float((TPMicro + TNMicro) / (TPMicro + FPMicro + TNMicro + FNMicro))
 
     return accuracymicro
 
 
-def precisionMacro(y_test, y_pred):
+def precisionMacro(y_test, predictions):
     """
     Precision Macro of our model
-
     Params
     ======
     y_test : sparse or dense matrix (n_samples, n_labels)
         Matrix of labels used in the test phase
-    y_pred: sparse or dense matrix (n_samples, n_labels)
+    predictions: sparse or dense matrix (n_samples, n_labels)
         Matrix of predicted labels given by our model
     Returns
     =======
@@ -65,24 +64,23 @@ def precisionMacro(y_test, y_pred):
         Precision macro of our model
     """
     precisionmacro = 0.0
-    TP, FP, TN, FN = multilabelConfussionMatrix(y_test, y_pred)
+    TP, FP, TN, FN = multilabelConfussionMatrix(y_test, predictions)
     for i in range(len(TP)):
         if TP[i] + FP[i] != 0:
-            precisionmacro = Decimal(precisionmacro) + Decimal(TP[i])/Decimal(TP[i] + FP[i])
+            precisionmacro = precisionmacro + (TP[i] / (TP[i] + FP[i]))
 
-    precisionmacro = Decimal(precisionmacro)/Decimal(y_test.shape[1])
+    precisionmacro = float(precisionmacro / len(TP))
     return precisionmacro
 
 
-def precisionMicro(y_test, y_pred):
+def precisionMicro(y_test, predictions):
     """
     Precision Micro of our model
-
     Params
     ======
     y_test : sparse or dense matrix (n_samples, n_labels)
         Matrix of labels used in the test phase
-    y_pred: sparse or dense matrix (n_samples, n_labels)
+    predictions: sparse or dense matrix (n_samples, n_labels)
         Matrix of predicted labels given by our model
     Returns
     =======
@@ -90,23 +88,22 @@ def precisionMicro(y_test, y_pred):
         Precision micro of our model
     """
     precisionmicro = 0.0
-    TP, FP, TN, FN = multilabelConfussionMatrix(y_test, y_pred)
+    TP, FP, TN, FN = multilabelConfussionMatrix(y_test, predictions)
     TPMicro, FPMicro, TNMicro, FNMicro = multilabelMicroConfussionMatrix(TP, FP, TN, FN)
     if (TPMicro + FPMicro) != 0:
-        precisionmicro = Decimal(TPMicro)/Decimal(TPMicro + FPMicro)
-
+        precisionmicro = float(TPMicro / (TPMicro + FPMicro))
 
     return precisionmicro
 
-def recallMacro(y_test, y_pred):
+
+def recallMacro(y_test, predictions):
     """
     Recall Macro of our model
-
     Params
     ======
     y_test : sparse or dense matrix (n_samples, n_labels)
         Matrix of labels used in the test phase
-    y_pred: sparse or dense matrix (n_samples, n_labels)
+    predictions: sparse or dense matrix (n_samples, n_labels)
         Matrix of predicted labels given by our model
     Returns
     =======
@@ -114,23 +111,23 @@ def recallMacro(y_test, y_pred):
         Recall Macro of our model
     """
     recallmacro = 0.0
-    TP, FP, TN, FN = multilabelConfussionMatrix(y_test, y_pred)
+    TP, FP, TN, FN = multilabelConfussionMatrix(y_test, predictions)
     for i in range(len(TP)):
         if TP[i] + FN[i] != 0:
-            recallmacro = recallmacro + (TP[i]/(TP[i] + FN[i]))
+            recallmacro = recallmacro + (TP[i] / (TP[i] + FN[i]))
 
-    recallmacro = recallmacro/len(TP)
+    recallmacro = recallmacro / len(TP)
     return recallmacro
 
-def recallMicro(y_test, y_pred):
+
+def recallMicro(y_test, predictions):
     """
     Recall Micro of our model
-
     Params
     ======
     y_test : sparse or dense matrix (n_samples, n_labels)
         Matrix of labels used in the test phase
-    y_pred: sparse or dense matrix (n_samples, n_labels)
+    predictions: sparse or dense matrix (n_samples, n_labels)
         Matrix of predicted labels given by our model
     Returns
     =======
@@ -138,24 +135,23 @@ def recallMicro(y_test, y_pred):
         Recall Micro of our model
     """
     recallmicro = 0.0
-    TP, FP, TN, FN = multilabelConfussionMatrix(y_test, y_pred)
+    TP, FP, TN, FN = multilabelConfussionMatrix(y_test, predictions)
     TPMicro, FPMicro, TNMicro, FNMicro = multilabelMicroConfussionMatrix(TP, FP, TN, FN)
 
     if (TPMicro + FNMicro) != 0:
-        recallmicro = Decimal(TPMicro)/Decimal(TPMicro + FNMicro)
+        recallmicro = float(TPMicro / (TPMicro + FNMicro))
 
     return recallmicro
 
 
-def fbetaMacro(y_test, y_pred, beta=1):
+def fbetaMacro(y_test, predictions, beta=1):
     """
     FBeta Macro of our model
-
     Params
     ======
     y_test : sparse or dense matrix (n_samples, n_labels)
         Matrix of labels used in the test phase
-    y_pred: sparse or dense matrix (n_samples, n_labels)
+    predictions: sparse or dense matrix (n_samples, n_labels)
         Matrix of predicted labels given by our model
     Returns
     =======
@@ -163,26 +159,26 @@ def fbetaMacro(y_test, y_pred, beta=1):
         FBeta Macro of our model
     """
     fbetamacro = 0.0
-    TP, FP, TN, FN = multilabelConfussionMatrix(y_test, y_pred)
-    
-    for i in range(len(TP)):
-        num = float((1+pow(beta,2))*TP[i])
-        den = float((1+pow(beta,2))*TP[i] + pow(beta,2)*FN[i] + FP[i])
-        if den != 0:
-            fbetamacro = Decimal(fbetamacro) + Decimal(num)/Decimal(den)
+    TP, FP, TN, FN = multilabelConfussionMatrix(y_test, predictions)
 
-    fbetamacro = Decimal(fbetamacro)/Decimal(y_test.shape[1])
+    for i in range(len(TP)):
+        num = float((1 + pow(beta, 2)) * TP[i])
+        den = float((1 + pow(beta, 2)) * TP[i] + pow(beta, 2) * FN[i] + FP[i])
+        if den != 0:
+            fbetamacro = fbetamacro + num / den
+
+    fbetamacro = fbetamacro / len(TP)
     return fbetamacro
 
-def fbetaMicro(y_test, y_pred, beta=1):
+
+def fbetaMicro(y_test, predictions, beta=1):
     """
     FBeta Micro of our model
-
     Params
     ======
     y_test : sparse or dense matrix (n_samples, n_labels)
         Matrix of labels used in the test phase
-    y_pred: sparse or dense matrix (n_samples, n_labels)
+    predictions: sparse or dense matrix (n_samples, n_labels)
         Matrix of predicted labels given by our model
     Returns
     =======
@@ -190,11 +186,11 @@ def fbetaMicro(y_test, y_pred, beta=1):
         FBeta Micro of our model
     """
     fbetamicro = 0.0
-    TP, FP, TN, FN = multilabelConfussionMatrix(y_test, y_pred)
+    TP, FP, TN, FN = multilabelConfussionMatrix(y_test, predictions)
     TPMicro, FPMicro, TNMicro, FNMicro = multilabelMicroConfussionMatrix(TP, FP, TN, FN)
 
-    num = float((1+pow(beta,2))*TPMicro)
-    den = float((1+pow(beta,2))*TPMicro + pow(beta,2)*FNMicro + FPMicro)
-    fbetamicro = Decimal(num)/Decimal(den)
+    num = float((1 + pow(beta, 2)) * TPMicro)
+    den = float((1 + pow(beta, 2)) * TPMicro + pow(beta, 2) * FNMicro + FPMicro)
+    fbetamicro = float(num / den)
 
     return fbetamicro
