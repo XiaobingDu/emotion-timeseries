@@ -177,7 +177,7 @@ def on_end_batch(AveragePrecisionMeter, epoch_num, output, target_gt, loss1, mul
     # measure mAP
     output_ = output.cpu().detach().numpy()
     target_gt_ = target_gt.cpu().detach().numpy()
-    AveragePrecisionMeter.add(output, target_gt)
+    AveragePrecisionMeter.add(output_, target_gt_)
 
     if state == 'training':
         print('Epoch: [{0}]\t'
