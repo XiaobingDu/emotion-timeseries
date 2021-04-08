@@ -219,8 +219,8 @@ def load_ckp(checkpoint_fpath, model, optimizer):
 
 # euclidean distance
 def euclidean_dist (size, RD, PD):
-    RD = RD.detach().numpy()
-    PD = PD.detach().numpy()
+    RD = RD.cpu().detach().numpy()
+    PD = PD.cpu().detach().numpy()
     _size = size
     dist = np.empty(_size)
     for i in range(_size):
@@ -232,8 +232,8 @@ def euclidean_dist (size, RD, PD):
 
 # chebyshev distance
 def chebyshev_dist (size, RD, PD):
-    RD = RD.detach().numpy()
-    PD = PD.detach().numpy()
+    RD = RD.cpu().detach().numpy()
+    PD = PD.cpu().detach().numpy()
     _size = size
     chebyshev_distances = np.empty(_size)
     for i in range(_size):
@@ -243,8 +243,8 @@ def chebyshev_dist (size, RD, PD):
 
 # Kullback-Leibler divergence
 def KL_dist(RD, PD):
-    RD = RD.detach().numpy()
-    PD = PD.detach().numpy()
+    RD = RD.cpu().detach().numpy()
+    PD = PD.cpu().detach().numpy()
 
     kldiv = RD * np.log(RD / PD)
     kldist = kldiv.sum(axis=1)
@@ -255,8 +255,8 @@ def KL_dist(RD, PD):
 
 # clark distance
 def clark_dist(RD, PD):
-    RD = RD.detach().numpy()
-    PD = PD.detach().numpy()
+    RD = RD.cpu().detach().numpy()
+    PD = PD.cpu().detach().numpy()
 
     temp = PD - RD
     temp = temp * temp
@@ -271,8 +271,8 @@ def clark_dist(RD, PD):
 
 #canberra metric
 def canberra_dist(RD, PD):
-    RD = RD.detach().numpy()
-    PD = PD.detach().numpy()
+    RD = RD.cpu().detach().numpy()
+    PD = PD.cpu().detach().numpy()
 
     temp = np.abs(PD - RD)
     temp2 = PD + RD
@@ -284,8 +284,8 @@ def canberra_dist(RD, PD):
 
 #cosine coefficient
 def cosine_dist(RD, PD):
-    RD = RD.detach().numpy()
-    PD = PD.detach().numpy()
+    RD = RD.cpu().detach().numpy()
+    PD = PD.cpu().detach().numpy()
 
     temp = PD * RD
     inner = temp.sum(axis=1)
@@ -303,8 +303,8 @@ def cosine_dist(RD, PD):
 
 #intersection similarity
 def intersection_dist(RD, PD):
-    RD = RD.detach().numpy()
-    PD = PD.detach().numpy()
+    RD = RD.cpu().detach().numpy()
+    PD = PD.cpu().detach().numpy()
 
     temp = np.minimum(PD,RD)
     temp = temp.sum(axis=1)
