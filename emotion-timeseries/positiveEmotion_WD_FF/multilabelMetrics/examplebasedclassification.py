@@ -118,7 +118,7 @@ def precision(y_test, predictions):
     print('y_test')
     print(y_test.dtype)
     print(y_test.device)
-    predictions = predictions.detach().numpy()
+    predictions = predictions.cpu().detach().numpy()
     predict_label = np.array(predictions > 0.485, dtype=float)
 
     precision = 0.0
