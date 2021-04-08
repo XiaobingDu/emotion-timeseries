@@ -185,6 +185,8 @@ def fbeta(y_test, predictions, beta=1):
     fbeta : float
         fbeta of our model
     """
+    y_test = y_test.cpu().detach().numpy()
+    predictions = predictions.cpu().detach().numpy()
     predict_label = np.array(predictions > 0.485, dtype=float)
 
     pr = precision(y_test, predict_label)
