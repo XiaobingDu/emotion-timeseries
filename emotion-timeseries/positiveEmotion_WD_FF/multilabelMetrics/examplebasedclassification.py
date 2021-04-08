@@ -16,7 +16,7 @@ def subsetAccuracy(y_test, predictions):
     """
     y_test = y_test.cpu().detach().numpy()
     predictions = predictions.cpu().detach().numpy()
-    predict_label = np.array(predictions > 0.485, dtype=float)
+    predict_label = np.array(predictions > 0.500, dtype=float)
 
     subsetaccuracy = 0.0
 
@@ -48,7 +48,7 @@ def hammingLoss(y_test, predictions):
     """
     y_test = y_test.cpu().detach().numpy()
     predictions = predictions.cpu().detach().numpy()
-    predict_label = np.array(predictions > 0.485, dtype=float)
+    predict_label = np.array(predictions > 0.500, dtype=float)
 
     hammingloss = 0.0
     for i in range(y_test.shape[0]):
@@ -78,7 +78,7 @@ def accuracy(y_test, predictions):
     """
     y_test = y_test.cpu().detach().numpy()
     predictions = predictions.cpu().detach().numpy()
-    predict_label = np.array(predictions > 0.485, dtype=float)
+    predict_label = np.array(predictions > 0.500, dtype=float)
 
     accuracy = 0.0
 
@@ -115,7 +115,7 @@ def precision(y_test, predictions):
     """
     y_test = y_test.cpu().detach().numpy()
     predictions = predictions.cpu().detach().numpy()
-    predict_label = np.array(predictions > 0.485, dtype=float)
+    predict_label = np.array(predictions > 0.500, dtype=float)
 
     precision = 0.0
 
@@ -151,7 +151,7 @@ def recall(y_test, predictions):
     """
     y_test = y_test.cpu().detach().numpy()
     predictions = predictions.cpu().detach().numpy()
-    predict_label = np.array(predictions > 0.485, dtype=float)
+    predict_label = np.array(predictions > 0.500, dtype=float)
 
     recall = 0.0
 
