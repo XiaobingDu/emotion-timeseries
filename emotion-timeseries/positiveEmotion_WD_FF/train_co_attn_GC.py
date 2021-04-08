@@ -357,6 +357,7 @@ for epoch_num in range(num_epochs):
         # for loss2
         label_prediction = torch.sigmoid(predict)
         # loss2: BCELoss
+        target_gt = target_gt.detach()
         loss2 = mutilabel_criterion(label_prediction, target_gt)
         print('*' * 100)
         print('predict label...', label_prediction)
@@ -557,6 +558,7 @@ for epoch_num in range(num_epochs):
         # for loss2
         label_prediction = torch.sigmoid(predict)
         # loss2: BCELoss
+        target_gt = target_gt.detach()
         loss2 = mutilabel_criterion(label_prediction, target_gt)
         print('*' * 100)
         print('predict label...', label_prediction)
@@ -779,6 +781,7 @@ for i, data in enumerate(testDataloader):
     #for loss2
     label_prediction = torch.sigmoid(predict)
     #loss2: BCELoss
+    target_gt = target_gt.detach()
     loss2 = mutilabel_criterion(label_prediction, target_gt)
     print('*'*100)
     print('predict label...', label_prediction)
