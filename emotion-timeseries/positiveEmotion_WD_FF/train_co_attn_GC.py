@@ -202,87 +202,87 @@ def on_end_epoch(AveragePrecisionMeter, epoch_num, multiLabel_loss, state = 'tra
     OP, OR, OF1, CP, CR, CF1 = AveragePrecisionMeter.overall()
     OP_k, OR_k, OF1_k, CP_k, CR_k, CF1_k = AveragePrecisionMeter.overall_topk(3)
 
-    if state == 'training':
-        print('Training: \t Epoch: [{0}]\t'
-              'Loss {loss:.4f}\t'
-              'mAP {map:.3f}\t'.format(epoch_num, loss=multiLabel_loss, map=map))
-        print('OP: {OP:.4f}\t'
-              'OR: {OR:.4f}\t'
-              'OF1: {OF1:.4f}\t'
-              'CP: {CP:.4f}\t'
-              'CR: {CR:.4f}\t'
-              'CF1: {CF1:.4f}\n'.format(OP=OP, OR=OR, OF1=OF1, CP=CP, CR=CR, CF1=CF1))
-        result.write("\n------------------------------------------------------------------\n")
-        result.write('Epoch: [{0}]\t'
-                     'Training: \t Loss {loss:.4f}\t'
-                     'mAP {map:.3f}\t'.format(epoch_num, loss=multiLabel_loss, map=map))
-        result.write(
-            'OP: {OP:.4f}\t'
-            'OR: {OR:.4f}\t'
-            'OF1: {OF1:.4f}\t'
-            'CP: {CP:.4f}\t'
-            'CR: {CR:.4f}\t'
-            'CF1: {CF1:.4f}\n'.format(OP=OP, OR=OR, OF1=OF1, CP=CP, CR=CR, CF1=CF1))
-    elif state == 'validation':
-        print('Validation: \t Epoch: [{0}]\t Loss {loss:.4f}\t mAP {map:.3f}'.format(epoch_num, loss=multiLabel_loss, map=map))
-        print('OP: {OP:.4f}\t'
-              'OR: {OR:.4f}\t'
-              'OF1: {OF1:.4f}\t'
-              'CP: {CP:.4f}\t'
-              'CR: {CR:.4f}\t'
-              'CF1: {CF1:.4f}\t'.format(OP=OP, OR=OR, OF1=OF1, CP=CP, CR=CR, CF1=CF1))
-        print('OP_3: {OP:.4f}\t'
-              'OR_3: {OR:.4f}\t'
-              'OF1_3: {OF1:.4f}\t'
-              'CP_3: {CP:.4f}\t'
-              'CR_3: {CR:.4f}\t'
-              'CF1_3: {CF1:.4f}\n'.format(OP=OP_k, OR=OR_k, OF1=OF1_k, CP=CP_k, CR=CR_k, CF1=CF1_k))
-        result.write("\n------------------------------------------------------------------\n")
-        result.write('Epoch: [{0}]\t'
-                     'Validation: \t Loss {loss:.4f}\t'
-                     'mAP {map:.3f}\t'.format(epoch_num, loss=multiLabel_loss, map=map))
-        result.write('OP: {OP:.4f}\t'
-                     'OR: {OR:.4f}\t'
-                     'OF1: {OF1:.4f}\t'
-                     'CP: {CP:.4f}\t'
-                     'CR: {CR:.4f}\t'
-                     'CF1: {CF1:.4f}\t'.format(OP=OP, OR=OR, OF1=OF1, CP=CP, CR=CR, CF1=CF1))
-        result.write('OP_3: {OP:.4f}\t'
-                     'OR_3: {OR:.4f}\t'
-                     'OF1_3: {OF1:.4f}\t'
-                     'CP_3: {CP:.4f}\t'
-                     'CR_3: {CR:.4f}\t'
-                     'CF1_3: {CF1:.4f}\n'.format(OP=OP_k, OR=OR_k, OF1=OF1_k, CP=CP_k, CR=CR_k, CF1=CF1_k))
-    elif state == 'test':
-        print('Test: \t Loss {loss:.4f}\t mAP {map:.3f}\t'.format(loss=multiLabel_loss, map=map))
-        print('OP: {OP:.4f}\t'
-              'OR: {OR:.4f}\t'
-              'OF1: {OF1:.4f}\t'
-              'CP: {CP:.4f}\t'
-              'CR: {CR:.4f}\t'
-              'CF1: {CF1:.4f}\t'.format(OP=OP, OR=OR, OF1=OF1, CP=CP, CR=CR, CF1=CF1))
-        print('OP_3: {OP:.4f}\t'
-              'OR_3: {OR:.4f}\t'
-              'OF1_3: {OF1:.4f}\t'
-              'CP_3: {CP:.4f}\t'
-              'CR_3: {CR:.4f}\t'
-              'CF1_3: {CF1:.4f}\n'.format(OP=OP_k, OR=OR_k, OF1=OF1_k, CP=CP_k, CR=CR_k, CF1=CF1_k))
-        result.write("\n------------------------------------------------------------------\n")
-        result.write('Epoch: [{0}]\t'
-                     'Test: \t Loss {loss:.4f}\t'
-                     'mAP {map:.3f}'.format(epoch_num, loss=multiLabel_loss, map=map))
-        result.write('OP: {OP:.4f}\t'
-                     'OR: {OR:.4f}\t'
-                     'OF1: {OF1:.4f}\t'
-                     'CP: {CP:.4f}\t'
-                     'CR: {CR:.4f}\t'
-                     'CF1: {CF1:.4f}\t'.format(OP=OP, OR=OR, OF1=OF1, CP=CP, CR=CR, CF1=CF1))
-        result.write('OP_3: {OP:.4f}\t'
-                     'OR_3: {OR:.4f}\t'
-                     'OF1_3: {OF1:.4f}\t'
-                     'CP_3: {CP:.4f}\t'
-                     'CR_3: {CR:.4f}\t'
-                     'CF1_3: {CF1:.4f}\n'.format(OP=OP_k, OR=OR_k, OF1=OF1_k, CP=CP_k, CR=CR_k, CF1=CF1_k))
+    # if state == 'training':
+    #     print('Training: \t Epoch: [{0}]\t'
+    #           'Loss {loss:.4f}\t'
+    #           'mAP {map:.3f}\t'.format(epoch_num, loss=multiLabel_loss, map=map))
+    #     print('OP: {OP:.4f}\t'
+    #           'OR: {OR:.4f}\t'
+    #           'OF1: {OF1:.4f}\t'
+    #           'CP: {CP:.4f}\t'
+    #           'CR: {CR:.4f}\t'
+    #           'CF1: {CF1:.4f}\n'.format(OP=OP, OR=OR, OF1=OF1, CP=CP, CR=CR, CF1=CF1))
+    #     result.write("\n------------------------------------------------------------------\n")
+    #     result.write('Epoch: [{0}]\t'
+    #                  'Training: \t Loss {loss:.4f}\t'
+    #                  'mAP {map:.3f}\t'.format(epoch_num, loss=multiLabel_loss, map=map))
+    #     result.write(
+    #         'OP: {OP:.4f}\t'
+    #         'OR: {OR:.4f}\t'
+    #         'OF1: {OF1:.4f}\t'
+    #         'CP: {CP:.4f}\t'
+    #         'CR: {CR:.4f}\t'
+    #         'CF1: {CF1:.4f}\n'.format(OP=OP, OR=OR, OF1=OF1, CP=CP, CR=CR, CF1=CF1))
+    # elif state == 'validation':
+    #     print('Validation: \t Epoch: [{0}]\t Loss {loss:.4f}\t mAP {map:.3f}'.format(epoch_num, loss=multiLabel_loss, map=map))
+    #     print('OP: {OP:.4f}\t'
+    #           'OR: {OR:.4f}\t'
+    #           'OF1: {OF1:.4f}\t'
+    #           'CP: {CP:.4f}\t'
+    #           'CR: {CR:.4f}\t'
+    #           'CF1: {CF1:.4f}\t'.format(OP=OP, OR=OR, OF1=OF1, CP=CP, CR=CR, CF1=CF1))
+    #     print('OP_3: {OP:.4f}\t'
+    #           'OR_3: {OR:.4f}\t'
+    #           'OF1_3: {OF1:.4f}\t'
+    #           'CP_3: {CP:.4f}\t'
+    #           'CR_3: {CR:.4f}\t'
+    #           'CF1_3: {CF1:.4f}\n'.format(OP=OP_k, OR=OR_k, OF1=OF1_k, CP=CP_k, CR=CR_k, CF1=CF1_k))
+    #     result.write("\n------------------------------------------------------------------\n")
+    #     result.write('Epoch: [{0}]\t'
+    #                  'Validation: \t Loss {loss:.4f}\t'
+    #                  'mAP {map:.3f}\t'.format(epoch_num, loss=multiLabel_loss, map=map))
+    #     result.write('OP: {OP:.4f}\t'
+    #                  'OR: {OR:.4f}\t'
+    #                  'OF1: {OF1:.4f}\t'
+    #                  'CP: {CP:.4f}\t'
+    #                  'CR: {CR:.4f}\t'
+    #                  'CF1: {CF1:.4f}\t'.format(OP=OP, OR=OR, OF1=OF1, CP=CP, CR=CR, CF1=CF1))
+    #     result.write('OP_3: {OP:.4f}\t'
+    #                  'OR_3: {OR:.4f}\t'
+    #                  'OF1_3: {OF1:.4f}\t'
+    #                  'CP_3: {CP:.4f}\t'
+    #                  'CR_3: {CR:.4f}\t'
+    #                  'CF1_3: {CF1:.4f}\n'.format(OP=OP_k, OR=OR_k, OF1=OF1_k, CP=CP_k, CR=CR_k, CF1=CF1_k))
+    # elif state == 'test':
+    #     print('Test: \t Loss {loss:.4f}\t mAP {map:.3f}\t'.format(loss=multiLabel_loss, map=map))
+    #     print('OP: {OP:.4f}\t'
+    #           'OR: {OR:.4f}\t'
+    #           'OF1: {OF1:.4f}\t'
+    #           'CP: {CP:.4f}\t'
+    #           'CR: {CR:.4f}\t'
+    #           'CF1: {CF1:.4f}\t'.format(OP=OP, OR=OR, OF1=OF1, CP=CP, CR=CR, CF1=CF1))
+    #     print('OP_3: {OP:.4f}\t'
+    #           'OR_3: {OR:.4f}\t'
+    #           'OF1_3: {OF1:.4f}\t'
+    #           'CP_3: {CP:.4f}\t'
+    #           'CR_3: {CR:.4f}\t'
+    #           'CF1_3: {CF1:.4f}\n'.format(OP=OP_k, OR=OR_k, OF1=OF1_k, CP=CP_k, CR=CR_k, CF1=CF1_k))
+    #     result.write("\n------------------------------------------------------------------\n")
+    #     result.write('Epoch: [{0}]\t'
+    #                  'Test: \t Loss {loss:.4f}\t'
+    #                  'mAP {map:.3f}'.format(epoch_num, loss=multiLabel_loss, map=map))
+    #     result.write('OP: {OP:.4f}\t'
+    #                  'OR: {OR:.4f}\t'
+    #                  'OF1: {OF1:.4f}\t'
+    #                  'CP: {CP:.4f}\t'
+    #                  'CR: {CR:.4f}\t'
+    #                  'CF1: {CF1:.4f}\t'.format(OP=OP, OR=OR, OF1=OF1, CP=CP, CR=CR, CF1=CF1))
+    #     result.write('OP_3: {OP:.4f}\t'
+    #                  'OR_3: {OR:.4f}\t'
+    #                  'OF1_3: {OF1:.4f}\t'
+    #                  'CP_3: {CP:.4f}\t'
+    #                  'CR_3: {CR:.4f}\t'
+    #                  'CF1_3: {CF1:.4f}\n'.format(OP=OP_k, OR=OR_k, OF1=OF1_k, CP=CP_k, CR=CR_k, CF1=CF1_k))
 
     return map
 
@@ -478,25 +478,25 @@ for epoch_num in range(num_epochs):
             result.write('%s\n' % GC_est)
             result.write('Training co-attention:\n ')
             result.write('att_1: \t')
-            result.write('%s\n' % att_1.cpu().detach().numpy())
+            result.write('%s\n' % att_1.cpu().detach().numpy().mean(axis=0))
             result.write('att_2: \t')
-            result.write('%s\n' % att_2.cpu().detach().numpy())
+            result.write('%s\n' % att_2.cpu().detach().numpy().mean(axis=0))
             result.write('att_3: \t')
-            result.write('%s\n' % att_3.cpu().detach().numpy())
+            result.write('%s\n' % att_3.cpu().detach().numpy().mean(axis=0))
             result.write('att_4: \t')
-            result.write('%s\n' % att_4.cpu().detach().numpy())
+            result.write('%s\n' % att_4.cpu().detach().numpy().mean(axis=0))
             result.write('att_5: \t')
-            result.write('%s\n' % att_5.cpu().detach().numpy())
+            result.write('%s\n' % att_5.cpu().detach().numpy().mean(axis=0))
             result.write('att_6: \t')
-            result.write('%s\n' % att_6.cpu().detach().numpy())
+            result.write('%s\n' % att_6.cpu().detach().numpy().mean(axis=0))
             result.write('att_7: \t')
-            result.write('%s\n' % att_7.cpu().detach().numpy())
+            result.write('%s\n' % att_7.cpu().detach().numpy().mean(axis=0))
             result.write('att_8: \t')
-            result.write('%s\n' % att_8.cpu().detach().numpy())
+            result.write('%s\n' % att_8.cpu().detach().numpy().mean(axis=0))
             result.write('att_9: \t')
-            result.write('%s\n' % att_9.cpu().detach().numpy())
+            result.write('%s\n' % att_9.cpu().detach().numpy().mean(axis=0))
             result.write('att_10: \t')
-            result.write('%s\n' % att_10.cpu().detach().numpy())
+            result.write('%s\n' % att_10.cpu().detach().numpy().mean(axis=0))
 
             result.write("\n------------------------------------------------------------------\n")
             result.write("Epoch no: {epoch: .4f}\t"  
@@ -513,6 +513,55 @@ for epoch_num in range(num_epochs):
                                                                         clark_dist=clark, canberra_dist=canberra,
                                                                         cosine_dist=cosine,
                                                                         intersection_dist=intersection))
+            result.write("\n------------------------------------------------------------------\n")
+            result.write("Training set results:\n")
+            result.write('Multilabel metrics: example-based-classification:\n')
+            result.write('subsetAccuracy: {subsetAccuracy:.4f}\t'
+                         'hammingLoss: {hammingLoss:.4f}\t'
+                         'accuracy: {accuracy:.4f}\t'
+                         'precision: {precision:.4f}\t'
+                         'recall: {recall:.4f}\t'
+                         'fbeta: {fbeta:.4f}\t'.format(subsetAccuracy=train_subsetAccuracy,
+                                                       hammingLoss=train_hammingLoss,
+                                                       accuracy=train_eb_accuracy, precision=train_eb_precision,
+                                                       recall=train_eb_recall, fbeta=train_eb_fbeta))
+
+            result.write("\n")
+            result.write('Multilabel metrics: example-based-ranking:\n')
+            result.write('oneError: {oneError:.4f}\t'
+                         'coverage: {coverage:.4f}\t'
+                         'averagePrecision: {averagePrecision:.4f}\t'
+                         'rankingLoss: {rankingLoss:.4f}\t'.format(oneError=train_oneError,
+                                                                   coverage=train_coverage,
+                                                                   averagePrecision=train_averagePrecision,
+                                                                   rankingLoss=train_rankingLoss))
+
+            result.write("\n")
+            result.write('Multilabel metrics: label-based-classification:\n')
+            result.write('accuracyMacro: {accuracyMacro:.4f}\t'
+                         'accuracyMicro: {accuracyMicro:.4f}\t'
+                         'precisionMacro: {precisionMacro:.4f}\t'
+                         'precisionMicro: {precisionMicro:.4f}\t'
+                         'recallMacro: {recallMacro:.4f}\t'
+                         'recallMicro: {recallMicro:.4f}\t'
+                         'fbetaMacro: {fbetaMacro:.4f}\t'
+                         'fbetaMicro: {fbetaMicro:.4f}\t'.format(accuracyMacro=train_accuracyMacro,
+                                                                 accuracyMicro=train_accuracyMicro,
+                                                                 precisionMacro=train_precisionMacro,
+                                                                 precisionMicro=train_precisionMicro,
+                                                                 recallMacro=train_recallMacro,
+                                                                 recallMicro=train_recallMicro,
+                                                                 fbetaMacro=train_fbetaMacro,
+                                                                 fbetaMicro=train_fbetaMicro))
+
+            result.write("\n")
+            result.write('Multilabel metrics: label-based-ranking:\n')
+            result.write('aucMacro: {aucMacro:.4f}\t'
+                         'aucMicro: {aucMicro:.4f}\t'
+                         'aucInstance: {aucInstance:.4f}\t'.format(aucMacro=train_aucMacro,
+                                                                   aucMicro=train_aucMicro,
+                                                                   aucInstance=train_aucInstance))
+
     # end_epoch
     on_end_epoch(ap, epoch_num + 1, loss2, state='training')
 
@@ -619,7 +668,7 @@ for epoch_num in range(num_epochs):
             #end_batch
             on_end_batch(ap, epoch_num+1, label_prediction, dom_label, loss1, loss2, state='validation')
 
-            print('euclidean_dist: {euclidean_dist:.4f}\t'
+            print('Validation euclidean_dist: {euclidean_dist:.4f}\t'
                   'chebyshev_dist: {chebyshev_dist:.4f}\t'
                   'kldist: {kldist:.4f}\t'
                   'clark_dist: {clark_dist:.4f}\t'
@@ -667,25 +716,25 @@ for epoch_num in range(num_epochs):
             result.write("\n------------------------------------------------------------------\n")
             result.write('Training co-attention:\n ')
             result.write('att_1: \t')
-            result.write('%s\n' % att_1.cpu().detach().numpy())
+            result.write('%s\n' % att_1.cpu().detach().numpy().mean(axis=0))
             result.write('att_2: \t')
-            result.write('%s\n' % att_2.cpu().detach().numpy())
+            result.write('%s\n' % att_2.cpu().detach().numpy().mean(axis=0))
             result.write('att_3: \t')
-            result.write('%s\n' % att_3.cpu().detach().numpy())
+            result.write('%s\n' % att_3.cpu().detach().numpy().mean(axis=0))
             result.write('att_4: \t')
-            result.write('%s\n' % att_4.cpu().detach().numpy())
+            result.write('%s\n' % att_4.cpu().detach().numpy().mean(axis=0))
             result.write('att_5: \t')
-            result.write('%s\n' % att_5.cpu().detach().numpy())
+            result.write('%s\n' % att_5.cpu().detach().numpy().mean(axis=0))
             result.write('att_6: \t')
-            result.write('%s\n' % att_6.cpu().detach().numpy())
+            result.write('%s\n' % att_6.cpu().detach().numpy().mean(axis=0))
             result.write('att_7: \t')
-            result.write('%s\n' % att_7.cpu().detach().numpy())
+            result.write('%s\n' % att_7.cpu().detach().numpy().mean(axis=0))
             result.write('att_8: \t')
-            result.write('%s\n' % att_8.cpu().detach().numpy())
+            result.write('%s\n' % att_8.cpu().detach().numpy().mean(axis=0))
             result.write('att_9: \t')
-            result.write('%s\n' % att_9.cpu().detach().numpy())
+            result.write('%s\n' % att_9.cpu().detach().numpy().mean(axis=0))
             result.write('att_10: \t')
-            result.write('%s\n' % att_10.cpu().detach().numpy())
+            result.write('%s\n' % att_10.cpu().detach().numpy().mean(axis=0))
 
             result.write("\n========================================\n")
             result.write('euclidean_dist: {euclidean_dist:.4f}\t'
@@ -699,6 +748,55 @@ for epoch_num in range(num_epochs):
                                                                         clark_dist=clark, canberra_dist=canberra,
                                                                         cosine_dist=cosine,
                                                                         intersection_dist=intersection))
+            result.write("\n------------------------------------------------------------------\n")
+            result.write("Validation set results:\n")
+            result.write('Multilabel metrics: example-based-classification:\n')
+            result.write('subsetAccuracy: {subsetAccuracy:.4f}\t'
+                         'hammingLoss: {hammingLoss:.4f}\t'
+                         'accuracy: {accuracy:.4f}\t'
+                         'precision: {precision:.4f}\t'
+                         'recall: {recall:.4f}\t'
+                         'fbeta: {fbeta:.4f}\t'.format(subsetAccuracy=val_subsetAccuracy,
+                                                       hammingLoss=val_hammingLoss,
+                                                       accuracy=val_eb_accuracy, precision=val_eb_precision,
+                                                       recall=val_eb_recall, fbeta=val_eb_fbeta))
+
+            result.write("\n")
+            result.write('Multilabel metrics: example-based-ranking:\n')
+            result.write('oneError: {oneError:.4f}\t'
+                         'coverage: {coverage:.4f}\t'
+                         'averagePrecision: {averagePrecision:.4f}\t'
+                         'rankingLoss: {rankingLoss:.4f}\t'.format(oneError=val_oneError,
+                                                                   coverage=val_coverage,
+                                                                   averagePrecision=val_averagePrecision,
+                                                                   rankingLoss=val_rankingLoss))
+
+            result.write("\n")
+            result.write('Multilabel metrics: label-based-classification:\n')
+            result.write('accuracyMacro: {accuracyMacro:.4f}\t'
+                         'accuracyMicro: {accuracyMicro:.4f}\t'
+                         'precisionMacro: {precisionMacro:.4f}\t'
+                         'precisionMicro: {precisionMicro:.4f}\t'
+                         'recallMacro: {recallMacro:.4f}\t'
+                         'recallMicro: {recallMicro:.4f}\t'
+                         'fbetaMacro: {fbetaMacro:.4f}\t'
+                         'fbetaMicro: {fbetaMicro:.4f}\t'.format(accuracyMacro=val_accuracyMacro,
+                                                                 accuracyMicro=val_accuracyMicro,
+                                                                 precisionMacro=val_precisionMacro,
+                                                                 precisionMicro=val_precisionMicro,
+                                                                 recallMacro=val_recallMacro,
+                                                                 recallMicro=val_recallMicro,
+                                                                 fbetaMacro=val_fbetaMacro,
+                                                                 fbetaMicro=val_fbetaMicro))
+
+            result.write("\n")
+            result.write('Multilabel metrics: label-based-ranking:\n')
+            result.write('aucMacro: {aucMacro:.4f}\t'
+                         'aucMicro: {aucMicro:.4f}\t'
+                         'aucInstance: {aucInstance:.4f}\t'.format(aucMacro=val_aucMacro,
+                                                                   aucMicro=val_aucMicro,
+                                                                   aucInstance=val_aucInstance))
+
         # Pearson correlation
         emopcc += pearsonr(dis_prediction.cpu().detach().numpy(), dis.cpu().detach().numpy())[0]
     # 每一个epoch loss平均
@@ -889,25 +987,25 @@ for i, data in enumerate(testDataloader):
         result.write("\n------------------------------------------------------------------\n")
         result.write('Training co-attention:\n ')
         result.write('att_1: \t')
-        result.write('%s\n' % att_1.cpu().detach().numpy())
+        result.write('%s\n' % att_1.cpu().detach().numpy().mean(axis=0))
         result.write('att_2: \t')
-        result.write('%s\n' % att_2.cpu().detach().numpy())
+        result.write('%s\n' % att_2.cpu().detach().numpy().mean(axis=0))
         result.write('att_3: \t')
-        result.write('%s\n' % att_3.cpu().detach().numpy())
+        result.write('%s\n' % att_3.cpu().detach().numpy().mean(axis=0))
         result.write('att_4: \t')
-        result.write('%s\n' % att_4.cpu().detach().numpy())
+        result.write('%s\n' % att_4.cpu().detach().numpy().mean(axis=0))
         result.write('att_5: \t')
-        result.write('%s\n' % att_5.cpu().detach().numpy())
+        result.write('%s\n' % att_5.cpu().detach().numpy().mean(axis=0))
         result.write('att_6: \t')
-        result.write('%s\n' % att_6.cpu().detach().numpy())
+        result.write('%s\n' % att_6.cpu().detach().numpy().mean(axis=0))
         result.write('att_7: \t')
-        result.write('%s\n' % att_7.cpu().detach().numpy())
+        result.write('%s\n' % att_7.cpu().detach().numpy().mean(axis=0))
         result.write('att_8: \t')
-        result.write('%s\n' % att_8.cpu().detach().numpy())
+        result.write('%s\n' % att_8.cpu().detach().numpy().mean(axis=0))
         result.write('att_9: \t')
-        result.write('%s\n' % att_9.cpu().detach().numpy())
+        result.write('%s\n' % att_9.cpu().detach().numpy().mean(axis=0))
         result.write('att_10: \t')
-        result.write('%s\n' % att_10.cpu().detach().numpy())
+        result.write('%s\n' % att_10.cpu().detach().numpy().mean(axis=0))
 
         result.write("\n========================================\n")
         result.write('euclidean_dist: {euclidean_dist:.4f}\t'
@@ -921,6 +1019,52 @@ for i, data in enumerate(testDataloader):
                                                                         clark_dist=clark, canberra_dist=canberra,
                                                                         cosine_dist=cosine,
                                                                         intersection_dist=intersection))
+        result.write("\n------------------------------------------------------------------\n")
+        result.write("Test set results:\n")
+        result.write('Multilabel metrics: example-based-classification:\n')
+        result.write('subsetAccuracy: {subsetAccuracy:.4f}\t'
+                     'hammingLoss: {hammingLoss:.4f}\t'
+                     'accuracy: {accuracy:.4f}\t'
+                     'precision: {precision:.4f}\t'
+                     'recall: {recall:.4f}\t'
+                     'fbeta: {fbeta:.4f}\t'.format(subsetAccuracy=test_subsetAccuracy,
+                                                   hammingLoss=test_hammingLoss,
+                                                   accuracy=test_eb_accuracy, precision=test_eb_precision,
+                                                   recall=test_eb_recall, fbeta=test_eb_fbeta))
+        result.write("\n")
+        result.write('Multilabel metrics: example-based-ranking:\n')
+        result.write('oneError: {oneError:.4f}\t'
+                     'coverage: {coverage:.4f}\t'
+                     'averagePrecision: {averagePrecision:.4f}\t'
+                     'rankingLoss: {rankingLoss:.4f}\t'.format(oneError=test_oneError,
+                                                               coverage=test_coverage,
+                                                               averagePrecision=test_averagePrecision,
+                                                               rankingLoss=test_rankingLoss))
+        result.write("\n")
+        result.write('Multilabel metrics: label-based-classification:\n')
+        result.write('accuracyMacro: {accuracyMacro:.4f}\t'
+                     'accuracyMicro: {accuracyMicro:.4f}\t'
+                     'precisionMacro: {precisionMacro:.4f}\t'
+                     'precisionMicro: {precisionMicro:.4f}\t'
+                     'recallMacro: {recallMacro:.4f}\t'
+                     'recallMicro: {recallMicro:.4f}\t'
+                     'fbetaMacro: {fbetaMacro:.4f}\t'
+                     'fbetaMicro: {fbetaMicro:.4f}\t'.format(accuracyMacro=test_accuracyMacro,
+                                                             accuracyMicro=test_accuracyMicro,
+                                                             precisionMacro=test_precisionMacro,
+                                                             precisionMicro=test_precisionMicro,
+                                                             recallMacro=test_recallMacro,
+                                                             recallMicro=test_recallMicro,
+                                                             fbetaMacro=test_fbetaMacro,
+                                                             fbetaMicro=test_fbetaMicro))
+        result.write("\n")
+        result.write('Multilabel metrics: label-based-ranking:\n')
+        result.write('aucMacro: {aucMacro:.4f}\t'
+                     'aucMicro: {aucMicro:.4f}\t'
+                     'aucInstance: {aucInstance:.4f}\t'.format(aucMacro=test_aucMacro,
+                                                               aucMicro=test_aucMicro,
+                                                               aucInstance=test_aucInstance))
+
     # pearson correlation
     emopcc += pearsonr(dis_prediction.cpu().detach().numpy(), dis.cpu().detach().numpy())[0]
 # average loss
@@ -936,7 +1080,11 @@ result.write('Epoch: [{0}]\t' "Test Emotion distribution KLDivLoss:{KLDivLoss: .
 #end epoch
 on_end_epoch(ap, epoch_num+1, loss2, state= 'test')
 
-print(att_1, att_2, att_3, att_4, att_5, att_6, att_7, att_8, att_9, att_10)
+print(att_1.cpu().detach().numpy().mean(axis=0), att_2.cpu().detach().numpy().mean(axis=0),
+      att_3.cpu().detach().numpy().mean(axis=0), att_4.cpu().detach().numpy().mean(axis=0),
+      att_5.cpu().detach().numpy().mean(axis=0), att_6.cpu().detach().numpy().mean(axis=0),
+      att_7.cpu().detach().numpy().mean(axis=0), att_8.cpu().detach().numpy().mean(axis=0),
+      att_9.cpu().detach().numpy().mean(axis=0), att_10.cpu().detach().numpy().mean(axis=0))
 
 import csv
 
