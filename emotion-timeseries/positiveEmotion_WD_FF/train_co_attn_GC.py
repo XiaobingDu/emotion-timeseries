@@ -812,6 +812,7 @@ for epoch_num in range(num_epochs):
     result.write("\n------------------------------------------------------------------\n")
     result.write('Epoch: [{0}]\t' "Validation: Epoch emotion distribution val_loss: {val_loss: .4f}\t"
                  "\nEpoch emotion distribution PCC: {PCC: .4f}\t".format(epoch_num +1, val_loss=val_loss, PCC=epoch_pcc))
+    result.write('\n*****************************Epoch: [{0}]\t end************************\n'.format(epoch_num +1))
 
     # end_epoch
     on_end_epoch(ap, epoch_num + 1, loss2, state='validation')
@@ -836,6 +837,7 @@ for epoch_num in range(num_epochs):
                  best_model_path + "/train_co_attn_GC_best_model.pt")
         valid_loss_min = val_loss
 
+    print('\n*****************************Epoch: [{0}]\t end************************\n'.format(epoch_num +1))
 
 # testing
 net = MovieNet(args)
