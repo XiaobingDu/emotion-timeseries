@@ -615,7 +615,7 @@ for epoch_num in range(num_epochs):
         # loss2 = MLSML(label_prediction.cuda(), target_gt.cuda())
         loss = lamda * loss1 + (1 - lamda) * loss2
 
-        val_loss = loss
+        val_loss = loss.item()
         val_loss += val_loss /dis.shape[0]
 
         # emotion distribution metrics
@@ -807,7 +807,7 @@ for epoch_num in range(num_epochs):
     epoch_pcc = emopcc / len(valSet)
     # validation loss
     val_loss = epoch_loss
-    print("Validation: Epoch emotion distribution val_loss:", val_loss.item(), "\nEpoch emotion distribution PCC:",
+    print("Validation: Epoch emotion distribution val_loss:", val_loss, "\nEpoch emotion distribution PCC:",
           epoch_pcc.item(), "\n", "==========================")
     result.write("\n------------------------------------------------------------------\n")
     result.write('Epoch: [{0}]\t' "Validation: Epoch emotion distribution val_loss: {val_loss: .4f}\t"
@@ -891,7 +891,7 @@ for i, data in enumerate(testDataloader):
     #loss2: MLSML
     # loss2 = MLSML(label_prediction.cuda(), target_gt.cuda())
     loss = lamda * loss1 + (1 - lamda) * loss2
-    test_loss = loss
+    test_loss = loss.item()
     test_loss += test_loss / dis.shape[0]
 
     # emotion distribution metrics
@@ -1077,7 +1077,7 @@ test_testkl = test_loss / len(testSet)
 # average pcc
 test_emopcc = emopcc / len(testSet)
 print("\n========================================\n")
-print("Test Emotion distribution test_loss:", test_testkl.item(), "\Test Emotion distribution PCC:", test_emopcc.item())
+print("Test Emotion distribution test_loss:", test_testkl, "\Test Emotion distribution PCC:", test_emopcc.item())
 result.write("\n------------------------------------------------------------------\n")
 result.write('Epoch: [{0}]\t' "Test Emotion distribution test_loss:{test_loss: .4f}\n"
              "Test Emotion distribution PCC:{PCC: .4f}\t".format(epoch_num+1, test_loss=test_testkl,PCC=test_emopcc))
