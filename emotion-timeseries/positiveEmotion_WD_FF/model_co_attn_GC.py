@@ -234,12 +234,8 @@ class MovieNet(nn.Module):
         GCN_output = GCN_module(inp='embedding/positiveEmotion_glove_word2vec.pkl') #[9,5]
         GCN_output = GCN_output.transpose(0, 1).cuda() #[5,9]
 
-        # GCN output * LSTM out lastTimestep
+        # GCN output * LSTM lastTimestep
         ## [32,9]
         predict = torch.matmul(predicted_last, GCN_output)  # ML-GCN eq.4
-
-        # #log_softmax layer
-        # log_softmax = torch.nn.LogSoftmax(dim=1)
-        # predicted = log_softmax(predict)
 
         return predict, enc_input_unimodal_cat, self.shared_encoder, att_1, att_2, att_3, att_4, att_5, att_6, att_7, att_8, att_9, att_10

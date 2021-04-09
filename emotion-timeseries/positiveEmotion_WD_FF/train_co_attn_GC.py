@@ -881,8 +881,8 @@ for i, data in enumerate(testDataloader):
     #loss2: BCELoss
     dom_label = dom_label.detach()
     loss2 = mutilabel_criterion(label_prediction, dom_label)
-    # print('*'*100)
-    # print('predict label...', label_prediction)
+    print('*'*100)
+    print('predict label...', label_prediction)
     #loss2: MLSML
     # loss2 = MLSML(label_prediction.cuda(), target_gt.cuda())
     loss = lamda * loss1 + (1 - lamda) * loss2
