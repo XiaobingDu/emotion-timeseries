@@ -213,7 +213,7 @@ def load_ckp(checkpoint_fpath, model, optimizer):
     # initialize valid_loss_min from checkpoint to valid_loss_min
     valid_loss_min_kl = checkpoint['valid_loss_min_kl']
 
-    return model, optimizer, checkpoint['epoch'], valid_loss_min_kl.item()
+    return model, optimizer, checkpoint['epoch'], valid_loss_min_kl
 
 ## metrics for emotion distribution learning
 
