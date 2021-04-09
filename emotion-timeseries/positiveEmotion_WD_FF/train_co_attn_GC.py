@@ -615,7 +615,7 @@ for epoch_num in range(num_epochs):
         # loss2 = MLSML(label_prediction.cuda(), target_gt.cuda())
         loss = lamda * loss1 + (1 - lamda) * loss2
 
-        val_loss = loss.item()
+        val_loss = loss
         val_loss += val_loss /dis.shape[0]
 
         # emotion distribution metrics
@@ -891,7 +891,7 @@ for i, data in enumerate(testDataloader):
     #loss2: MLSML
     # loss2 = MLSML(label_prediction.cuda(), target_gt.cuda())
     loss = lamda * loss1 + (1 - lamda) * loss2
-    test_loss = loss.item()
+    test_loss = loss
     test_loss += test_loss / dis.shape[0]
 
     # emotion distribution metrics
