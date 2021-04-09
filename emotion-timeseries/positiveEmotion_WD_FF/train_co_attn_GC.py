@@ -498,6 +498,7 @@ for epoch_num in range(num_epochs):
             result.write('att_10: \t')
             result.write('%s\n' % att_10.cpu().detach().numpy().mean(axis=0))
 
+            result.write('\n Epoch: [{0}]: Training....\n'.format(epoch_num + 1))
             result.write("\n========================================\n")
             result.write('euclidean_dist: {euclidean_dist:.4f}\t'
                   'chebyshev_dist: {chebyshev_dist:.4f}\t'
@@ -716,7 +717,7 @@ for epoch_num in range(num_epochs):
                   "aucInstance={:.4f}".format(val_aucInstance))
 
             result.write("\n------------------------------------------------------------------\n")
-            result.write('Training co-attention:\n ')
+            result.write('Validation co-attention:\n ')
             result.write('att_1: \t')
             result.write('%s\n' % att_1.cpu().detach().numpy().mean(axis=0))
             result.write('att_2: \t')
@@ -738,6 +739,7 @@ for epoch_num in range(num_epochs):
             result.write('att_10: \t')
             result.write('%s\n' % att_10.cpu().detach().numpy().mean(axis=0))
 
+            result.write('\n Epoch: [{0}]: Validation....\n'.format(epoch_num + 1))
             result.write("\n========================================\n")
             result.write('euclidean_dist: {euclidean_dist:.4f}\t'
                   'chebyshev_dist: {chebyshev_dist:.4f}\t'
@@ -990,7 +992,7 @@ for i, data in enumerate(testDataloader):
               "aucInstance={:.4f}".format(test_aucInstance))
 
         result.write("\n------------------------------------------------------------------\n")
-        result.write('Training co-attention:\n ')
+        result.write('Test co-attention:\n ')
         result.write('att_1: \t')
         result.write('%s\n' % att_1.cpu().detach().numpy().mean(axis=0))
         result.write('att_2: \t')
@@ -1012,6 +1014,7 @@ for i, data in enumerate(testDataloader):
         result.write('att_10: \t')
         result.write('%s\n' % att_10.cpu().detach().numpy().mean(axis=0))
 
+        result.write('\n Epoch: [{0}]: Test....\n'.format(epoch_num+1))
         result.write("\n========================================\n")
         result.write('euclidean_dist: {euclidean_dist:.4f}\t'
                   'chebyshev_dist: {chebyshev_dist:.4f}\t'
