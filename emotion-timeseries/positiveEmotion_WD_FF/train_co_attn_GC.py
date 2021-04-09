@@ -5,8 +5,6 @@ from model_co_attn_GC import MovieNet
 from dataManager import five_fold, dataSplit, get_sample_data, get_sample_data_withoutOverlap
 from utils_co_attn_GC import *
 from torch.utils.data import DataLoader
-from torch.autograd import Variable
-import numpy as np
 from scipy.stats.mstats import pearsonr
 from clstm import train_model_gista
 import time, argparse
@@ -370,7 +368,10 @@ for epoch_num in range(num_epochs):
         loss.backward()
         a = torch.nn.utils.clip_grad_norm_(net.parameters(), 10)
         optimizer.step()
-        avg_tr_loss += loss.item()
+
+        avg_tr_loss = loss.item()
+        avg_tr_loss += avg_tr_loss / dis.shape[0]
+        # avg_tr_loss += loss.item()
         # print('dis_prediction....', dis_prediction)
         # print('target_gt...', target_gt)
 
@@ -426,7 +427,6 @@ for epoch_num in range(num_epochs):
             on_end_batch(ap, epoch_num+1, label_prediction, dom_label, loss1, loss2, state= 'training')
             #输出每一个batch的结果，分析一下结果变化趋势
 
-            print("Epoch no:" ,epoch_num +1, "| Avg train loss:" .format(avg_tr_loss /len(trSet) ,'0.4f') )
             print('euclidean_dist: {euclidean_dist:.4f}\t'
                   'chebyshev_dist: {chebyshev_dist:.4f}\t'
                   'kldist: {kldist:.4f}\t'
@@ -498,9 +498,6 @@ for epoch_num in range(num_epochs):
             result.write('att_10: \t')
             result.write('%s\n' % att_10.cpu().detach().numpy().mean(axis=0))
 
-            result.write("\n------------------------------------------------------------------\n")
-            result.write("Epoch no: {epoch: .4f}\t"  
-                         "| Avg train loss: {loss:.4f}\t" .format( epoch = epoch_num +1, loss = avg_tr_loss /len(trSet)))
             result.write("\n========================================\n")
             result.write('euclidean_dist: {euclidean_dist:.4f}\t'
                   'chebyshev_dist: {chebyshev_dist:.4f}\t'
@@ -562,6 +559,10 @@ for epoch_num in range(num_epochs):
                                                                    aucMicro=train_aucMicro,
                                                                    aucInstance=train_aucInstance))
 
+    print("Epoch no:", epoch_num + 1, "| Avg_train_loss:".format(avg_tr_loss / len(trSet), '0.4f'))
+    result.write("\n------------------------------------------------------------------\n")
+    result.write("Epoch no: {epoch: .4f}\t"
+                 "| Avg_train_loss: {loss:.4f}\t".format(epoch=epoch_num + 1, loss=avg_tr_loss / len(trSet)))
     # end_epoch
     on_end_epoch(ap, epoch_num + 1, loss2, state='training')
 
@@ -613,7 +614,8 @@ for epoch_num in range(num_epochs):
         # loss2: MLSML
         # loss2 = MLSML(label_prediction.cuda(), target_gt.cuda())
         loss = lamda * loss1 + (1 - lamda) * loss2
-        val_loss = loss
+
+        val_loss = loss.item()
         val_loss += val_loss /dis.shape[0]
 
         # emotion distribution metrics
@@ -805,10 +807,11 @@ for epoch_num in range(num_epochs):
     epoch_pcc = emopcc / len(valSet)
     # validation loss
     val_loss = epoch_loss
-    print("Validation: Epoch emotion distribution KLDivLoss:", epoch_loss.item(), "\nEpoch emotion distribution PCC:",
+    print("Validation: Epoch emotion distribution val_loss:", val_loss.item(), "\nEpoch emotion distribution PCC:",
           epoch_pcc.item(), "\n", "==========================")
-    result.write('Epoch: [{0}]\t' "Validation: Epoch emotion distribution KLDivLoss: {KLDivLoss: .4f}\t"
-                 "\nEpoch emotion distribution PCC: {PCC: .4f}\t".format(epoch_num +1, KLDivLoss=epoch_loss, PCC=epoch_pcc))
+    result.write("\n------------------------------------------------------------------\n")
+    result.write('Epoch: [{0}]\t' "Validation: Epoch emotion distribution val_loss: {val_loss: .4f}\t"
+                 "\nEpoch emotion distribution PCC: {PCC: .4f}\t".format(epoch_num +1, val_loss=val_loss, PCC=epoch_pcc))
 
     # end_epoch
     on_end_epoch(ap, epoch_num + 1, loss2, state='validation')
@@ -886,7 +889,7 @@ for i, data in enumerate(testDataloader):
     #loss2: MLSML
     # loss2 = MLSML(label_prediction.cuda(), target_gt.cuda())
     loss = lamda * loss1 + (1 - lamda) * loss2
-    test_loss = loss
+    test_loss = loss.item()
     test_loss += test_loss / dis.shape[0]
 
     # emotion distribution metrics
@@ -1072,10 +1075,10 @@ test_testkl = test_loss / len(testSet)
 # average pcc
 test_emopcc = emopcc / len(testSet)
 print("\n========================================\n")
-print("Test Emotion distribution KLDivLoss:", test_testkl.item(), "\Test Emotion distribution PCC:", test_emopcc.item())
-result.write("\n============================================\n")
-result.write('Epoch: [{0}]\t' "Test Emotion distribution KLDivLoss:{KLDivLoss: .4f}\n"
-             "Test Emotion distribution PCC:{PCC: .4f}\t".format(epoch_num+1, KLDivLoss=test_testkl,PCC=test_emopcc))
+print("Test Emotion distribution test_loss:", test_testkl.item(), "\Test Emotion distribution PCC:", test_emopcc.item())
+result.write("\n------------------------------------------------------------------\n")
+result.write('Epoch: [{0}]\t' "Test Emotion distribution test_loss:{test_loss: .4f}\n"
+             "Test Emotion distribution PCC:{PCC: .4f}\t".format(epoch_num+1, test_loss=test_testkl,PCC=test_emopcc))
 
 #end epoch
 on_end_epoch(ap, epoch_num+1, loss2, state= 'test')
