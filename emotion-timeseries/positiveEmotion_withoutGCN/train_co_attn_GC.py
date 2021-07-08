@@ -852,8 +852,44 @@ emopcc = 0
 
 # start_epoch
 on_start_epoch(ap)
+sum_euclidean = 0
+sum_chebyshev = 0
+sum_kldist = 0
+sum_clark = 0
+sum_canberra = 0
+sum_cosine = 0
+sum_intersection = 0
 
+sum_subsetAccuracy = 0
+sum_hammingLoss = 0
+sum_eb_accuracy = 0
+sum_eb_precision = 0
+sum_eb_recall = 0
+sum_eb_fbeta = 0
+
+# example-based-ranking
+sum_oneError = 0
+sum_coverage = 0
+sum_averagePrecision = 0
+sum_rankingLoss = 0
+
+# label-based-classification
+sum_accuracyMacro = 0
+sum_accuracyMicro = 0
+sum_precisionMacro = 0
+sum_precisionMicro = 0
+sum_recallMacro = 0
+sum_recallMicro = 0
+sum_fbetaMacro = 0
+sum_fbetaMicro = 0
+
+# label-based-ranking
+sum_aucMacro = 0
+sum_aucMicro = 0
+sum_aucInstance = 0
+count = 0
 for i, data in enumerate(testDataloader):
+    count = count + 1
     st_time = time.time()
     test, dis, dom_label, Frontal, Temporal, Central, Parietal, Occipital = data
     dis = dis
@@ -899,48 +935,76 @@ for i, data in enumerate(testDataloader):
     # emotion distribution metrics
     # euclidean
     euclidean = euclidean_dist(dis.shape[0], dis, dis_prediction)
+    sum_euclidean += euclidean
     # chebyshev
     chebyshev = chebyshev_dist(dis.shape[0], dis, dis_prediction)
+    sum_chebyshev += chebyshev
     # Kullback-Leibler divergence
     kldist = KL_dist(dis, dis_prediction)
+    sum_kldist += kldist
     # clark
     clark = clark_dist(dis, dis_prediction)
+    sum_clark += clark
     # canberra
     canberra = canberra_dist(dis, dis_prediction)
+    sum_canberra += canberra
     # cosine
     cosine = cosine_dist(dis, dis_prediction)
+    sum_cosine += cosine
     # intersection
     intersection = intersection_dist(dis, dis_prediction)
+    sum_intersection += intersection
 
     # for multilabel prediction
     # example-based-classification
     test_subsetAccuracy = subsetAccuracy(dom_label, label_prediction)
+    sum_subsetAccuracy += test_subsetAccuracy
     test_hammingLoss = hammingLoss(dom_label, label_prediction)
+    sum_hammingLoss += test_hammingLoss
     test_eb_accuracy = accuracy(dom_label, label_prediction)
+    sum_eb_accuracy += test_eb_accuracy
     test_eb_precision = precision(dom_label, label_prediction)
+    sum_eb_precision += test_eb_precision
     test_eb_recall = recall(dom_label, label_prediction)
+    sum_eb_recall += test_eb_recall
     test_eb_fbeta = fbeta(dom_label, label_prediction)
+    sum_eb_fbeta += test_eb_fbeta
 
     # example-based-ranking
     test_oneError = oneError(dom_label, label_prediction)
+    sum_oneError += test_oneError
     test_coverage = coverage(dom_label, label_prediction)
+    sum_coverage += test_coverage
     test_averagePrecision = averagePrecision(dom_label, label_prediction)
+    sum_averagePrecision += test_averagePrecision
     test_rankingLoss = rankingLoss(dom_label, label_prediction)
+    sum_rankingLoss += test_rankingLoss
 
     # label-based-classification
     test_accuracyMacro = accuracyMacro(dom_label, label_prediction)
+    sum_accuracyMacro += test_accuracyMacro
     test_accuracyMicro = accuracyMicro(dom_label, label_prediction)
+    sum_accuracyMicro += test_accuracyMicro
     test_precisionMacro = precisionMacro(dom_label, label_prediction)
+    sum_precisionMacro += test_precisionMacro
     test_precisionMicro = precisionMicro(dom_label, label_prediction)
+    sum_precisionMicro += test_precisionMicro
     test_recallMacro = recallMacro(dom_label, label_prediction)
+    sum_recallMacro += test_recallMacro
     test_recallMicro = recallMicro(dom_label, label_prediction)
+    sum_recallMicro += test_recallMicro
     test_fbetaMacro = fbetaMacro(dom_label, label_prediction)
+    sum_fbetaMacro += test_recallMacro
     test_fbetaMicro = fbetaMicro(dom_label, label_prediction)
+    sum_fbetaMicro += test_fbetaMicro
 
     # label-based-ranking
     test_aucMacro = aucMacro(dom_label, label_prediction)
+    sum_aucMacro += test_aucMacro
     test_aucMicro = aucMicro(dom_label, label_prediction)
+    sum_aucMicro += test_aucMicro
     test_aucInstance = aucInstance(dom_label, label_prediction)
+    sum_aucInstance += test_aucInstance
 
     if i % 10 == 0:
         # measure mAP
@@ -1079,11 +1143,82 @@ for i, data in enumerate(testDataloader):
 test_testkl = test_loss / len(testSet)
 # average pcc
 test_emopcc = emopcc / len(testSet)
-print("\n========================================\n")
+ave_euclidean = sum_euclidean/count
+ave_chebyshev = sum_chebyshev/count
+ave_kldist = sum_kldist/count
+ave_clark = sum_clark/count
+ave_canberra = sum_canberra/count
+ave_cosine = sum_cosine/count
+ave_intersection = sum_intersection/count
+
+ave_subsetAccuracy = sum_subsetAccuracy/count
+ave_hammingLoss = sum_hammingLoss/count
+ave_eb_accuracy = sum_eb_accuracy/count
+ave_eb_precision = sum_eb_precision/count
+ave_eb_recall = sum_eb_recall/count
+ave_eb_fbeta = sum_eb_fbeta/count
+
+# example-based-ranking
+ave_oneError = sum_oneError/count
+ave_coverage = sum_coverage/count
+ave_averagePrecision = sum_averagePrecision/count
+ave_rankingLoss = sum_rankingLoss/count
+
+# label-based-classification
+ave_accuracyMacro = sum_accuracyMacro/count
+ave_accuracyMicro = sum_accuracyMicro/count
+ave_precisionMacro = sum_precisionMacro/count
+ave_precisionMicro = sum_precisionMicro/count
+ave_recallMacro = sum_recallMacro/count
+ave_recallMicro = sum_recallMicro/count
+ave_fbetaMacro = sum_fbetaMacro/count
+ave_fbetaMicro = sum_fbetaMicro/count
+
+# label-based-ranking
+ave_aucMacro = sum_aucMacro/count
+ave_aucMicro = sum_aucMicro/count
+ave_aucInstance = sum_aucInstance/count
+print("\n================================================================================\n")
 print("Test Emotion distribution test_loss:", test_testkl, "\Test Emotion distribution PCC:", test_emopcc.item())
 result.write("\n------------------------------------------------------------------\n")
 result.write('Epoch: [{0}]\t' "Test Emotion distribution test_loss:{test_loss: .4f}\n"
              "Test Emotion distribution PCC:{PCC: .4f}\t".format(epoch_num+1, test_loss=test_testkl,PCC=test_emopcc))
+
+result.write("\n================================================================================\n")
+result.write('Epoch: {epoch:.1f}\t'
+                     'Test epoch_euclidean: {epoch_euclidean:.4f}\t'
+                     'Test epoch_chebyshev: {epoch_chebyshev:.4f}\t'
+                     'Test epoch_kldist: {epoch_kldist:.4f}\t'
+                     'Test epoch_clark_dist: {epoch_clark_dist:.4f}\t'
+                     'Test epoch_canberra_dist: {epoch_canberra_dist:.4f}\t'
+                     'Test epoch_cosine_similarity: {epoch_cosine_similarity:.4f}\t'
+                     'Test epoch_intersection_similarity: {epoch_intersection_similarity:.4f}\t'.format(epoch=epoch_num+1,
+                                                                                                        epoch_euclidean=ave_euclidean,
+                                                                                                        epoch_chebyshev=ave_chebyshev,
+                                                                                                        epoch_kldist=ave_kldist,
+                                                                                                        epoch_clark_dist=ave_clark,
+                                                                                                        epoch_canberra_dist=ave_canberra,
+                                                                                                        epoch_cosine_similarity=ave_cosine,
+                                                                                                        epoch_intersection_similarity=ave_intersection))
+
+#multi-label classification
+# result.write("\n================================================================================\n")
+# result.write('Epoch: {epoch:.1f}\t'
+#                      'Test epoch_accuracy: {epoch_accuracy:.4f}\t'
+#                      'Test epoch_hammingloss: {epoch_hammingloss:.4f}\t'
+#                      'Test epoch_oneError: {epoch_oneError:.4f}\t'
+#                      'Test epoch_Averageprecision: {epoch_Averageprecision:.4f}\t'
+#                      'Test epoch_rankingloss: {epoch_rankingloss:.4f}\t'
+#                      'Test epoch_accuracyMacro: {epoch_accuracyMacro:.4f}\t'
+#                      'Test epoch_fbetaMicro: {epoch_fbetaMicro:.4f}\t'.format(epoch=epoch_num+1,
+#                                                                               epoch_accuracy=epoch_accuracy,
+#                                                                             epoch_hammingloss=epoch_hammingloss,
+#                                                                             epoch_oneError=epoch_oneError,
+#                                                                             epoch_Averageprecision=epoch_Averageprecision,
+#                                                                             epoch_rankingloss=epoch_rankingloss,
+#                                                                             epoch_accuracyMacro=epoch_accuracyMacro,
+#                                                                             epoch_fbetaMicro=epoch_fbetaMicro))
+
 
 #end epoch
 on_end_epoch(ap, epoch_num+1, loss2, state= 'test')
