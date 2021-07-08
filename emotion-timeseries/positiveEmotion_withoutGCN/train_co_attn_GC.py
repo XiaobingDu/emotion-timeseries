@@ -392,34 +392,34 @@ for epoch_num in range(num_epochs):
         intersection = intersection_dist(dis, dis_prediction)
 
         # for multilabel prediction
-        # example-based-classification
-        train_subsetAccuracy = subsetAccuracy(dom_label, label_prediction)
-        train_hammingLoss = hammingLoss(dom_label, label_prediction)
-        train_eb_accuracy = accuracy(dom_label, label_prediction)
-        train_eb_precision = precision(dom_label, label_prediction)
-        train_eb_recall = recall(dom_label, label_prediction)
-        train_eb_fbeta = fbeta(dom_label, label_prediction)
+        # # example-based-classification
+        # train_subsetAccuracy = subsetAccuracy(dom_label, label_prediction)
+        # train_hammingLoss = hammingLoss(dom_label, label_prediction)
+        # train_eb_accuracy = accuracy(dom_label, label_prediction)
+        # train_eb_precision = precision(dom_label, label_prediction)
+        # train_eb_recall = recall(dom_label, label_prediction)
+        # train_eb_fbeta = fbeta(dom_label, label_prediction)
+        #
+        # # example-based-ranking
+        # train_oneError = oneError(dom_label, label_prediction)
+        # train_coverage = coverage(dom_label, label_prediction)
+        # train_averagePrecision = averagePrecision(dom_label, label_prediction)
+        # train_rankingLoss = rankingLoss(dom_label, label_prediction)
+        #
+        # # label-based-classification
+        # train_accuracyMacro = accuracyMacro(dom_label, label_prediction)
+        # train_accuracyMicro = accuracyMicro(dom_label, label_prediction)
+        # train_precisionMacro = precisionMacro(dom_label, label_prediction)
+        # train_precisionMicro = precisionMicro(dom_label, label_prediction)
+        # train_recallMacro = recallMacro(dom_label, label_prediction)
+        # train_recallMicro = recallMicro(dom_label, label_prediction)
+        # train_fbetaMacro = fbetaMacro(dom_label, label_prediction)
+        # train_fbetaMicro = fbetaMicro(dom_label, label_prediction)
 
-        # example-based-ranking
-        train_oneError = oneError(dom_label, label_prediction)
-        train_coverage = coverage(dom_label, label_prediction)
-        train_averagePrecision = averagePrecision(dom_label, label_prediction)
-        train_rankingLoss = rankingLoss(dom_label, label_prediction)
-
-        # label-based-classification
-        train_accuracyMacro = accuracyMacro(dom_label, label_prediction)
-        train_accuracyMicro = accuracyMicro(dom_label, label_prediction)
-        train_precisionMacro = precisionMacro(dom_label, label_prediction)
-        train_precisionMicro = precisionMicro(dom_label, label_prediction)
-        train_recallMacro = recallMacro(dom_label, label_prediction)
-        train_recallMicro = recallMicro(dom_label, label_prediction)
-        train_fbetaMacro = fbetaMacro(dom_label, label_prediction)
-        train_fbetaMicro = fbetaMicro(dom_label, label_prediction)
-
-        # label-based-ranking
-        train_aucMacro = aucMacro(dom_label, label_prediction)
-        train_aucMicro = aucMicro(dom_label, label_prediction)
-        train_aucInstance = aucInstance(dom_label, label_prediction)
+        # # label-based-ranking
+        # train_aucMacro = aucMacro(dom_label, label_prediction)
+        # train_aucMicro = aucMicro(dom_label, label_prediction)
+        # train_aucInstance = aucInstance(dom_label, label_prediction)
 
         #results
         if i % 10 == 0:
@@ -439,38 +439,38 @@ for epoch_num in range(num_epochs):
                                                                         cosine_dist=cosine,
                                                                         intersection_dist=intersection))
 
-            print("Training set results:\n",
-                  'Multilabel metrics: example-based-classification:\n',
-                  "subsetAccuracy= {:.4f}".format(train_subsetAccuracy),
-                  "hammingLoss= {:.4f}".format(train_hammingLoss),
-                  "accuracy= {:.4f}".format(train_eb_accuracy),
-                  "precision= {:.4f}".format(train_eb_precision),
-                  "recall= {:.4f}".format(train_eb_recall),
-                  "fbeta= {:.4f}".format(train_eb_fbeta))
-
-            print("Training set results:\n",
-                  'Multilabel metrics: example-based-ranking:\n',
-                  "oneError= {:.4f}".format(train_oneError),
-                  "coverage= {:.4f}".format(train_coverage),
-                  "averagePrecision= {:.4f}".format(train_averagePrecision),
-                  "rankingLoss= {:.4f}".format(train_rankingLoss))
-
-            print("Training set results:\n",
-                  'Multilabel metrics: label-based-classification:\n',
-                  "accuracyMacro= {:.4f}".format(train_accuracyMacro),
-                  "accuracyMicro= {:.4f}".format(train_accuracyMicro),
-                  "precisionMacro= {:.4f}".format(train_precisionMacro),
-                  "precisionMicro= {:.4f}".format(train_precisionMicro),
-                  "recallMacro= {:.4f}".format(train_recallMacro),
-                  "recallMicro= {:.4f}".format(train_recallMicro),
-                  "fbetaMacro= {:.4f}".format(train_fbetaMacro),
-                  "fbetaMicro= {:.4f}".format(train_fbetaMicro))
-
-            print("Training set results:\n",
-                  'Multilabel metrics: label-based-ranking:\n',
-                  "aucMacro= {:.4f}".format(train_aucMacro),
-                  "aucMicro= {:.4f}".format(train_aucMicro),
-                  "aucInstance={:.4f}".format(train_aucInstance))
+            # print("Training set results:\n",
+            #       'Multilabel metrics: example-based-classification:\n',
+            #       "subsetAccuracy= {:.4f}".format(train_subsetAccuracy),
+            #       "hammingLoss= {:.4f}".format(train_hammingLoss),
+            #       "accuracy= {:.4f}".format(train_eb_accuracy),
+            #       "precision= {:.4f}".format(train_eb_precision),
+            #       "recall= {:.4f}".format(train_eb_recall),
+            #       "fbeta= {:.4f}".format(train_eb_fbeta))
+            #
+            # print("Training set results:\n",
+            #       'Multilabel metrics: example-based-ranking:\n',
+            #       "oneError= {:.4f}".format(train_oneError),
+            #       "coverage= {:.4f}".format(train_coverage),
+            #       "averagePrecision= {:.4f}".format(train_averagePrecision),
+            #       "rankingLoss= {:.4f}".format(train_rankingLoss))
+            #
+            # print("Training set results:\n",
+            #       'Multilabel metrics: label-based-classification:\n',
+            #       "accuracyMacro= {:.4f}".format(train_accuracyMacro),
+            #       "accuracyMicro= {:.4f}".format(train_accuracyMicro),
+            #       "precisionMacro= {:.4f}".format(train_precisionMacro),
+            #       "precisionMicro= {:.4f}".format(train_precisionMicro),
+            #       "recallMacro= {:.4f}".format(train_recallMacro),
+            #       "recallMicro= {:.4f}".format(train_recallMicro),
+            #       "fbetaMacro= {:.4f}".format(train_fbetaMacro),
+            #       "fbetaMicro= {:.4f}".format(train_fbetaMicro))
+            #
+            # print("Training set results:\n",
+            #       'Multilabel metrics: label-based-ranking:\n',
+            #       "aucMacro= {:.4f}".format(train_aucMacro),
+            #       "aucMicro= {:.4f}".format(train_aucMicro),
+            #       "aucInstance={:.4f}".format(train_aucInstance))
 
             result = codecs.open(FLAGS.save_file, 'a', 'utf-8')
             result.write("\n------------------------------------------------------------------\n")
@@ -511,54 +511,54 @@ for epoch_num in range(num_epochs):
                                                                         clark_dist=clark, canberra_dist=canberra,
                                                                         cosine_dist=cosine,
                                                                         intersection_dist=intersection))
-            result.write("\n------------------------------------------------------------------\n")
-            result.write("Training set results:\n")
-            result.write('Multilabel metrics: example-based-classification:\n')
-            result.write('subsetAccuracy: {subsetAccuracy:.4f}\t'
-                         'hammingLoss: {hammingLoss:.4f}\t'
-                         'accuracy: {accuracy:.4f}\t'
-                         'precision: {precision:.4f}\t'
-                         'recall: {recall:.4f}\t'
-                         'fbeta: {fbeta:.4f}\t'.format(subsetAccuracy=train_subsetAccuracy,
-                                                       hammingLoss=train_hammingLoss,
-                                                       accuracy=train_eb_accuracy, precision=train_eb_precision,
-                                                       recall=train_eb_recall, fbeta=train_eb_fbeta))
-
-            result.write("\n")
-            result.write('Multilabel metrics: example-based-ranking:\n')
-            result.write('oneError: {oneError:.4f}\t'
-                         'coverage: {coverage:.4f}\t'
-                         'averagePrecision: {averagePrecision:.4f}\t'
-                         'rankingLoss: {rankingLoss:.4f}\t'.format(oneError=train_oneError,
-                                                                   coverage=train_coverage,
-                                                                   averagePrecision=train_averagePrecision,
-                                                                   rankingLoss=train_rankingLoss))
-
-            result.write("\n")
-            result.write('Multilabel metrics: label-based-classification:\n')
-            result.write('accuracyMacro: {accuracyMacro:.4f}\t'
-                         'accuracyMicro: {accuracyMicro:.4f}\t'
-                         'precisionMacro: {precisionMacro:.4f}\t'
-                         'precisionMicro: {precisionMicro:.4f}\t'
-                         'recallMacro: {recallMacro:.4f}\t'
-                         'recallMicro: {recallMicro:.4f}\t'
-                         'fbetaMacro: {fbetaMacro:.4f}\t'
-                         'fbetaMicro: {fbetaMicro:.4f}\t'.format(accuracyMacro=train_accuracyMacro,
-                                                                 accuracyMicro=train_accuracyMicro,
-                                                                 precisionMacro=train_precisionMacro,
-                                                                 precisionMicro=train_precisionMicro,
-                                                                 recallMacro=train_recallMacro,
-                                                                 recallMicro=train_recallMicro,
-                                                                 fbetaMacro=train_fbetaMacro,
-                                                                 fbetaMicro=train_fbetaMicro))
-
-            result.write("\n")
-            result.write('Multilabel metrics: label-based-ranking:\n')
-            result.write('aucMacro: {aucMacro:.4f}\t'
-                         'aucMicro: {aucMicro:.4f}\t'
-                         'aucInstance: {aucInstance:.4f}\t'.format(aucMacro=train_aucMacro,
-                                                                   aucMicro=train_aucMicro,
-                                                                   aucInstance=train_aucInstance))
+            # result.write("\n------------------------------------------------------------------\n")
+            # result.write("Training set results:\n")
+            # result.write('Multilabel metrics: example-based-classification:\n')
+            # result.write('subsetAccuracy: {subsetAccuracy:.4f}\t'
+            #              'hammingLoss: {hammingLoss:.4f}\t'
+            #              'accuracy: {accuracy:.4f}\t'
+            #              'precision: {precision:.4f}\t'
+            #              'recall: {recall:.4f}\t'
+            #              'fbeta: {fbeta:.4f}\t'.format(subsetAccuracy=train_subsetAccuracy,
+            #                                            hammingLoss=train_hammingLoss,
+            #                                            accuracy=train_eb_accuracy, precision=train_eb_precision,
+            #                                            recall=train_eb_recall, fbeta=train_eb_fbeta))
+            #
+            # result.write("\n")
+            # result.write('Multilabel metrics: example-based-ranking:\n')
+            # result.write('oneError: {oneError:.4f}\t'
+            #              'coverage: {coverage:.4f}\t'
+            #              'averagePrecision: {averagePrecision:.4f}\t'
+            #              'rankingLoss: {rankingLoss:.4f}\t'.format(oneError=train_oneError,
+            #                                                        coverage=train_coverage,
+            #                                                        averagePrecision=train_averagePrecision,
+            #                                                        rankingLoss=train_rankingLoss))
+            #
+            # result.write("\n")
+            # result.write('Multilabel metrics: label-based-classification:\n')
+            # result.write('accuracyMacro: {accuracyMacro:.4f}\t'
+            #              'accuracyMicro: {accuracyMicro:.4f}\t'
+            #              'precisionMacro: {precisionMacro:.4f}\t'
+            #              'precisionMicro: {precisionMicro:.4f}\t'
+            #              'recallMacro: {recallMacro:.4f}\t'
+            #              'recallMicro: {recallMicro:.4f}\t'
+            #              'fbetaMacro: {fbetaMacro:.4f}\t'
+            #              'fbetaMicro: {fbetaMicro:.4f}\t'.format(accuracyMacro=train_accuracyMacro,
+            #                                                      accuracyMicro=train_accuracyMicro,
+            #                                                      precisionMacro=train_precisionMacro,
+            #                                                      precisionMicro=train_precisionMicro,
+            #                                                      recallMacro=train_recallMacro,
+            #                                                      recallMicro=train_recallMicro,
+            #                                                      fbetaMacro=train_fbetaMacro,
+            #                                                      fbetaMicro=train_fbetaMicro))
+            #
+            # result.write("\n")
+            # result.write('Multilabel metrics: label-based-ranking:\n')
+            # result.write('aucMacro: {aucMacro:.4f}\t'
+            #              'aucMicro: {aucMicro:.4f}\t'
+            #              'aucInstance: {aucInstance:.4f}\t'.format(aucMacro=train_aucMacro,
+            #                                                        aucMicro=train_aucMicro,
+            #                                                        aucInstance=train_aucInstance))
 
     print("Epoch no:", epoch_num + 1, "| Avg_train_loss:".format(avg_tr_loss / len(trSet), '0.4f'))
     result.write("\n------------------------------------------------------------------\n")
@@ -635,35 +635,35 @@ for epoch_num in range(num_epochs):
         # intersection
         intersection = intersection_dist(dis, dis_prediction)
 
-        # for multilabel prediction
-        # example-based-classification
-        val_subsetAccuracy = subsetAccuracy(dom_label, label_prediction)
-        val_hammingLoss = hammingLoss(dom_label, label_prediction)
-        val_eb_accuracy = accuracy(dom_label, label_prediction)
-        val_eb_precision = precision(dom_label, label_prediction)
-        val_eb_recall = recall(dom_label, label_prediction)
-        val_eb_fbeta = fbeta(dom_label, label_prediction)
-
-        # example-based-ranking
-        val_oneError = oneError(dom_label, label_prediction)
-        val_coverage = coverage(dom_label, label_prediction)
-        val_averagePrecision = averagePrecision(dom_label, label_prediction)
-        val_rankingLoss = rankingLoss(dom_label, label_prediction)
-
-        # label-based-classification
-        val_accuracyMacro = accuracyMacro(dom_label, label_prediction)
-        val_accuracyMicro = accuracyMicro(dom_label, label_prediction)
-        val_precisionMacro = precisionMacro(dom_label, label_prediction)
-        val_precisionMicro = precisionMicro(dom_label, label_prediction)
-        val_recallMacro = recallMacro(dom_label, label_prediction)
-        val_recallMicro = recallMicro(dom_label, label_prediction)
-        val_fbetaMacro = fbetaMacro(dom_label, label_prediction)
-        val_fbetaMicro = fbetaMicro(dom_label, label_prediction)
-
-        # label-based-ranking
-        val_aucMacro = aucMacro(dom_label, label_prediction)
-        val_aucMicro = aucMicro(dom_label, label_prediction)
-        val_aucInstance = aucInstance(dom_label, label_prediction)
+        # # for multilabel prediction
+        # # example-based-classification
+        # val_subsetAccuracy = subsetAccuracy(dom_label, label_prediction)
+        # val_hammingLoss = hammingLoss(dom_label, label_prediction)
+        # val_eb_accuracy = accuracy(dom_label, label_prediction)
+        # val_eb_precision = precision(dom_label, label_prediction)
+        # val_eb_recall = recall(dom_label, label_prediction)
+        # val_eb_fbeta = fbeta(dom_label, label_prediction)
+        #
+        # # example-based-ranking
+        # val_oneError = oneError(dom_label, label_prediction)
+        # val_coverage = coverage(dom_label, label_prediction)
+        # val_averagePrecision = averagePrecision(dom_label, label_prediction)
+        # val_rankingLoss = rankingLoss(dom_label, label_prediction)
+        #
+        # # label-based-classification
+        # val_accuracyMacro = accuracyMacro(dom_label, label_prediction)
+        # val_accuracyMicro = accuracyMicro(dom_label, label_prediction)
+        # val_precisionMacro = precisionMacro(dom_label, label_prediction)
+        # val_precisionMicro = precisionMicro(dom_label, label_prediction)
+        # val_recallMacro = recallMacro(dom_label, label_prediction)
+        # val_recallMicro = recallMicro(dom_label, label_prediction)
+        # val_fbetaMacro = fbetaMacro(dom_label, label_prediction)
+        # val_fbetaMicro = fbetaMicro(dom_label, label_prediction)
+        #
+        # # label-based-ranking
+        # val_aucMacro = aucMacro(dom_label, label_prediction)
+        # val_aucMicro = aucMicro(dom_label, label_prediction)
+        # val_aucInstance = aucInstance(dom_label, label_prediction)
 
         #results
         if i % 10 == 0:
@@ -683,38 +683,38 @@ for epoch_num in range(num_epochs):
                                                                         cosine_dist=cosine,
                                                                         intersection_dist=intersection))
 
-            print("Validation set results:\n",
-                  'Multilabel metrics: example-based-classification:\n',
-                  "subsetAccuracy= {:.4f}".format(val_subsetAccuracy),
-                  "hammingLoss= {:.4f}".format(val_hammingLoss),
-                  "accuracy= {:.4f}".format(val_eb_accuracy),
-                  "precision= {:.4f}".format(val_eb_precision),
-                  "recall= {:.4f}".format(val_eb_recall),
-                  "fbeta= {:.4f}".format(val_eb_fbeta))
-
-            print(
-                  'Multilabel metrics: example-based-ranking:\n',
-                  "oneError= {:.4f}".format(val_oneError),
-                  "coverage= {:.4f}".format(val_coverage),
-                  "averagePrecision= {:.4f}".format(val_averagePrecision),
-                  "rankingLoss= {:.4f}".format(val_rankingLoss))
-
-            print(
-                  'Multilabel metrics: label-based-classification:\n',
-                  "accuracyMacro= {:.4f}".format(val_accuracyMacro),
-                  "accuracyMicro= {:.4f}".format(val_accuracyMicro),
-                  "precisionMacro= {:.4f}".format(val_precisionMacro),
-                  "precisionMicro= {:.4f}".format(val_precisionMicro),
-                  "recallMacro= {:.4f}".format(val_recallMacro),
-                  "recallMicro= {:.4f}".format(val_recallMicro),
-                  "fbetaMacro= {:.4f}".format(val_fbetaMacro),
-                  "fbetaMicro= {:.4f}".format(val_fbetaMicro))
-
-            print(
-                  'Multilabel metrics: label-based-ranking:\n',
-                  "aucMacro= {:.4f}".format(val_aucMacro),
-                  "aucMicro= {:.4f}".format(val_aucMicro),
-                  "aucInstance={:.4f}".format(val_aucInstance))
+            # print("Validation set results:\n",
+            #       'Multilabel metrics: example-based-classification:\n',
+            #       "subsetAccuracy= {:.4f}".format(val_subsetAccuracy),
+            #       "hammingLoss= {:.4f}".format(val_hammingLoss),
+            #       "accuracy= {:.4f}".format(val_eb_accuracy),
+            #       "precision= {:.4f}".format(val_eb_precision),
+            #       "recall= {:.4f}".format(val_eb_recall),
+            #       "fbeta= {:.4f}".format(val_eb_fbeta))
+            #
+            # print(
+            #       'Multilabel metrics: example-based-ranking:\n',
+            #       "oneError= {:.4f}".format(val_oneError),
+            #       "coverage= {:.4f}".format(val_coverage),
+            #       "averagePrecision= {:.4f}".format(val_averagePrecision),
+            #       "rankingLoss= {:.4f}".format(val_rankingLoss))
+            #
+            # print(
+            #       'Multilabel metrics: label-based-classification:\n',
+            #       "accuracyMacro= {:.4f}".format(val_accuracyMacro),
+            #       "accuracyMicro= {:.4f}".format(val_accuracyMicro),
+            #       "precisionMacro= {:.4f}".format(val_precisionMacro),
+            #       "precisionMicro= {:.4f}".format(val_precisionMicro),
+            #       "recallMacro= {:.4f}".format(val_recallMacro),
+            #       "recallMicro= {:.4f}".format(val_recallMicro),
+            #       "fbetaMacro= {:.4f}".format(val_fbetaMacro),
+            #       "fbetaMicro= {:.4f}".format(val_fbetaMicro))
+            #
+            # print(
+            #       'Multilabel metrics: label-based-ranking:\n',
+            #       "aucMacro= {:.4f}".format(val_aucMacro),
+            #       "aucMicro= {:.4f}".format(val_aucMicro),
+            #       "aucInstance={:.4f}".format(val_aucInstance))
 
             result.write("\n------------------------------------------------------------------\n")
             result.write('Validation co-attention:\n ')
@@ -752,54 +752,54 @@ for epoch_num in range(num_epochs):
                                                                         clark_dist=clark, canberra_dist=canberra,
                                                                         cosine_dist=cosine,
                                                                         intersection_dist=intersection))
-            result.write("\n------------------------------------------------------------------\n")
-            result.write("Validation set results:\n")
-            result.write('Multilabel metrics: example-based-classification:\n')
-            result.write('subsetAccuracy: {subsetAccuracy:.4f}\t'
-                         'hammingLoss: {hammingLoss:.4f}\t'
-                         'accuracy: {accuracy:.4f}\t'
-                         'precision: {precision:.4f}\t'
-                         'recall: {recall:.4f}\t'
-                         'fbeta: {fbeta:.4f}\t'.format(subsetAccuracy=val_subsetAccuracy,
-                                                       hammingLoss=val_hammingLoss,
-                                                       accuracy=val_eb_accuracy, precision=val_eb_precision,
-                                                       recall=val_eb_recall, fbeta=val_eb_fbeta))
-
-            result.write("\n")
-            result.write('Multilabel metrics: example-based-ranking:\n')
-            result.write('oneError: {oneError:.4f}\t'
-                         'coverage: {coverage:.4f}\t'
-                         'averagePrecision: {averagePrecision:.4f}\t'
-                         'rankingLoss: {rankingLoss:.4f}\t'.format(oneError=val_oneError,
-                                                                   coverage=val_coverage,
-                                                                   averagePrecision=val_averagePrecision,
-                                                                   rankingLoss=val_rankingLoss))
-
-            result.write("\n")
-            result.write('Multilabel metrics: label-based-classification:\n')
-            result.write('accuracyMacro: {accuracyMacro:.4f}\t'
-                         'accuracyMicro: {accuracyMicro:.4f}\t'
-                         'precisionMacro: {precisionMacro:.4f}\t'
-                         'precisionMicro: {precisionMicro:.4f}\t'
-                         'recallMacro: {recallMacro:.4f}\t'
-                         'recallMicro: {recallMicro:.4f}\t'
-                         'fbetaMacro: {fbetaMacro:.4f}\t'
-                         'fbetaMicro: {fbetaMicro:.4f}\t'.format(accuracyMacro=val_accuracyMacro,
-                                                                 accuracyMicro=val_accuracyMicro,
-                                                                 precisionMacro=val_precisionMacro,
-                                                                 precisionMicro=val_precisionMicro,
-                                                                 recallMacro=val_recallMacro,
-                                                                 recallMicro=val_recallMicro,
-                                                                 fbetaMacro=val_fbetaMacro,
-                                                                 fbetaMicro=val_fbetaMicro))
-
-            result.write("\n")
-            result.write('Multilabel metrics: label-based-ranking:\n')
-            result.write('aucMacro: {aucMacro:.4f}\t'
-                         'aucMicro: {aucMicro:.4f}\t'
-                         'aucInstance: {aucInstance:.4f}\t'.format(aucMacro=val_aucMacro,
-                                                                   aucMicro=val_aucMicro,
-                                                                   aucInstance=val_aucInstance))
+            # result.write("\n------------------------------------------------------------------\n")
+            # result.write("Validation set results:\n")
+            # result.write('Multilabel metrics: example-based-classification:\n')
+            # result.write('subsetAccuracy: {subsetAccuracy:.4f}\t'
+            #              'hammingLoss: {hammingLoss:.4f}\t'
+            #              'accuracy: {accuracy:.4f}\t'
+            #              'precision: {precision:.4f}\t'
+            #              'recall: {recall:.4f}\t'
+            #              'fbeta: {fbeta:.4f}\t'.format(subsetAccuracy=val_subsetAccuracy,
+            #                                            hammingLoss=val_hammingLoss,
+            #                                            accuracy=val_eb_accuracy, precision=val_eb_precision,
+            #                                            recall=val_eb_recall, fbeta=val_eb_fbeta))
+            #
+            # result.write("\n")
+            # result.write('Multilabel metrics: example-based-ranking:\n')
+            # result.write('oneError: {oneError:.4f}\t'
+            #              'coverage: {coverage:.4f}\t'
+            #              'averagePrecision: {averagePrecision:.4f}\t'
+            #              'rankingLoss: {rankingLoss:.4f}\t'.format(oneError=val_oneError,
+            #                                                        coverage=val_coverage,
+            #                                                        averagePrecision=val_averagePrecision,
+            #                                                        rankingLoss=val_rankingLoss))
+            #
+            # result.write("\n")
+            # result.write('Multilabel metrics: label-based-classification:\n')
+            # result.write('accuracyMacro: {accuracyMacro:.4f}\t'
+            #              'accuracyMicro: {accuracyMicro:.4f}\t'
+            #              'precisionMacro: {precisionMacro:.4f}\t'
+            #              'precisionMicro: {precisionMicro:.4f}\t'
+            #              'recallMacro: {recallMacro:.4f}\t'
+            #              'recallMicro: {recallMicro:.4f}\t'
+            #              'fbetaMacro: {fbetaMacro:.4f}\t'
+            #              'fbetaMicro: {fbetaMicro:.4f}\t'.format(accuracyMacro=val_accuracyMacro,
+            #                                                      accuracyMicro=val_accuracyMicro,
+            #                                                      precisionMacro=val_precisionMacro,
+            #                                                      precisionMicro=val_precisionMicro,
+            #                                                      recallMacro=val_recallMacro,
+            #                                                      recallMicro=val_recallMicro,
+            #                                                      fbetaMacro=val_fbetaMacro,
+            #                                                      fbetaMicro=val_fbetaMicro))
+            #
+            # result.write("\n")
+            # result.write('Multilabel metrics: label-based-ranking:\n')
+            # result.write('aucMacro: {aucMacro:.4f}\t'
+            #              'aucMicro: {aucMicro:.4f}\t'
+            #              'aucInstance: {aucInstance:.4f}\t'.format(aucMacro=val_aucMacro,
+            #                                                        aucMicro=val_aucMicro,
+            #                                                        aucInstance=val_aucInstance))
 
         # Pearson correlation
         emopcc += pearsonr(dis_prediction.cpu().detach().numpy(), dis.cpu().detach().numpy())[0]
@@ -860,33 +860,33 @@ sum_canberra = 0
 sum_cosine = 0
 sum_intersection = 0
 
-sum_subsetAccuracy = 0
-sum_hammingLoss = 0
-sum_eb_accuracy = 0
-sum_eb_precision = 0
-sum_eb_recall = 0
-sum_eb_fbeta = 0
-
-# example-based-ranking
-sum_oneError = 0
-sum_coverage = 0
-sum_averagePrecision = 0
-sum_rankingLoss = 0
-
-# label-based-classification
-sum_accuracyMacro = 0
-sum_accuracyMicro = 0
-sum_precisionMacro = 0
-sum_precisionMicro = 0
-sum_recallMacro = 0
-sum_recallMicro = 0
-sum_fbetaMacro = 0
-sum_fbetaMicro = 0
-
-# label-based-ranking
-sum_aucMacro = 0
-sum_aucMicro = 0
-sum_aucInstance = 0
+# sum_subsetAccuracy = 0
+# sum_hammingLoss = 0
+# sum_eb_accuracy = 0
+# sum_eb_precision = 0
+# sum_eb_recall = 0
+# sum_eb_fbeta = 0
+#
+# # example-based-ranking
+# sum_oneError = 0
+# sum_coverage = 0
+# sum_averagePrecision = 0
+# sum_rankingLoss = 0
+#
+# # label-based-classification
+# sum_accuracyMacro = 0
+# sum_accuracyMicro = 0
+# sum_precisionMacro = 0
+# sum_precisionMicro = 0
+# sum_recallMacro = 0
+# sum_recallMicro = 0
+# sum_fbetaMacro = 0
+# sum_fbetaMicro = 0
+#
+# # label-based-ranking
+# sum_aucMacro = 0
+# sum_aucMicro = 0
+# sum_aucInstance = 0
 count = 0
 for i, data in enumerate(testDataloader):
     count = count + 1
@@ -957,54 +957,54 @@ for i, data in enumerate(testDataloader):
 
     # for multilabel prediction
     # example-based-classification
-    test_subsetAccuracy = subsetAccuracy(dom_label, label_prediction)
-    sum_subsetAccuracy += test_subsetAccuracy
-    test_hammingLoss = hammingLoss(dom_label, label_prediction)
-    sum_hammingLoss += test_hammingLoss
-    test_eb_accuracy = accuracy(dom_label, label_prediction)
-    sum_eb_accuracy += test_eb_accuracy
-    test_eb_precision = precision(dom_label, label_prediction)
-    sum_eb_precision += test_eb_precision
-    test_eb_recall = recall(dom_label, label_prediction)
-    sum_eb_recall += test_eb_recall
-    test_eb_fbeta = fbeta(dom_label, label_prediction)
-    sum_eb_fbeta += test_eb_fbeta
-
-    # example-based-ranking
-    test_oneError = oneError(dom_label, label_prediction)
-    sum_oneError += test_oneError
-    test_coverage = coverage(dom_label, label_prediction)
-    sum_coverage += test_coverage
-    test_averagePrecision = averagePrecision(dom_label, label_prediction)
-    sum_averagePrecision += test_averagePrecision
-    test_rankingLoss = rankingLoss(dom_label, label_prediction)
-    sum_rankingLoss += test_rankingLoss
-
-    # label-based-classification
-    test_accuracyMacro = accuracyMacro(dom_label, label_prediction)
-    sum_accuracyMacro += test_accuracyMacro
-    test_accuracyMicro = accuracyMicro(dom_label, label_prediction)
-    sum_accuracyMicro += test_accuracyMicro
-    test_precisionMacro = precisionMacro(dom_label, label_prediction)
-    sum_precisionMacro += test_precisionMacro
-    test_precisionMicro = precisionMicro(dom_label, label_prediction)
-    sum_precisionMicro += test_precisionMicro
-    test_recallMacro = recallMacro(dom_label, label_prediction)
-    sum_recallMacro += test_recallMacro
-    test_recallMicro = recallMicro(dom_label, label_prediction)
-    sum_recallMicro += test_recallMicro
-    test_fbetaMacro = fbetaMacro(dom_label, label_prediction)
-    sum_fbetaMacro += test_recallMacro
-    test_fbetaMicro = fbetaMicro(dom_label, label_prediction)
-    sum_fbetaMicro += test_fbetaMicro
-
-    # label-based-ranking
-    test_aucMacro = aucMacro(dom_label, label_prediction)
-    sum_aucMacro += test_aucMacro
-    test_aucMicro = aucMicro(dom_label, label_prediction)
-    sum_aucMicro += test_aucMicro
-    test_aucInstance = aucInstance(dom_label, label_prediction)
-    sum_aucInstance += test_aucInstance
+    # test_subsetAccuracy = subsetAccuracy(dom_label, label_prediction)
+    # sum_subsetAccuracy += test_subsetAccuracy
+    # test_hammingLoss = hammingLoss(dom_label, label_prediction)
+    # sum_hammingLoss += test_hammingLoss
+    # test_eb_accuracy = accuracy(dom_label, label_prediction)
+    # sum_eb_accuracy += test_eb_accuracy
+    # test_eb_precision = precision(dom_label, label_prediction)
+    # sum_eb_precision += test_eb_precision
+    # test_eb_recall = recall(dom_label, label_prediction)
+    # sum_eb_recall += test_eb_recall
+    # test_eb_fbeta = fbeta(dom_label, label_prediction)
+    # sum_eb_fbeta += test_eb_fbeta
+    #
+    # # example-based-ranking
+    # test_oneError = oneError(dom_label, label_prediction)
+    # sum_oneError += test_oneError
+    # test_coverage = coverage(dom_label, label_prediction)
+    # sum_coverage += test_coverage
+    # test_averagePrecision = averagePrecision(dom_label, label_prediction)
+    # sum_averagePrecision += test_averagePrecision
+    # test_rankingLoss = rankingLoss(dom_label, label_prediction)
+    # sum_rankingLoss += test_rankingLoss
+    #
+    # # label-based-classification
+    # test_accuracyMacro = accuracyMacro(dom_label, label_prediction)
+    # sum_accuracyMacro += test_accuracyMacro
+    # test_accuracyMicro = accuracyMicro(dom_label, label_prediction)
+    # sum_accuracyMicro += test_accuracyMicro
+    # test_precisionMacro = precisionMacro(dom_label, label_prediction)
+    # sum_precisionMacro += test_precisionMacro
+    # test_precisionMicro = precisionMicro(dom_label, label_prediction)
+    # sum_precisionMicro += test_precisionMicro
+    # test_recallMacro = recallMacro(dom_label, label_prediction)
+    # sum_recallMacro += test_recallMacro
+    # test_recallMicro = recallMicro(dom_label, label_prediction)
+    # sum_recallMicro += test_recallMicro
+    # test_fbetaMacro = fbetaMacro(dom_label, label_prediction)
+    # sum_fbetaMacro += test_recallMacro
+    # test_fbetaMicro = fbetaMicro(dom_label, label_prediction)
+    # sum_fbetaMicro += test_fbetaMicro
+    #
+    # # label-based-ranking
+    # test_aucMacro = aucMacro(dom_label, label_prediction)
+    # sum_aucMacro += test_aucMacro
+    # test_aucMicro = aucMicro(dom_label, label_prediction)
+    # sum_aucMicro += test_aucMicro
+    # test_aucInstance = aucInstance(dom_label, label_prediction)
+    # sum_aucInstance += test_aucInstance
 
     if i % 10 == 0:
         # measure mAP
@@ -1022,38 +1022,38 @@ for i, data in enumerate(testDataloader):
                                                                         cosine_dist=cosine,
                                                                         intersection_dist=intersection))
 
-        print("Test set results:\n",
-              'Multilabel metrics: example-based-classification:\n',
-              "subsetAccuracy= {:.4f}".format(test_subsetAccuracy),
-              "hammingLoss= {:.4f}".format(test_hammingLoss),
-              "accuracy= {:.4f}".format(test_eb_accuracy),
-              "precision= {:.4f}".format(test_eb_precision),
-              "recall= {:.4f}".format(test_eb_recall),
-              "fbeta= {:.4f}".format(test_eb_fbeta))
-
-        print("Test set results:\n",
-              'Multilabel metrics: example-based-ranking:\n',
-              "oneError= {:.4f}".format(test_oneError),
-              "coverage= {:.4f}".format(test_coverage),
-              "averagePrecision= {:.4f}".format(test_averagePrecision),
-              "rankingLoss= {:.4f}".format(test_rankingLoss))
-
-        print("Test set results:\n",
-              'Multilabel metrics: label-based-classification:\n',
-              "accuracyMacro= {:.4f}".format(test_accuracyMacro),
-              "accuracyMicro= {:.4f}".format(test_accuracyMicro),
-              "precisionMacro= {:.4f}".format(test_precisionMacro),
-              "precisionMicro= {:.4f}".format(test_precisionMicro),
-              "recallMacro= {:.4f}".format(test_recallMacro),
-              "recallMicro= {:.4f}".format(test_recallMicro),
-              "fbetaMacro= {:.4f}".format(test_fbetaMacro),
-              "fbetaMicro= {:.4f}".format(test_fbetaMicro))
-
-        print("Test set results:\n",
-              'Multilabel metrics: label-based-ranking:\n',
-              "aucMacro= {:.4f}".format(test_aucMacro),
-              "aucMicro= {:.4f}".format(test_aucMicro),
-              "aucInstance={:.4f}".format(test_aucInstance))
+        # print("Test set results:\n",
+        #       'Multilabel metrics: example-based-classification:\n',
+        #       "subsetAccuracy= {:.4f}".format(test_subsetAccuracy),
+        #       "hammingLoss= {:.4f}".format(test_hammingLoss),
+        #       "accuracy= {:.4f}".format(test_eb_accuracy),
+        #       "precision= {:.4f}".format(test_eb_precision),
+        #       "recall= {:.4f}".format(test_eb_recall),
+        #       "fbeta= {:.4f}".format(test_eb_fbeta))
+        #
+        # print("Test set results:\n",
+        #       'Multilabel metrics: example-based-ranking:\n',
+        #       "oneError= {:.4f}".format(test_oneError),
+        #       "coverage= {:.4f}".format(test_coverage),
+        #       "averagePrecision= {:.4f}".format(test_averagePrecision),
+        #       "rankingLoss= {:.4f}".format(test_rankingLoss))
+        #
+        # print("Test set results:\n",
+        #       'Multilabel metrics: label-based-classification:\n',
+        #       "accuracyMacro= {:.4f}".format(test_accuracyMacro),
+        #       "accuracyMicro= {:.4f}".format(test_accuracyMicro),
+        #       "precisionMacro= {:.4f}".format(test_precisionMacro),
+        #       "precisionMicro= {:.4f}".format(test_precisionMicro),
+        #       "recallMacro= {:.4f}".format(test_recallMacro),
+        #       "recallMicro= {:.4f}".format(test_recallMicro),
+        #       "fbetaMacro= {:.4f}".format(test_fbetaMacro),
+        #       "fbetaMicro= {:.4f}".format(test_fbetaMicro))
+        #
+        # print("Test set results:\n",
+        #       'Multilabel metrics: label-based-ranking:\n',
+        #       "aucMacro= {:.4f}".format(test_aucMacro),
+        #       "aucMicro= {:.4f}".format(test_aucMicro),
+        #       "aucInstance={:.4f}".format(test_aucInstance))
 
         result.write("\n------------------------------------------------------------------\n")
         result.write('Test co-attention:\n ')
@@ -1091,51 +1091,51 @@ for i, data in enumerate(testDataloader):
                                                                         clark_dist=clark, canberra_dist=canberra,
                                                                         cosine_dist=cosine,
                                                                         intersection_dist=intersection))
-        result.write("\n------------------------------------------------------------------\n")
-        result.write("Test set results:\n")
-        result.write('Multilabel metrics: example-based-classification:\n')
-        result.write('subsetAccuracy: {subsetAccuracy:.4f}\t'
-                     'hammingLoss: {hammingLoss:.4f}\t'
-                     'accuracy: {accuracy:.4f}\t'
-                     'precision: {precision:.4f}\t'
-                     'recall: {recall:.4f}\t'
-                     'fbeta: {fbeta:.4f}\t'.format(subsetAccuracy=test_subsetAccuracy,
-                                                   hammingLoss=test_hammingLoss,
-                                                   accuracy=test_eb_accuracy, precision=test_eb_precision,
-                                                   recall=test_eb_recall, fbeta=test_eb_fbeta))
-        result.write("\n")
-        result.write('Multilabel metrics: example-based-ranking:\n')
-        result.write('oneError: {oneError:.4f}\t'
-                     'coverage: {coverage:.4f}\t'
-                     'averagePrecision: {averagePrecision:.4f}\t'
-                     'rankingLoss: {rankingLoss:.4f}\t'.format(oneError=test_oneError,
-                                                               coverage=test_coverage,
-                                                               averagePrecision=test_averagePrecision,
-                                                               rankingLoss=test_rankingLoss))
-        result.write("\n")
-        result.write('Multilabel metrics: label-based-classification:\n')
-        result.write('accuracyMacro: {accuracyMacro:.4f}\t'
-                     'accuracyMicro: {accuracyMicro:.4f}\t'
-                     'precisionMacro: {precisionMacro:.4f}\t'
-                     'precisionMicro: {precisionMicro:.4f}\t'
-                     'recallMacro: {recallMacro:.4f}\t'
-                     'recallMicro: {recallMicro:.4f}\t'
-                     'fbetaMacro: {fbetaMacro:.4f}\t'
-                     'fbetaMicro: {fbetaMicro:.4f}\t'.format(accuracyMacro=test_accuracyMacro,
-                                                             accuracyMicro=test_accuracyMicro,
-                                                             precisionMacro=test_precisionMacro,
-                                                             precisionMicro=test_precisionMicro,
-                                                             recallMacro=test_recallMacro,
-                                                             recallMicro=test_recallMicro,
-                                                             fbetaMacro=test_fbetaMacro,
-                                                             fbetaMicro=test_fbetaMicro))
-        result.write("\n")
-        result.write('Multilabel metrics: label-based-ranking:\n')
-        result.write('aucMacro: {aucMacro:.4f}\t'
-                     'aucMicro: {aucMicro:.4f}\t'
-                     'aucInstance: {aucInstance:.4f}\t'.format(aucMacro=test_aucMacro,
-                                                               aucMicro=test_aucMicro,
-                                                               aucInstance=test_aucInstance))
+        # result.write("\n------------------------------------------------------------------\n")
+        # result.write("Test set results:\n")
+        # result.write('Multilabel metrics: example-based-classification:\n')
+        # result.write('subsetAccuracy: {subsetAccuracy:.4f}\t'
+        #              'hammingLoss: {hammingLoss:.4f}\t'
+        #              'accuracy: {accuracy:.4f}\t'
+        #              'precision: {precision:.4f}\t'
+        #              'recall: {recall:.4f}\t'
+        #              'fbeta: {fbeta:.4f}\t'.format(subsetAccuracy=test_subsetAccuracy,
+        #                                            hammingLoss=test_hammingLoss,
+        #                                            accuracy=test_eb_accuracy, precision=test_eb_precision,
+        #                                            recall=test_eb_recall, fbeta=test_eb_fbeta))
+        # result.write("\n")
+        # result.write('Multilabel metrics: example-based-ranking:\n')
+        # result.write('oneError: {oneError:.4f}\t'
+        #              'coverage: {coverage:.4f}\t'
+        #              'averagePrecision: {averagePrecision:.4f}\t'
+        #              'rankingLoss: {rankingLoss:.4f}\t'.format(oneError=test_oneError,
+        #                                                        coverage=test_coverage,
+        #                                                        averagePrecision=test_averagePrecision,
+        #                                                        rankingLoss=test_rankingLoss))
+        # result.write("\n")
+        # result.write('Multilabel metrics: label-based-classification:\n')
+        # result.write('accuracyMacro: {accuracyMacro:.4f}\t'
+        #              'accuracyMicro: {accuracyMicro:.4f}\t'
+        #              'precisionMacro: {precisionMacro:.4f}\t'
+        #              'precisionMicro: {precisionMicro:.4f}\t'
+        #              'recallMacro: {recallMacro:.4f}\t'
+        #              'recallMicro: {recallMicro:.4f}\t'
+        #              'fbetaMacro: {fbetaMacro:.4f}\t'
+        #              'fbetaMicro: {fbetaMicro:.4f}\t'.format(accuracyMacro=test_accuracyMacro,
+        #                                                      accuracyMicro=test_accuracyMicro,
+        #                                                      precisionMacro=test_precisionMacro,
+        #                                                      precisionMicro=test_precisionMicro,
+        #                                                      recallMacro=test_recallMacro,
+        #                                                      recallMicro=test_recallMicro,
+        #                                                      fbetaMacro=test_fbetaMacro,
+        #                                                      fbetaMicro=test_fbetaMicro))
+        # result.write("\n")
+        # result.write('Multilabel metrics: label-based-ranking:\n')
+        # result.write('aucMacro: {aucMacro:.4f}\t'
+        #              'aucMicro: {aucMicro:.4f}\t'
+        #              'aucInstance: {aucInstance:.4f}\t'.format(aucMacro=test_aucMacro,
+        #                                                        aucMicro=test_aucMicro,
+        #                                                        aucInstance=test_aucInstance))
 
     # pearson correlation
     emopcc += pearsonr(dis_prediction.cpu().detach().numpy(), dis.cpu().detach().numpy())[0]
@@ -1151,33 +1151,33 @@ ave_canberra = sum_canberra/count
 ave_cosine = sum_cosine/count
 ave_intersection = sum_intersection/count
 
-ave_subsetAccuracy = sum_subsetAccuracy/count
-ave_hammingLoss = sum_hammingLoss/count
-ave_eb_accuracy = sum_eb_accuracy/count
-ave_eb_precision = sum_eb_precision/count
-ave_eb_recall = sum_eb_recall/count
-ave_eb_fbeta = sum_eb_fbeta/count
-
-# example-based-ranking
-ave_oneError = sum_oneError/count
-ave_coverage = sum_coverage/count
-ave_averagePrecision = sum_averagePrecision/count
-ave_rankingLoss = sum_rankingLoss/count
-
-# label-based-classification
-ave_accuracyMacro = sum_accuracyMacro/count
-ave_accuracyMicro = sum_accuracyMicro/count
-ave_precisionMacro = sum_precisionMacro/count
-ave_precisionMicro = sum_precisionMicro/count
-ave_recallMacro = sum_recallMacro/count
-ave_recallMicro = sum_recallMicro/count
-ave_fbetaMacro = sum_fbetaMacro/count
-ave_fbetaMicro = sum_fbetaMicro/count
-
-# label-based-ranking
-ave_aucMacro = sum_aucMacro/count
-ave_aucMicro = sum_aucMicro/count
-ave_aucInstance = sum_aucInstance/count
+# ave_subsetAccuracy = sum_subsetAccuracy/count
+# ave_hammingLoss = sum_hammingLoss/count
+# ave_eb_accuracy = sum_eb_accuracy/count
+# ave_eb_precision = sum_eb_precision/count
+# ave_eb_recall = sum_eb_recall/count
+# ave_eb_fbeta = sum_eb_fbeta/count
+#
+# # example-based-ranking
+# ave_oneError = sum_oneError/count
+# ave_coverage = sum_coverage/count
+# ave_averagePrecision = sum_averagePrecision/count
+# ave_rankingLoss = sum_rankingLoss/count
+#
+# # label-based-classification
+# ave_accuracyMacro = sum_accuracyMacro/count
+# ave_accuracyMicro = sum_accuracyMicro/count
+# ave_precisionMacro = sum_precisionMacro/count
+# ave_precisionMicro = sum_precisionMicro/count
+# ave_recallMacro = sum_recallMacro/count
+# ave_recallMicro = sum_recallMicro/count
+# ave_fbetaMacro = sum_fbetaMacro/count
+# ave_fbetaMicro = sum_fbetaMicro/count
+#
+# # label-based-ranking
+# ave_aucMacro = sum_aucMacro/count
+# ave_aucMicro = sum_aucMicro/count
+# ave_aucInstance = sum_aucInstance/count
 print("\n================================================================================\n")
 print("Test Emotion distribution test_loss:", test_testkl, "\Test Emotion distribution PCC:", test_emopcc.item())
 result.write("\n------------------------------------------------------------------\n")
