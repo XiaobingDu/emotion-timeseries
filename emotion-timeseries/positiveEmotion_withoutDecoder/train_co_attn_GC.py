@@ -46,7 +46,7 @@ parser.add_argument('--GCN_hidden', type=int, default=16,
                     help='Number of hidden units.')
 parser.add_argument('--LSTM_layers', type=int, default=2,
                     help='Number of LSTM layers.')
-parser.add_argument('--LSTM_hidden', type=int, default=32,
+parser.add_argument('--LSTM_hidden', type=int, default=1024, #32
                     help='Number of hidden units.')
 parser.add_argument('--attn_len', type=int, default=10,
                     help='attn_len = time_sequence')
@@ -118,7 +118,7 @@ if args['use_cuda']:
 
 ## Initialize optimizer
 optimizer = torch.optim.RMSprop(net.parameters(), lr=lr) if args['optimizer' ]== 'rmsprop' else torch.optim.Adam \
-    (net.parameters() ,lr=lr, weight_decay=0.9)
+    (net.parameters() ,lr=lr, weight_decay=0.4) #0.9
 # mse = torch.nn.MSELoss(reduction='sum')
 kl_div = torch.nn.KLDivLoss(size_average = True, reduce = True)
 #from multi-label dom_emotion predict
