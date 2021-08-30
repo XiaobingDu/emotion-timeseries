@@ -25,7 +25,7 @@ parser.add_argument('--path2', type=str, choices=["/home/xiaobingdu/EEG_experime
                                                   '../DOM_feature_all/DOM_featureAll.mat'])
 parser.add_argument('--no-cuda', action='store_true', default=False,
                     help='Disables CUDA training.')
-parser.add_argument('--learning_rate', type=float, default=1e-4,
+parser.add_argument('--learning_rate', type=float, default=0.001,
                     help='Initial learning rate.')
 parser.add_argument('--iter_num', type=int,
                     help='Number of iterate to train.')
