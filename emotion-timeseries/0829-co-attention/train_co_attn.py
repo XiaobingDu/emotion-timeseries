@@ -68,7 +68,6 @@ parser.add_argument('--seed', type=int, default=42, help='Random seed.')
 FLAGS = parser.parse_args()
 
 args = {}
-
 # path1 = '/home/xiaobingdu/EEG_experiments/LDL-LSTM_softmax/attn_lstm/EEG_PSD_9_DOM/'
 # path2 = '/home/xiaobingdu/EEG_experiments/LDL-LSTM_softmax/attn_lstm/EEG_PSD_multilabel_9_win/DOM_featureAll.mat'
 path1 = FLAGS.path1
@@ -89,7 +88,7 @@ args['use_cuda'] = True
 args['train_flag'] = True
 args['optimizer'] = 'adam'
 args['model_path'] = 'trained_models/EEG_eval_model.tar'
-args['out_layer'] =  FLAGS.out_layer #64 #9 #2048 same as GCN output_size
+args['out_layer'] = FLAGS.out_layer #64 #9 #2048 same as GCN output_size
 args['dropout_prob'] = FLAGS.dropout
 args['encoder_size'] = FLAGS.encoder_size
 args['decoder_size'] = FLAGS.decoder_size
