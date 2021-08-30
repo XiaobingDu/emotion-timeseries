@@ -157,7 +157,7 @@ if args['use_cuda']:
 
 ## Initialize optimizer
 optimizer = torch.optim.RMSprop(net.parameters(), lr=lr) if args['optimizer' ]== 'rmsprop' else torch.optim.Adam \
-    (net.parameters() ,lr=lr, weight_decay=0.9)
+    (net.parameters() ,lr=lr, weight_decay=1e-8) #weight_decay=0.9
 # mse = torch.nn.MSELoss(reduction='sum')
 kl_div = torch.nn.KLDivLoss(size_average = True, reduce = True)
 #from multi-label dom_emotion predict
@@ -781,8 +781,6 @@ for i, data in enumerate(testDataloader):
     #loss2: BCELoss
     dom_label = dom_label.detach()
     loss2 = mutilabel_criterion(label_prediction, dom_label)
-    print('*'*100)
-    print('predict label...', label_prediction)
     #loss2: MLSML
     # loss2 = MLSML(label_prediction.cuda(), target_gt.cuda())
     loss = lamda * loss1 + (1 - lamda) * loss2

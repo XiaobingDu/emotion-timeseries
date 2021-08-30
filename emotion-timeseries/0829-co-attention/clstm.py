@@ -19,8 +19,10 @@ class LSTM(nn.Module):
     def init_hidden(self, batch):
         '''Initialize hidden states for LSTM cell.'''
         device = self.lstm.weight_ih_l0.device
-        return (torch.zeros(1, batch, self.hidden, device=device),
-                torch.zeros(1, batch, self.hidden, device=device))
+        # return (torch.zeros(1, batch, self.hidden, device=device),
+        #         torch.zeros(1, batch, self.hidden, device=device))
+        return (torch.rand(1, batch, self.hidden, device=device),
+                torch.rand(1, batch, self.hidden, device=device))
 
     def forward(self, X, hidden=None, truncation=None):
         self.lstm.flatten_parameters()
