@@ -230,6 +230,7 @@ for epoch_num in range(num_epochs):
         # for loss2
         label_prediction = torch.sigmoid(predict)
         # loss2: BCELoss
+        target = dom_label
         target_gt = target_gt.detach()
         loss2 = mutilabel_criterion(label_prediction, target_gt)
         # print('*' * 100)
