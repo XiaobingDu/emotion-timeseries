@@ -440,9 +440,11 @@ for epoch_num in range(num_epochs):
     val_kl = 0
     emopcc = 0
     val_cosine = 0
+    cnt = 0
 
     for i, data in enumerate(valDataloader):
-        # print("Val ..... 第 {} 个Batch.....".format(i))
+        cnt += 1
+        print("Val ..... 第 {} 个Batch.....".format(i))
         st_time = time.time()
         val, dis, dom_label, Frontal, Temporal, Central, Parietal, Occipital = data
 
@@ -668,7 +670,9 @@ for epoch_num in range(num_epochs):
     epoch_loss = val_loss / len(valSet)
     # 每一个epoch pcc平均
     epoch_pcc = emopcc / len(valSet)
-    epoch_cosine = val_cosine / len(valSet)
+    epoch_cosine = val_cosine / len(cnt)
+    print('********',valSet)
+    print('********',cnt)
     # validation loss
     val_loss = epoch_loss
     print("Validation: Epoch emotion distribution val_loss:", val_loss, "\nEpoch emotion distribution PCC:",
