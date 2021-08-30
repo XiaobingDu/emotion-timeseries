@@ -77,6 +77,7 @@ best_model_path ="./best_model"
 checkpoint_path ="./checkpoints"
 valid_loss_min =np.Inf
 epoch_cosine_min = np.NINF
+epoch_accuracy_min = np.NINF
 
 ## Network Arguments
 args['Frontal_len'] = 35
@@ -267,28 +268,28 @@ for epoch_num in range(num_epochs):
 
         # for multilabel prediction
         # # example-based-classification
-        # train_subsetAccuracy = subsetAccuracy(dom_label, label_prediction)
-        # train_hammingLoss = hammingLoss(dom_label, label_prediction)
-        # train_eb_accuracy = accuracy(dom_label, label_prediction)
-        # train_eb_precision = precision(dom_label, label_prediction)
-        # train_eb_recall = recall(dom_label, label_prediction)
-        # train_eb_fbeta = fbeta(dom_label, label_prediction)
+        train_subsetAccuracy = subsetAccuracy(dom_label, label_prediction)
+        train_hammingLoss = hammingLoss(dom_label, label_prediction)
+        train_eb_accuracy = accuracy(dom_label, label_prediction)
+        train_eb_precision = precision(dom_label, label_prediction)
+        train_eb_recall = recall(dom_label, label_prediction)
+        train_eb_fbeta = fbeta(dom_label, label_prediction)
         #
         # # example-based-ranking
-        # train_oneError = oneError(dom_label, label_prediction)
+        train_oneError = oneError(dom_label, label_prediction)
         # train_coverage = coverage(dom_label, label_prediction)
-        # train_averagePrecision = averagePrecision(dom_label, label_prediction)
-        # train_rankingLoss = rankingLoss(dom_label, label_prediction)
+        train_averagePrecision = averagePrecision(dom_label, label_prediction)
+        train_rankingLoss = rankingLoss(dom_label, label_prediction)
         #
         # # label-based-classification
-        # train_accuracyMacro = accuracyMacro(dom_label, label_prediction)
+        train_accuracyMacro = accuracyMacro(dom_label, label_prediction)
         # train_accuracyMicro = accuracyMicro(dom_label, label_prediction)
         # train_precisionMacro = precisionMacro(dom_label, label_prediction)
         # train_precisionMicro = precisionMicro(dom_label, label_prediction)
         # train_recallMacro = recallMacro(dom_label, label_prediction)
         # train_recallMicro = recallMicro(dom_label, label_prediction)
         # train_fbetaMacro = fbetaMacro(dom_label, label_prediction)
-        # train_fbetaMicro = fbetaMicro(dom_label, label_prediction)
+        train_fbetaMicro = fbetaMicro(dom_label, label_prediction)
 
         # # label-based-ranking
         # train_aucMacro = aucMacro(dom_label, label_prediction)
@@ -309,15 +310,27 @@ for epoch_num in range(num_epochs):
                                                                         cosine_dist=cosine,
                                                                         intersection_dist=intersection))
 
-            # print("Training set results:\n",
-            #       'Multilabel metrics: example-based-classification:\n',
-            #       "subsetAccuracy= {:.4f}".format(train_subsetAccuracy),
-            #       "hammingLoss= {:.4f}".format(train_hammingLoss),
-            #       "accuracy= {:.4f}".format(train_eb_accuracy),
-            #       "precision= {:.4f}".format(train_eb_precision),
-            #       "recall= {:.4f}".format(train_eb_recall),
-            #       "fbeta= {:.4f}".format(train_eb_fbeta))
-            #
+            print("Training set results:\n",
+                  'Multilabel metrics: example-based-classification:\n',
+                  "subsetAccuracy= {:.4f}".format(train_subsetAccuracy),
+                  "hammingLoss= {:.4f}".format(train_hammingLoss),
+                  "accuracy= {:.4f}".format(train_eb_accuracy),
+                  "precision= {:.4f}".format(train_eb_precision),
+                  "recall= {:.4f}".format(train_eb_recall),
+                  "fbeta= {:.4f}".format(train_eb_fbeta)
+                  )
+
+            print("Training set results:\n",
+                  'Multilabel metrics: example-based-ranking:\n',
+                  "oneError= {:.4f}".format(train_oneError),
+                  "averagePrecision= {:.4f}".format(train_averagePrecision),
+                  "rankingLoss= {:.4f}".format(train_rankingLoss))
+
+            print("Training set results:\n",
+                  'Multilabel metrics: label-based-classification:\n',
+                  "accuracyMacro= {:.4f}".format(train_accuracyMacro),
+                  "fbetaMicro= {:.4f}".format(train_fbetaMicro))
+
             # print("Training set results:\n",
             #       'Multilabel metrics: example-based-ranking:\n',
             #       "oneError= {:.4f}".format(train_oneError),
@@ -381,19 +394,37 @@ for epoch_num in range(num_epochs):
                                                                         clark_dist=clark, canberra_dist=canberra,
                                                                         cosine_dist=cosine,
                                                                         intersection_dist=intersection))
-            # result.write("\n------------------------------------------------------------------\n")
-            # result.write("Training set results:\n")
-            # result.write('Multilabel metrics: example-based-classification:\n')
-            # result.write('subsetAccuracy: {subsetAccuracy:.4f}\t'
-            #              'hammingLoss: {hammingLoss:.4f}\t'
-            #              'accuracy: {accuracy:.4f}\t'
-            #              'precision: {precision:.4f}\t'
-            #              'recall: {recall:.4f}\t'
-            #              'fbeta: {fbeta:.4f}\t'.format(subsetAccuracy=train_subsetAccuracy,
-            #                                            hammingLoss=train_hammingLoss,
-            #                                            accuracy=train_eb_accuracy, precision=train_eb_precision,
-            #                                            recall=train_eb_recall, fbeta=train_eb_fbeta))
-            #
+            result.write("\n------------------------------------------------------------------\n")
+            result.write("Training set results:\n")
+            result.write('Multilabel metrics: example-based-classification:\n')
+            result.write(
+                         'subsetAccuracy: {subsetAccuracy:.4f}\t'
+                         'hammingLoss: {hammingLoss:.4f}\t'
+                         'accuracy: {accuracy:.4f}\t'
+                         'precision: {precision:.4f}\t'
+                         'recall: {recall:.4f}\t'
+                         'fbeta: {fbeta:.4f}\t'.format(
+                                                       subsetAccuracy=train_subsetAccuracy,
+                                                       hammingLoss=train_hammingLoss,
+                                                       accuracy=train_eb_accuracy,
+                                                        precision=train_eb_precision,
+                                                       recall=train_eb_recall, fbeta=train_eb_fbeta)
+                                                         )
+
+            result.write("\n")
+            result.write('Multilabel metrics: example-based-ranking:\n')
+            result.write('oneError: {oneError:.4f}\t'
+                         'averagePrecision: {averagePrecision:.4f}\t'
+                         'rankingLoss: {rankingLoss:.4f}\t'.format(oneError=train_oneError,
+                                                                   averagePrecision=train_averagePrecision,
+                                                                   rankingLoss=train_rankingLoss))
+
+            result.write("\n")
+            result.write('Multilabel metrics: label-based-classification:\n')
+            result.write('accuracyMacro: {accuracyMacro:.4f}\t'
+                         'fbetaMicro: {fbetaMicro:.4f}\t'.format(accuracyMacro=train_accuracyMacro,
+                                                                 fbetaMicro=train_fbetaMicro))
+
             # result.write("\n")
             # result.write('Multilabel metrics: example-based-ranking:\n')
             # result.write('oneError: {oneError:.4f}\t'
@@ -403,7 +434,7 @@ for epoch_num in range(num_epochs):
             #                                                        coverage=train_coverage,
             #                                                        averagePrecision=train_averagePrecision,
             #                                                        rankingLoss=train_rankingLoss))
-            #
+
             # result.write("\n")
             # result.write('Multilabel metrics: label-based-classification:\n')
             # result.write('accuracyMacro: {accuracyMacro:.4f}\t'
@@ -440,6 +471,7 @@ for epoch_num in range(num_epochs):
     val_kl = 0
     emopcc = 0
     val_cosine = 0
+    val_accuracy = 0
     cnt = 0
 
     for i, data in enumerate(valDataloader):
@@ -503,13 +535,22 @@ for epoch_num in range(num_epochs):
 
         # # for multilabel prediction
         # # example-based-classification
-        # val_subsetAccuracy = subsetAccuracy(dom_label, label_prediction)
-        # val_hammingLoss = hammingLoss(dom_label, label_prediction)
-        # val_eb_accuracy = accuracy(dom_label, label_prediction)
-        # val_eb_precision = precision(dom_label, label_prediction)
-        # val_eb_recall = recall(dom_label, label_prediction)
-        # val_eb_fbeta = fbeta(dom_label, label_prediction)
-        #
+        val_hammingLoss = hammingLoss(dom_label, label_prediction)
+        val_eb_accuracy = accuracy(dom_label, label_prediction)
+        val_accuracy += val_eb_accuracy
+        val_eb_precision = precision(dom_label, label_prediction)
+        val_eb_recall = recall(dom_label, label_prediction)
+        val_eb_fbeta = fbeta(dom_label, label_prediction)
+
+        # example-based-ranking
+        val_oneError = oneError(dom_label, label_prediction)
+        val_averagePrecision = averagePrecision(dom_label, label_prediction)
+        val_rankingLoss = rankingLoss(dom_label, label_prediction)
+
+        # label-based-classification
+        val_accuracyMacro = accuracyMacro(dom_label, label_prediction)
+        val_fbetaMicro = fbetaMicro(dom_label, label_prediction)
+
         # # example-based-ranking
         # val_oneError = oneError(dom_label, label_prediction)
         # val_coverage = coverage(dom_label, label_prediction)
@@ -546,15 +587,25 @@ for epoch_num in range(num_epochs):
                                                                         cosine_dist=cosine,
                                                                         intersection_dist=intersection))
 
-            # print("Validation set results:\n",
-            #       'Multilabel metrics: example-based-classification:\n',
-            #       "subsetAccuracy= {:.4f}".format(val_subsetAccuracy),
-            #       "hammingLoss= {:.4f}".format(val_hammingLoss),
-            #       "accuracy= {:.4f}".format(val_eb_accuracy),
-            #       "precision= {:.4f}".format(val_eb_precision),
-            #       "recall= {:.4f}".format(val_eb_recall),
-            #       "fbeta= {:.4f}".format(val_eb_fbeta))
-            #
+            print("Validation set results:\n",
+                  'Multilabel metrics: example-based-classification:\n',
+                  "hammingLoss= {:.4f}".format(val_hammingLoss),
+                  "accuracy= {:.4f}".format(val_eb_accuracy),
+                  "precision= {:.4f}".format(val_eb_precision),
+                  "recall= {:.4f}".format(val_eb_recall),
+                  "fbeta= {:.4f}".format(val_eb_fbeta))
+
+            print(
+                  'Multilabel metrics: example-based-ranking:\n',
+                  "oneError= {:.4f}".format(val_oneError),
+                  "averagePrecision= {:.4f}".format(val_averagePrecision),
+                  "rankingLoss= {:.4f}".format(val_rankingLoss))
+
+            print(
+                  'Multilabel metrics: label-based-classification:\n',
+                  "accuracyMacro= {:.4f}".format(val_accuracyMacro),
+                  "fbetaMicro= {:.4f}".format(val_fbetaMicro))
+
             # print(
             #       'Multilabel metrics: example-based-ranking:\n',
             #       "oneError= {:.4f}".format(val_oneError),
@@ -615,19 +666,34 @@ for epoch_num in range(num_epochs):
                                                                         clark_dist=clark, canberra_dist=canberra,
                                                                         cosine_dist=cosine,
                                                                         intersection_dist=intersection))
-            # result.write("\n------------------------------------------------------------------\n")
-            # result.write("Validation set results:\n")
-            # result.write('Multilabel metrics: example-based-classification:\n')
-            # result.write('subsetAccuracy: {subsetAccuracy:.4f}\t'
-            #              'hammingLoss: {hammingLoss:.4f}\t'
-            #              'accuracy: {accuracy:.4f}\t'
-            #              'precision: {precision:.4f}\t'
-            #              'recall: {recall:.4f}\t'
-            #              'fbeta: {fbeta:.4f}\t'.format(subsetAccuracy=val_subsetAccuracy,
-            #                                            hammingLoss=val_hammingLoss,
-            #                                            accuracy=val_eb_accuracy, precision=val_eb_precision,
-            #                                            recall=val_eb_recall, fbeta=val_eb_fbeta))
-            #
+            result.write("\n------------------------------------------------------------------\n")
+            result.write("Validation set results:\n")
+            result.write('Multilabel metrics: example-based-classification:\n')
+            result.write(
+                         'hammingLoss: {hammingLoss:.4f}\t'
+                         'accuracy: {accuracy:.4f}\t'
+                         'precision: {precision:.4f}\t'
+                         'recall: {recall:.4f}\t'
+                         'fbeta: {fbeta:.4f}\t'.format(
+                                                       hammingLoss=val_hammingLoss,
+                                                       accuracy=val_eb_accuracy, precision=val_eb_precision,
+                                                       recall=val_eb_recall, fbeta=val_eb_fbeta))
+
+
+            result.write("\n")
+            result.write('Multilabel metrics: example-based-ranking:\n')
+            result.write('oneError: {oneError:.4f}\t'
+                         'averagePrecision: {averagePrecision:.4f}\t'
+                         'rankingLoss: {rankingLoss:.4f}\t'.format(oneError=val_oneError,
+                                                                   averagePrecision=val_averagePrecision,
+                                                                   rankingLoss=val_rankingLoss))
+
+            result.write("\n")
+            result.write('Multilabel metrics: label-based-classification:\n')
+            result.write('accuracyMacro: {accuracyMacro:.4f}\t'
+                         'fbetaMicro: {fbetaMicro:.4f}\t'.format(accuracyMacro=val_accuracyMacro,
+                                                                 fbetaMicro=val_fbetaMicro))
+
             # result.write("\n")
             # result.write('Multilabel metrics: example-based-ranking:\n')
             # result.write('oneError: {oneError:.4f}\t'
@@ -671,6 +737,7 @@ for epoch_num in range(num_epochs):
     # 每一个epoch pcc平均
     epoch_pcc = emopcc / len(valSet)
     epoch_cosine = val_cosine / cnt
+    epoch_accuracy = val_accuracy / cnt
     print('********',len(valSet))
     print('********',cnt)
     # validation loss
@@ -691,16 +758,23 @@ for epoch_num in range(num_epochs):
         'optimizer': optimizer.state_dict(),
     }
     # save checkpoint
-    save_ckp(checkpoint, False, checkpoint_path + "/train_co_attn_current_checkpoint.pt",
-             best_model_path + "/train_co_attn_best_model.pt")
+    save_ckp(checkpoint, False, checkpoint_path + "/train_co_attn_multi_dis_current_checkpoint.pt",
+             best_model_path + "/train_co_attn_multi_dis_best_model.pt")
 
     ## TODO: save the model if validation loss has decreased
-    if epoch_cosine > epoch_cosine_min:
-        print('Validation cosine creased ({:.6f} --> {:.6f}).  Saving model ...'.format(epoch_cosine_min, epoch_cosine))
+    # if epoch_cosine > epoch_cosine_min:
+    #     print('Validation cosine creased ({:.6f} --> {:.6f}).  Saving model ...'.format(epoch_cosine_min, epoch_cosine))
+    #     # save checkpoint as best model
+    #     save_ckp(checkpoint, True, checkpoint_path + "/train_co_attn_current_checkpoint.pt",
+    #              best_model_path + "/train_co_attn_best_model.pt")
+    #     epoch_cosine_min = epoch_cosine
+
+    if epoch_accuracy > epoch_accuracy_min:
+        print('Validation accuracy creased ({:.6f} --> {:.6f}).  Saving model ...'.format(epoch_accuracy_min, epoch_accuracy))
         # save checkpoint as best model
-        save_ckp(checkpoint, True, checkpoint_path + "/train_co_attn_current_checkpoint.pt",
-                 best_model_path + "/train_co_attn_best_model.pt")
-        epoch_cosine_min = epoch_cosine
+        save_ckp(checkpoint, True, checkpoint_path + "/train_co_attn_multi_dis_current_checkpoint.pt",
+                 best_model_path + "/train_co_attn_multi_dis_best_model.pt")
+        epoch_accuracy_min = epoch_accuracy
 
     print('\n*****************************Epoch: [{0}]\t end************************\n'.format(epoch_num +1))
 
@@ -708,7 +782,7 @@ for epoch_num in range(num_epochs):
 # testing
 net = MovieNet(args)
 net, optimizer, start_epoch, valid_loss_min_kl = load_ckp(
-    best_model_path + "/train_co_attn_best_model.pt", net, optimizer)
+    best_model_path + "/train_co_attn_multi_dis_best_model.pt", net, optimizer)
 net.eval()
 test_kl = 0
 emopcc = 0
@@ -721,13 +795,21 @@ sum_canberra = 0
 sum_cosine = 0
 sum_intersection = 0
 
-# sum_subsetAccuracy = 0
-# sum_hammingLoss = 0
-# sum_eb_accuracy = 0
-# sum_eb_precision = 0
-# sum_eb_recall = 0
-# sum_eb_fbeta = 0
-#
+sum_hammingLoss = 0
+sum_eb_accuracy = 0
+sum_eb_precision = 0
+sum_eb_recall = 0
+sum_eb_fbeta = 0
+
+# example-based-ranking
+sum_oneError = 0
+sum_averagePrecision = 0
+sum_rankingLoss = 0
+
+# label-based-classification
+sum_accuracyMacro = 0
+sum_fbetaMicro = 0
+
 # # example-based-ranking
 # sum_oneError = 0
 # sum_coverage = 0
@@ -812,19 +894,31 @@ for i, data in enumerate(testDataloader):
 
     # for multilabel prediction
     # example-based-classification
-    # test_subsetAccuracy = subsetAccuracy(dom_label, label_prediction)
-    # sum_subsetAccuracy += test_subsetAccuracy
-    # test_hammingLoss = hammingLoss(dom_label, label_prediction)
-    # sum_hammingLoss += test_hammingLoss
-    # test_eb_accuracy = accuracy(dom_label, label_prediction)
-    # sum_eb_accuracy += test_eb_accuracy
-    # test_eb_precision = precision(dom_label, label_prediction)
-    # sum_eb_precision += test_eb_precision
-    # test_eb_recall = recall(dom_label, label_prediction)
-    # sum_eb_recall += test_eb_recall
-    # test_eb_fbeta = fbeta(dom_label, label_prediction)
-    # sum_eb_fbeta += test_eb_fbeta
-    #
+    test_hammingLoss = hammingLoss(dom_label, label_prediction)
+    sum_hammingLoss += test_hammingLoss
+    test_eb_accuracy = accuracy(dom_label, label_prediction)
+    sum_eb_accuracy += test_eb_accuracy
+    test_eb_precision = precision(dom_label, label_prediction)
+    sum_eb_precision += test_eb_precision
+    test_eb_recall = recall(dom_label, label_prediction)
+    sum_eb_recall += test_eb_recall
+    test_eb_fbeta = fbeta(dom_label, label_prediction)
+    sum_eb_fbeta += test_eb_fbeta
+
+    # example-based-ranking
+    test_oneError = oneError(dom_label, label_prediction)
+    sum_oneError += test_oneError
+    test_averagePrecision = averagePrecision(dom_label, label_prediction)
+    sum_averagePrecision += test_averagePrecision
+    test_rankingLoss = rankingLoss(dom_label, label_prediction)
+    sum_rankingLoss += test_rankingLoss
+
+    # label-based-classification
+    test_accuracyMacro = accuracyMacro(dom_label, label_prediction)
+    sum_accuracyMacro += test_accuracyMacro
+    test_fbetaMicro = fbetaMicro(dom_label, label_prediction)
+    sum_fbetaMicro += test_fbetaMicro
+
     # # example-based-ranking
     # test_oneError = oneError(dom_label, label_prediction)
     # sum_oneError += test_oneError
@@ -874,15 +968,25 @@ for i, data in enumerate(testDataloader):
                                                                         cosine_dist=cosine,
                                                                         intersection_dist=intersection))
 
-        # print("Test set results:\n",
-        #       'Multilabel metrics: example-based-classification:\n',
-        #       "subsetAccuracy= {:.4f}".format(test_subsetAccuracy),
-        #       "hammingLoss= {:.4f}".format(test_hammingLoss),
-        #       "accuracy= {:.4f}".format(test_eb_accuracy),
-        #       "precision= {:.4f}".format(test_eb_precision),
-        #       "recall= {:.4f}".format(test_eb_recall),
-        #       "fbeta= {:.4f}".format(test_eb_fbeta))
-        #
+        print("Test set results:\n",
+              'Multilabel metrics: example-based-classification:\n',
+              "hammingLoss= {:.4f}".format(test_hammingLoss),
+              "accuracy= {:.4f}".format(test_eb_accuracy),
+              "precision= {:.4f}".format(test_eb_precision),
+              "recall= {:.4f}".format(test_eb_recall),
+              "fbeta= {:.4f}".format(test_eb_fbeta))
+
+        print("Test set results:\n",
+              'Multilabel metrics: example-based-ranking:\n',
+              "oneError= {:.4f}".format(test_oneError),
+              "averagePrecision= {:.4f}".format(test_averagePrecision),
+              "rankingLoss= {:.4f}".format(test_rankingLoss))
+
+        print("Test set results:\n",
+              'Multilabel metrics: label-based-classification:\n',
+              "accuracyMacro= {:.4f}".format(test_accuracyMacro),
+              "fbetaMicro= {:.4f}".format(test_fbetaMicro))
+
         # print("Test set results:\n",
         #       'Multilabel metrics: example-based-ranking:\n',
         #       "oneError= {:.4f}".format(test_oneError),
@@ -943,18 +1047,31 @@ for i, data in enumerate(testDataloader):
                                                                         clark_dist=clark, canberra_dist=canberra,
                                                                         cosine_dist=cosine,
                                                                         intersection_dist=intersection))
-        # result.write("\n------------------------------------------------------------------\n")
-        # result.write("Test set results:\n")
-        # result.write('Multilabel metrics: example-based-classification:\n')
-        # result.write('subsetAccuracy: {subsetAccuracy:.4f}\t'
-        #              'hammingLoss: {hammingLoss:.4f}\t'
-        #              'accuracy: {accuracy:.4f}\t'
-        #              'precision: {precision:.4f}\t'
-        #              'recall: {recall:.4f}\t'
-        #              'fbeta: {fbeta:.4f}\t'.format(subsetAccuracy=test_subsetAccuracy,
-        #                                            hammingLoss=test_hammingLoss,
-        #                                            accuracy=test_eb_accuracy, precision=test_eb_precision,
-        #                                            recall=test_eb_recall, fbeta=test_eb_fbeta))
+        result.write("\n------------------------------------------------------------------\n")
+        result.write("Test set results:\n")
+        result.write('Multilabel metrics: example-based-classification:\n')
+        result.write(
+                     'hammingLoss: {hammingLoss:.4f}\t'
+                     'accuracy: {accuracy:.4f}\t'
+                     'precision: {precision:.4f}\t'
+                     'recall: {recall:.4f}\t'
+                     'fbeta: {fbeta:.4f}\t'.format(
+                                                   hammingLoss=test_hammingLoss,
+                                                   accuracy=test_eb_accuracy, precision=test_eb_precision,
+                                                   recall=test_eb_recall, fbeta=test_eb_fbeta))
+        result.write("\n")
+        result.write('Multilabel metrics: example-based-ranking:\n')
+        result.write('oneError: {oneError:.4f}\t'
+                     'averagePrecision: {averagePrecision:.4f}\t'
+                     'rankingLoss: {rankingLoss:.4f}\t'.format(oneError=test_oneError,
+                                                               averagePrecision=test_averagePrecision,
+                                                               rankingLoss=test_rankingLoss))
+        result.write("\n")
+        result.write('Multilabel metrics: label-based-classification:\n')
+        result.write('accuracyMacro: {accuracyMacro:.4f}\t'
+                     'fbetaMicro: {fbetaMicro:.4f}\t'.format(accuracyMacro=test_accuracyMacro,
+                                                             fbetaMicro=test_fbetaMicro))
+
         # result.write("\n")
         # result.write('Multilabel metrics: example-based-ranking:\n')
         # result.write('oneError: {oneError:.4f}\t'
@@ -1003,13 +1120,21 @@ ave_canberra = sum_canberra/count
 ave_cosine = sum_cosine/count
 ave_intersection = sum_intersection/count
 
-# ave_subsetAccuracy = sum_subsetAccuracy/count
-# ave_hammingLoss = sum_hammingLoss/count
-# ave_eb_accuracy = sum_eb_accuracy/count
-# ave_eb_precision = sum_eb_precision/count
-# ave_eb_recall = sum_eb_recall/count
-# ave_eb_fbeta = sum_eb_fbeta/count
-#
+ave_hammingLoss = sum_hammingLoss/count
+ave_eb_accuracy = sum_eb_accuracy/count
+ave_eb_precision = sum_eb_precision/count
+ave_eb_recall = sum_eb_recall/count
+ave_eb_fbeta = sum_eb_fbeta/count
+
+# example-based-ranking
+ave_oneError = sum_oneError/count
+ave_averagePrecision = sum_averagePrecision/count
+ave_rankingLoss = sum_rankingLoss/count
+
+# label-based-classification
+ave_accuracyMacro = sum_accuracyMacro/count
+ave_fbetaMicro = sum_fbetaMicro/count
+
 # # example-based-ranking
 # ave_oneError = sum_oneError/count
 # ave_coverage = sum_coverage/count
@@ -1054,22 +1179,31 @@ result.write('Epoch: {epoch:.1f}\t'
                                                                                                         epoch_intersection_similarity=ave_intersection))
 
 #multi-label classification
-# result.write("\n================================================================================\n")
-# result.write('Epoch: {epoch:.1f}\t'
-#                      'Test epoch_accuracy: {epoch_accuracy:.4f}\t'
-#                      'Test epoch_hammingloss: {epoch_hammingloss:.4f}\t'
-#                      'Test epoch_oneError: {epoch_oneError:.4f}\t'
-#                      'Test epoch_Averageprecision: {epoch_Averageprecision:.4f}\t'
-#                      'Test epoch_rankingloss: {epoch_rankingloss:.4f}\t'
-#                      'Test epoch_accuracyMacro: {epoch_accuracyMacro:.4f}\t'
-#                      'Test epoch_fbetaMicro: {epoch_fbetaMicro:.4f}\t'.format(epoch=epoch_num+1,
-#                                                                               epoch_accuracy=epoch_accuracy,
-#                                                                             epoch_hammingloss=epoch_hammingloss,
-#                                                                             epoch_oneError=epoch_oneError,
-#                                                                             epoch_Averageprecision=epoch_Averageprecision,
-#                                                                             epoch_rankingloss=epoch_rankingloss,
-#                                                                             epoch_accuracyMacro=epoch_accuracyMacro,
-#                                                                             epoch_fbetaMicro=epoch_fbetaMicro))
+result.write("\n================================================================================\n")
+result.write('Epoch: {epoch:.1f}\t'
+                     'Test epoch_accuracy: {epoch_accuracy:.4f}\t'
+                     'Test epoch_eb_accuracy: {epoch_eb_accuracy:.4f}\t'
+                     'Test epoch_eb_precision: {epoch_eb_precision:.4f}\t'
+                     'Test epoch_eb_recall: {epoch_eb_recall:.4f}\t'
+                     'Test epoch_eb_fbeta: {epoch_eb_fbeta:.4f}\t'
+                     'Test epoch_hammingloss: {epoch_hammingloss:.4f}\t'
+                     'Test epoch_oneError: {epoch_oneError:.4f}\t'
+                     'Test epoch_Averageprecision: {epoch_Averageprecision:.4f}\t'
+                     'Test epoch_rankingloss: {epoch_rankingloss:.4f}\t'
+                     'Test epoch_accuracyMacro: {epoch_accuracyMacro:.4f}\t'
+                     'Test epoch_fbetaMicro: {epoch_fbetaMicro:.4f}\t'.format(epoch=epoch_num+1,
+                                                                            epoch_accuracy=epoch_accuracy,
+                                                                            epoch_eb_accuracy=ave_eb_accuracy,
+                                                                            epoch_eb_precision=ave_eb_precision,
+                                                                            epoch_eb_recall=ave_eb_recall,
+                                                                            epoch_eb_fbeta=ave_eb_fbeta,
+                                                                            epoch_hammingloss=ave_hammingLoss,
+                                                                            epoch_oneError=ave_oneError,
+                                                                            epoch_Averageprecision=ave_averagePrecision,
+                                                                            epoch_rankingloss=ave_rankingLoss,
+                                                                            epoch_accuracyMacro=ave_accuracyMacro,
+                                                                            epoch_fbetaMicro=ave_fbetaMicro))
+
 
 print(att_1.cpu().detach().numpy().mean(axis=0), att_2.cpu().detach().numpy().mean(axis=0),
       att_3.cpu().detach().numpy().mean(axis=0), att_4.cpu().detach().numpy().mean(axis=0),

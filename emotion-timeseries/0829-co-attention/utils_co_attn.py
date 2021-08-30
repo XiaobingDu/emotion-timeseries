@@ -162,9 +162,9 @@ class MediaEvalDataset(Dataset):
 #______________________________________________________________________________________________________________________________________
 def adjust_learning_rate(optimizer, epoch, lr):
     """Sets the learning rate to the initial LR decayed by 10 every 30 epochs
-    lr_decay can instead lr = lr * 0.1
+    lr_decay = 10 equals to lr = lr * 0.1
     """
-    if epoch == 10: #100
+    if epoch == 5: #100
         lr = lr * 0.1
         for param_group in optimizer.param_groups:
             param_group['lr'] = lr
