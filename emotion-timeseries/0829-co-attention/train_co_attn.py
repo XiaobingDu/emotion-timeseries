@@ -692,7 +692,7 @@ for epoch_num in range(num_epochs):
 
     ## TODO: save the model if validation loss has decreased
     if epoch_cosine > epoch_cosine_min:
-        print('Validation cosine creased ({:.6f} --> {:.6f}).  Saving model ...'.format(epoch_cosine_min, epoch_cosine_min))
+        print('Validation cosine creased ({:.6f} --> {:.6f}).  Saving model ...'.format(epoch_cosine_min, epoch_cosine))
         # save checkpoint as best model
         save_ckp(checkpoint, True, checkpoint_path + "/train_co_attn_current_checkpoint.pt",
                  best_model_path + "/train_co_attn_best_model.pt")
