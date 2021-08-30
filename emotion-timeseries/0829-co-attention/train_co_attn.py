@@ -682,7 +682,6 @@ for epoch_num in range(num_epochs):
     checkpoint = {
         'epoch': epoch_num + 1,
         'valid_loss_min_kl': epoch_loss,
-        'epoch_cosine_min_kl': epoch_cosine_min,
         'state_dict': net.state_dict(),
         'optimizer': optimizer.state_dict(),
     }
@@ -703,7 +702,7 @@ for epoch_num in range(num_epochs):
 
 # testing
 net = MovieNet(args)
-net, optimizer, start_epoch, valid_loss_min_kl,epoch_cosine_min_kl = load_ckp(
+net, optimizer, start_epoch, valid_loss_min_kl = load_ckp(
     best_model_path + "/train_co_attn_best_model.pt", net, optimizer)
 net.eval()
 test_kl = 0
