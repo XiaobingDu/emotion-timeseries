@@ -93,7 +93,7 @@ class MovieNet(nn.Module):
         self.dec_h0 = nn.Parameter(torch.rand(self.n_layers, 1, self.h_dim))
         self.dec_c0 = nn.Parameter(torch.rand(self.n_layers, 1, self.h_dim))
 
-        self.out = nn.Sequential(nn.Linear(512, 128),  #5 -> 128
+        self.out = nn.Sequential(nn.Linear(1024, 128),  #5 -> 128 #512-->1024
                                   nn.LeakyReLU(),
                                   nn.Linear(128, 64), # 128 -> 64
                                  nn.LeakyReLU(),
