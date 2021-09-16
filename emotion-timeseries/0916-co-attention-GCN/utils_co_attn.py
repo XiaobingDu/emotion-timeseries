@@ -159,12 +159,12 @@ class MediaEvalDataset(Dataset):
 
 
 
-#________________________________________________________________________________________________________________________________________
-
-
+#______________________________________________________________________________________________________________________________________
 def adjust_learning_rate(optimizer, epoch, lr):
-    """Sets the learning rate to the initial LR decayed by 10 every 30 epochs"""
-    if epoch == 100:
+    """Sets the learning rate to the initial LR decayed by 10 every 30 epochs
+    lr_decay = 10 equals to lr = lr * 0.1
+    """
+    if epoch == 5: #100
         lr = lr * 0.1
         for param_group in optimizer.param_groups:
             param_group['lr'] = lr
@@ -481,7 +481,7 @@ def gen_A(num_classes, t, adj_file):
     # _adj = _adj / _nums
     # _adj[_adj < t] = 0
     # _adj[_adj >= t] = 1
-    # _adj = _adj * 0.25 / (_adj.sum(0, keepdims=True) + 1e-6) #P=0.25
+    # _adj = _adj * 0.25 / (_adj.sum(0, keepdims=True) + 1e-6) #p=0.25
     # _adj = _adj + np.identity(num_classes, np.int)
     return _adj
 
