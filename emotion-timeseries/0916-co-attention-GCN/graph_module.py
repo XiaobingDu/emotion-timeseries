@@ -4,7 +4,7 @@ from torch.nn import Parameter
 import torch
 import torch.nn as nn
 import math
-from utils_co_attn_GC import gen_A, gen_adj
+from utils_co_attn import gen_A, gen_adj
 
 class GraphConvolution(nn.Module):
     """
