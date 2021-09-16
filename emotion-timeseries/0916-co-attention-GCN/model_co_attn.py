@@ -94,11 +94,16 @@ class MovieNet(nn.Module):
         self.dec_h0 = nn.Parameter(torch.rand(self.n_layers, 1, self.h_dim))
         self.dec_c0 = nn.Parameter(torch.rand(self.n_layers, 1, self.h_dim))
 
-        self.out = nn.Sequential(nn.Linear(1024, 128),  #5 -> 128 #512-->1024
+        self.out = nn.Sequential(nn.Linear(1024, 512),
                                   nn.LeakyReLU(),
-                                  nn.Linear(128, 64), # 128 -> 64
+                                  nn.Linear(512, 256),
                                  nn.LeakyReLU(),
-                                 nn.Linear(64, self.out_layer))  # 64 -> out_layer:9
+                                 nn.Linear(256, 128))
+        self.GCN_out = nn.Sequential(nn.Linear(2048, 512),
+                                  nn.LeakyReLU(),
+                                  nn.Linear(512, 256),
+                                  nn.LeakyReLU(),
+                                  nn.Linear(256, 128))
 
         # Store module in specified device (CUDA/CPU)
         self.device = (device if torch.cuda.is_available() else
@@ -239,16 +244,17 @@ class MovieNet(nn.Module):
         # [320,512]
         dec_out = dec_out.reshape(-1, self.h_dim) #[640,512]
         # eq.10
-        ## [32,20,9]
+        ## [32,20,128]
         predicted = self.out(dec_out).view(batch_size, seq_len, self.out_layer)
-        ##[32,9]
+        ##[32,128]
         predicted_last = predicted[:, -1, :]
 
         # GCN module
         # num_class = 9
         GCN_module = GCN(num_classes=9, in_channel=300, t=0.4, adj_file='embedding/positiveEmotion_adj.pkl') #t-0.4
         GCN_output = GCN_module(inp='embedding/positiveEmotion_glove_word2vec.pkl')  # [9,2048]
-        GCN_output = GCN_output.transpose(0, 1).cuda()  # [2048,9]
+        GCN_output = self.GCN_out(GCN_output) #[9,128]
+        GCN_output = GCN_output.transpose(0, 1).cuda()  # [128,9]
 
         # GCN output * LSTM lastTimestep
         ## [32,9]
