@@ -253,8 +253,7 @@ class MovieNet(nn.Module):
         # num_class = 9
         GCN_module = GCN(num_classes=9, in_channel=300, t=0.4, adj_file='embedding/positiveEmotion_adj.pkl') #t-0.4
         GCN_output = GCN_module(inp='embedding/positiveEmotion_glove_word2vec.pkl')  # [9,2048]
-        GCN_output = GCN_output.to(torch.device)
-        GCN_output = self.GCN_out(GCN_output) #[9,128]
+        GCN_output = self.GCN_out(GCN_output.cuda()) #[9,128]
         GCN_output = GCN_output.transpose(0, 1).cuda()  # [128,9]
 
         # GCN output * LSTM lastTimestep
