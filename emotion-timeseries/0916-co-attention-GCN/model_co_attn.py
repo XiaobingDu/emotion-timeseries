@@ -245,7 +245,7 @@ class MovieNet(nn.Module):
         dec_out = dec_out.reshape(-1, self.h_dim) #[640,512]
         # eq.10
         ## [32,20,128]
-        predicted = self.out(dec_out).view(batch_size, seq_len, self.out_layer)
+        predicted = self.out(dec_out).view(batch_size, seq_len, -1)
         ##[32,128]
         predicted_last = predicted[:, -1, :]
 
