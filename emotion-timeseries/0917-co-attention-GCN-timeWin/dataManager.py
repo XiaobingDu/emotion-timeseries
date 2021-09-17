@@ -2,8 +2,6 @@
 import numpy as np
 import scipy.io as sio
 import os
-import math
-import random
 
 # return channels, tmie-steps, fea_dim, hidden_dim, n_labels
 def get_dim(db_name):
@@ -180,6 +178,7 @@ def get_sample_data_withoutOverlap(path1,path2):
             f = f + f_num
 
             # split samples by window_size
+            print ('................data shape..............', data[n_s][n_len]['feature_arr'].shape)
             t_len = data[n_s][n_len]['feature_arr'].shape[0]
 
             sub_sample = []

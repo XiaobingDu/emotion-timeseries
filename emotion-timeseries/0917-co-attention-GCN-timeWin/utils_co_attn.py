@@ -51,8 +51,7 @@ class MediaEvalDataset(Dataset):
         for f in F_idx:
             print('F_idx:', f)
             if cnt == 0:
-                print('.....data shape.....', data.shape)
-                Frontal_feature = data[:, :, f, :]
+                Frontal_feature = data[:, :, f, :] #data shape = [12338, 20, 30, 5]
                 Frontal_feature.unsqueeze_(2)
                 cnt = 1
             else:
