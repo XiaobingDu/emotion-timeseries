@@ -24,20 +24,20 @@ class MediaEvalDataset(Dataset):
         self.dis = dis
         self.dom_label = dom_label
         self.idx = idx
-        self.Frontal = []
-        self.Temporal = []
-        self.Central = []
-        self.Parietal = []
-        self.Occipital = []
+        self.T1 = []
+        self.T2 = []
+        self.T3 = []
+        self.T4 = []
+        self.T5 = []
 
         #get the brain regions
         # 对应5个脑区的特征
-        # idx = [[0,1,2,3,4,5,6],[7,11,12,16,17,21,22,26],[8,9,10,13,14,15,18,19,20],[23,24,25],[27,28,29]]
-        F_idx = idx[0]  # [0,1,2,3,4,5,6]
-        T_idx = idx[1]  # [7,11,12,16,17,21,22,26]
-        C_idx = idx[2]  # [8,9,10,13,14,15,18,19,20]
-        P_idx = idx[3]  # [23,24,25]
-        O_idx = idx[4]  # [27,28,29]
+        # idx = [[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29],[7,11,12,16,17,21,22,26],[8,9,10,13,14,15,18,19,20],[23,24,25],[27,28,29]]
+        T1_idx = idx[0]  # [0,1,2,3,4,5,6] #[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29]
+        T2_idx = idx[1]  # [7,11,12,16,17,21,22,26] #[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29]
+        T3_idx = idx[2]  # [8,9,10,13,14,15,18,19,20] #[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29]
+        T4_idx = idx[3]  # [23,24,25] #[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29]
+        T5_idx = idx[4]  # [27,28,29] #[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29]
         sample_nums = self.feature.shape[0]
         time_win = self.feature.shape[1]
         dim = self.feature.shape[2]
@@ -47,94 +47,94 @@ class MediaEvalDataset(Dataset):
         data = torch.Tensor(data)
 
         cnt = 0
-        # frontal channel
-        for f in F_idx:
-            print('F_idx:', f)
+        # T1 channel
+        for f in T1_idx:
+            print('T1_idx:', f)
             if cnt == 0:
-                Frontal_feature = data[:, :, f, :] #data shape = [12338, 20, 30, 5]
-                Frontal_feature.unsqueeze_(2)
+                T1_featuer = data[:, :, f, :] #data shape = [12338, 20, 30, 5]
+                T1_featuer.unsqueeze_(2)
                 cnt = 1
             else:
-                Frontal_feature = torch.cat((Frontal_feature, data[:, :, f, :].unsqueeze_(2)), dim=2)
+                T1_featuer = torch.cat((T1_featuer, data[:, :, f, :].unsqueeze_(2)), dim=2)
 
-        print('Frontal_feature shape:', Frontal_feature.shape) #[68832, 10, 7, 5]
-        Frontal_ch = Frontal_feature.shape[2]
+        print('T1_featuer shape:', T1_featuer.shape) #[68832, 10, 7, 5]
+        T1_ch = T1_featuer.shape[2]
         # reshape
-        Frontal_feature = np.reshape(Frontal_feature, [Frontal_feature.shape[0], Frontal_feature.shape[1],
-                                                         int(Frontal_feature.shape[2] * Frontal_feature.shape[3])])
-        print('Frontal_feature shape:', Frontal_feature.shape) #[68832, 10, 35]
+        T1_featuer = np.reshape(T1_featuer, [T1_featuer.shape[0], T1_featuer.shape[1],
+                                                         int(T1_featuer.shape[2] * T1_featuer.shape[3])])
+        print('T1_featuer shape:', T1_featuer.shape) #[68832, 10, 35]
 
         cnt = 0
-        # Temporal channel
-        for t in T_idx:
-            print('T_idx:', t)
+        # T2 channel
+        for t in T2_idx:
+            print('T2_idx:', t)
             if cnt == 0:
-                Temporal_feature = data[:, :, t, :]
-                Temporal_feature.unsqueeze_(2)
+                T2_feature = data[:, :, t, :]
+                T2_feature.unsqueeze_(2)
                 cnt = 1
             else:
-                Temporal_feature = torch.cat((Temporal_feature, data[:, :, t, :].unsqueeze_(2)), dim=2)
+                T2_feature = torch.cat((T2_feature, data[:, :, t, :].unsqueeze_(2)), dim=2)
 
-        print('Temporal_feature shape:', Temporal_feature.shape) #[68832, 10, 8, 5]
-        Temporal_ch = Temporal_feature.shape[2]
-        Temporal_feature = np.reshape(Temporal_feature, [Temporal_feature.shape[0], Temporal_feature.shape[1],
-                                                       int(Temporal_feature.shape[2] * Temporal_feature.shape[3])])
-        print('Temporal_feature shape:', Temporal_feature.shape) #[68832, 10, 40]
+        print('T2_feature shape:', T2_feature.shape) #[68832, 10, 8, 5]
+        T2_ch = T2_feature.shape[2]
+        T2_feature = np.reshape(T2_feature, [T2_feature.shape[0], T2_feature.shape[1],
+                                                       int(T2_feature.shape[2] * T2_feature.shape[3])])
+        print('T2_feature shape:', T2_feature.shape) #[68832, 10, 40]
 
         cnt = 0
-        # Central channel
-        for c in C_idx:
-            print('C_idx:', c)
+        # T3 channel
+        for c in T3_idx:
+            print('T3_idx:', c)
             if cnt == 0:
-                Central_feature = data[:, :, c, :]
-                Central_feature.unsqueeze_(2)
+                T3_feature = data[:, :, c, :]
+                T3_feature.unsqueeze_(2)
                 cnt = 1
             else:
-                Central_feature = torch.cat((Central_feature, data[:, :, c, :].unsqueeze_(2)), dim=2)
+                T3_feature = torch.cat((T3_feature, data[:, :, c, :].unsqueeze_(2)), dim=2)
 
-        print('Central_feature shape:', Central_feature.shape) #[68832, 10, 9, 5]
-        Central_ch = Central_feature.shape[2]
-        Central_feature = np.reshape(Central_feature, [Central_feature.shape[0], Central_feature.shape[1],
-                                                         int(Central_feature.shape[2] * Central_feature.shape[3])])
-        print('Central_feature shape:', Central_feature.shape) #[68832, 10, 45]
+        print('T3_feature shape:', T3_feature.shape) #[68832, 10, 9, 5]
+        T3_ch = T3_feature.shape[2]
+        T3_feature = np.reshape(T3_feature, [T3_feature.shape[0], T3_feature.shape[1],
+                                                         int(T3_feature.shape[2] * T3_feature.shape[3])])
+        print('T3_feature shape:', T3_feature.shape) #[68832, 10, 45]
 
         cnt = 0
-        # Parietal channel
-        for p in P_idx:
-            print('P_idx:', p)
+        # T4 channel
+        for p in T4_idx:
+            print('T4_idx:', p)
             if cnt == 0:
-                Parietal_feature = data[:, :, p, :]
-                Parietal_feature.unsqueeze_(2)
+                T4_feature = data[:, :, p, :]
+                T4_feature.unsqueeze_(2)
                 cnt = 1
             else:
-                Parietal_feature = torch.cat((Parietal_feature, data[:, :, p, :].unsqueeze_(2)), dim=2)
+                T4_feature = torch.cat((T4_feature, data[:, :, p, :].unsqueeze_(2)), dim=2)
 
-        print('Parietal_feature shape:', Parietal_feature.shape) #[68832, 10, 3, 5]
-        Parietal_ch = Parietal_feature.shape[2]
-        Parietal_feature = np.reshape(Parietal_feature,[Parietal_feature.shape[0],Parietal_feature.shape[1],int(Parietal_feature.shape[2]*Parietal_feature.shape[3])])
-        print('Parietal_feature shape:', Parietal_feature.shape) #[68832, 10, 15]
+        print('T4_feature shape:', T4_feature.shape) #[68832, 10, 3, 5]
+        T4_ch = T4_feature.shape[2]
+        T4_feature = np.reshape(T4_feature,[T4_feature.shape[0],T4_feature.shape[1],int(T4_feature.shape[2]*T4_feature.shape[3])])
+        print('T4_feature shape:', T4_feature.shape) #[68832, 10, 15]
 
         cnt = 0
-        # Occipital channel
-        for o in O_idx:
-            print('O_idx:', o)
+        # T5 channel
+        for o in T5_idx:
+            print('T5_idx:', o)
             if cnt == 0:
-                Occipital_feature = data[:, :, o, :]
-                Occipital_feature.unsqueeze_(2)
+                T5_feature = data[:, :, o, :]
+                T5_feature.unsqueeze_(2)
                 cnt = 1
             else:
-                Occipital_feature = torch.cat((Occipital_feature, data[:, :, o, :].unsqueeze_(2)), dim=2)
+                T5_feature = torch.cat((T5_feature, data[:, :, o, :].unsqueeze_(2)), dim=2)
 
-        print('Occipital_feature shape:', Occipital_feature.shape) #[68832, 10, 3, 5]
-        Occipital_ch = Occipital_feature.shape[2]
-        Occipital_feature = np.reshape(Occipital_feature,[Occipital_feature.shape[0],Occipital_feature.shape[1],int(Occipital_feature.shape[2]*Occipital_feature.shape[3])])
-        print('Occipital_feature shape:', Occipital_feature.shape) #[68832, 10, 15]
+        print('T5_feature shape:', T5_feature.shape) #[68832, 10, 3, 5]
+        T5_ch = T5_feature.shape[2]
+        T5_feature = np.reshape(T5_feature,[T5_feature.shape[0],T5_feature.shape[1],int(T5_feature.shape[2]*T5_feature.shape[3])])
+        print('T5_feature shape:', T5_feature.shape) #[68832, 10, 15]
 
-        self.Frontal = Frontal_feature
-        self.Temporal = Temporal_feature
-        self.Central = Central_feature
-        self.Parietal = Parietal_feature
-        self. Occipital = Occipital_feature
+        self.T1 = T1_featuer
+        self.T2 = T2_feature
+        self.T3 = T3_feature
+        self.T4 = T4_feature
+        self.T5 = T5_feature
 
 
 
@@ -143,19 +143,19 @@ class MediaEvalDataset(Dataset):
         return num_samples
 
     def __getitem__(self, index):
-        F = self.Frontal[index]
-        T = self.Temporal[index]
-        C = self.Central[index]
-        P = self.Parietal[index]
-        O = self.Occipital[index]
+        T1 = self.T1[index]
+        T2 = self.T2[index]
+        T3 = self.T3[index]
+        T4 = self.T4[index]
+        T5 = self.T5[index]
         y = self.dis[index]
         target_gt = self.dom_label[index]
 
         # 将5个脑区的数据hstack
         # combined = np.hstack([F, T, C, P, O])
-        combined = torch.cat((F, T, C, P, O), dim=-1) #[10,150]
+        combined = torch.cat((T1, T2, T3, T4, T5), dim=-1) #[10,150]
 
-        return combined, y, target_gt, F, T, C, P, O
+        return combined, y, target_gt, T1, T2, T3, T4, T5
 
 
 
@@ -356,7 +356,7 @@ class AveragePrecisionMeter(object):
                 each example (each weight > 0)
         """
         if not torch.is_tensor(output):
-            output = torch.from_numpy(output) # torch.from_numpy: transfer the 'numpy' to 'tensor'; same as torch.Tensor()
+            output = torch.from_numpy(output)
         if not torch.is_tensor(target):
             target = torch.from_numpy(target)
 

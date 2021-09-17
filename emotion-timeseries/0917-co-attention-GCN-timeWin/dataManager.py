@@ -3,17 +3,16 @@ import numpy as np
 import scipy.io as sio
 import os
 
-# return channels, tmie-steps, fea_dim, hidden_dim, n_labels
 def get_dim(db_name):
 
     if db_name=='LDL_data':
-        return 30, 30, 5, 32, 9
+        return 30, 150, 5, 32, 9
 
 # return sub_num, clip_num, channels, time-steps, fea_dim
 def get_num(db_name):
 
     if db_name=='LDL_data':
-        return 194, 9, 30, 30, 5
+        return 194, 9, 30, 150, 5
 
 def data_preprocess(data, db_name):
     sub_num, clip_num, channels, fea_dim = get_num(db_name)
@@ -24,7 +23,7 @@ def data_preprocess(data, db_name):
     std = np.std(reshape, axis=1)
     std = np.reshape(std, [-1,1])
     norm = (reshape - mean) / std
-    data  = norm
+    data = norm
 
     return data
 
