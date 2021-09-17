@@ -194,30 +194,30 @@ for epoch_num in range(num_epochs):
     for i, data in enumerate(trDataloader):
         # print("Training .... 第 {} 个Batch.....".format(i))
         st_time = time.time()
-        train, dis, dom_label, Frontal, Temporal, Central, Parietal, Occipital = data  # get training date
+        train, dis, dom_label, T1, T2, T3, T4, T5 = data  # get training date
 
         if args['use_cuda']: # use cuda
             train = torch.nn.Parameter(train).cuda()
             dis = torch.nn.Parameter(dis).cuda()
             dom_label = torch.nn.Parameter(dom_label.float()).cuda()
-            Frontal = torch.nn.Parameter(Frontal).cuda()
-            Temporal = torch.nn.Parameter(Temporal).cuda()
-            Central = torch.nn.Parameter(Central).cuda()
-            Parietal = torch.nn.Parameter(Parietal).cuda()
-            Occipital = torch.nn.Parameter(Occipital).cuda()
+            T1 = torch.nn.Parameter(T1).cuda()
+            T2 = torch.nn.Parameter(T2).cuda()
+            T3 = torch.nn.Parameter(T3).cuda()
+            T4 = torch.nn.Parameter(T4).cuda()
+            T5 = torch.nn.Parameter(T5).cuda()
 
         train.requires_grad_()  # backward
         dis.requires_grad_()
         dom_label.requires_grad_()
-        Frontal.requires_grad_()
-        Temporal.requires_grad_()
-        Central.requires_grad_()
-        Parietal.requires_grad_()
-        Occipital.requires_grad_()
+        T1.requires_grad_()
+        T2.requires_grad_()
+        T3.requires_grad_()
+        T4.requires_grad_()
+        T5.requires_grad_()
 
         # Forward pass
         predict, input_clstm, shared_encoder, att_1, att_2, att_3, att_4, att_5, att_6, att_7, att_8, att_9, att_10 \
-            = net(train, Frontal, Temporal, Central, Parietal, Occipital, dis)
+            = net(train, T1, T2, T3, T4, T5, dis)
         #get GC
         train_model_gista(shared_encoder, input_clstm, lam=0.5, lam_ridge=1e-4, lr=0.001, max_iter=1, check_every=1000, truncation=64)
         GC_est = shared_encoder.GC().cpu().data.numpy()
@@ -420,21 +420,21 @@ for epoch_num in range(num_epochs):
         cnt += 1
         print("Val ..... 第 {} 个Batch.....".format(i))
         st_time = time.time()
-        val, dis, dom_label, Frontal, Temporal, Central, Parietal, Occipital = data
+        val, dis, dom_label, T1, T2, T3, T4, T5 = data
 
         if args['use_cuda']:
             val = torch.nn.Parameter(val).cuda()
             dis = torch.nn.Parameter(dis).cuda()
             dom_label = torch.nn.Parameter(dom_label.float()).cuda()
-            Frontal = torch.nn.Parameter(Frontal).cuda()
-            Temporal = torch.nn.Parameter(Temporal).cuda()
-            Central = torch.nn.Parameter(Central).cuda()
-            Parietal = torch.nn.Parameter(Parietal).cuda()
-            Occipital = torch.nn.Parameter(Occipital).cuda()
+            T1 = torch.nn.Parameter(T1).cuda()
+            T2 = torch.nn.Parameter(T2).cuda()
+            T3 = torch.nn.Parameter(T3).cuda()
+            T4 = torch.nn.Parameter(T4).cuda()
+            T5 = torch.nn.Parameter(T5).cuda()
 
         # Forward pass
         predict, input_clstm, shared_encoder, att_1, att_2, att_3, att_4, att_5, att_6, att_7, att_8, att_9, att_10 = \
-            net(val, Frontal, Temporal, Central, Parietal, Occipital, dis)
+            net(val, T1, T2, T3, T4, T5, dis)
 
         # for loss1
         # softmax layer
@@ -664,22 +664,22 @@ count = 0
 for i, data in enumerate(testDataloader):
     count = count + 1
     st_time = time.time()
-    test, dis, dom_label, Frontal, Temporal, Central, Parietal, Occipital = data
+    test, dis, dom_label, T1, T2, T3, T4, T5 = data
     dis = dis
 
     if args['use_cuda']:
         test = torch.nn.Parameter(test).cuda()
         dis = torch.nn.Parameter(dis).cuda()
         dom_label = torch.nn.Parameter(dom_label.float()).cuda()
-        Frontal = torch.nn.Parameter(Frontal).cuda()
-        Temporal = torch.nn.Parameter(Temporal).cuda()
-        Central = torch.nn.Parameter(Central).cuda()
-        Parietal = torch.nn.Parameter(Parietal).cuda()
-        Occipital = torch.nn.Parameter(Occipital).cuda()
+        T1 = torch.nn.Parameter(T1).cuda()
+        T2 = torch.nn.Parameter(T2).cuda()
+        T3 = torch.nn.Parameter(T3).cuda()
+        T4 = torch.nn.Parameter(T4).cuda()
+        T5 = torch.nn.Parameter(T5).cuda()
 
     # Forward pass
     predict, input_clstm, shared_encoder, att_1, att_2, att_3, att_4, att_5, att_6, att_7, att_8, att_9, att_10 = \
-        net(test, Frontal, Temporal, Central, Parietal, Occipital, dis)
+        net(test, T1, T2, T3, T4, T5, dis)
     # print(att_1, att_2, att_3, att_4, att_5, att_6, att_7, att_8, att_9, att_10)
 
     #for loss1

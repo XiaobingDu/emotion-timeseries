@@ -55,7 +55,7 @@ class MovieNet(nn.Module):
         self.dropout= args['dropout_prob']
 
         #fully-connected linear layer
-        self.Frontal_linear = nn.Linear(self.T1_len, self.h_dim, bias=True)
+        self.T1_linear = nn.Linear(self.T1_len, self.h_dim, bias=True)
         self.T2_linear = nn.Linear(self.T2_len, self.h_dim, bias=True)
         self.T3_linear = nn.Linear(self.T3_len, self.h_dim, bias=True)
         self.T4_linear = nn.Linear(self.T4_len, self.h_dim, bias=True)
