@@ -75,7 +75,7 @@ class MovieNet(nn.Module):
 
         #unimodal single-modality for cLSTM
         #unimodal vs. multi-modal
-        self.unimodal_Frontal = nn.Sequential(nn.Dropout(self.dropout),nn.Linear(self.h_dim, 1), nn.LeakyReLU())
+        self.unimodal_T1 = nn.Sequential(nn.Dropout(self.dropout),nn.Linear(self.h_dim, 1), nn.LeakyReLU())
         self.unimodal_T2 = nn.Sequential(nn.Dropout(self.dropout),nn.Linear(self.h_dim, 1), nn.LeakyReLU())
         self.unimodal_T3 = nn.Sequential(nn.Dropout(self.dropout),nn.Linear(self.h_dim, 1), nn.LeakyReLU())
         self.unimodal_T4 = nn.Sequential(nn.Dropout(self.dropout),nn.Linear(self.h_dim, 1), nn.LeakyReLU()) #nn.Linear(self.h_dim,1)
