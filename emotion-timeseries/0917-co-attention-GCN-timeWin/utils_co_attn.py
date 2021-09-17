@@ -51,7 +51,7 @@ class MediaEvalDataset(Dataset):
         for f in T1_idx:
             print('T1_idx:', f)
             if cnt == 0:
-                T1_featuer = data[:, :, f, :] #data shape = [12338, 20, 30, 5]
+                T1_featuer = data[:, f, :, :] #data shape = [12338, 20, 30, 5]
                 T1_featuer.unsqueeze_(2)
                 cnt = 1
             else:
@@ -69,7 +69,7 @@ class MediaEvalDataset(Dataset):
         for t in T2_idx:
             print('T2_idx:', t)
             if cnt == 0:
-                T2_feature = data[:, :, t, :]
+                T2_feature = data[:, t, :, :]
                 T2_feature.unsqueeze_(2)
                 cnt = 1
             else:
@@ -86,7 +86,7 @@ class MediaEvalDataset(Dataset):
         for c in T3_idx:
             print('T3_idx:', c)
             if cnt == 0:
-                T3_feature = data[:, :, c, :]
+                T3_feature = data[:, c, :, :]
                 T3_feature.unsqueeze_(2)
                 cnt = 1
             else:
@@ -103,7 +103,7 @@ class MediaEvalDataset(Dataset):
         for p in T4_idx:
             print('T4_idx:', p)
             if cnt == 0:
-                T4_feature = data[:, :, p, :]
+                T4_feature = data[:, p, :, :]
                 T4_feature.unsqueeze_(2)
                 cnt = 1
             else:
@@ -119,7 +119,7 @@ class MediaEvalDataset(Dataset):
         for o in T5_idx:
             print('T5_idx:', o)
             if cnt == 0:
-                T5_feature = data[:, :, o, :]
+                T5_feature = data[:, o, :, :]
                 T5_feature.unsqueeze_(2)
                 cnt = 1
             else:
