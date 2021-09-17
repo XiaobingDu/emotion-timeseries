@@ -210,18 +210,13 @@ def get_sample_data_withoutOverlap(path1,path2):
 
             print('sub_sample len....', len(sub_sample))
             sub_sample = np.asarray(sub_sample)
-            sub_label = np.reshape(np.asarray(sub_label), [np.asarray(sub_label).shape[0],
-                                                           np.asarray(sub_label).shape[1] * np.asarray(sub_label).shape[2]])
+            sub_label = np.reshape(np.asarray(sub_label), [np.asarray(sub_label).shape[0],np.asarray(sub_label).shape[1] * np.asarray(sub_label).shape[2]])
             sub_dis = np.asarray(sub_dis)
-            sub_dis = np.reshape(np.asarray(sub_dis), [np.asarray(sub_dis).shape[0],
-                                                       np.asarray(sub_dis).shape[1] * np.asarray(sub_dis).shape[2]])
+            sub_dis = np.reshape(np.asarray(sub_dis), [np.asarray(sub_dis).shape[0],np.asarray(sub_dis).shape[1] * np.asarray(sub_dis).shape[2]])
             sub_dom_label = np.asarray(sub_dom_label)
-            sub_dom_label = np.reshape(np.asarray(sub_dom_label), [np.asarray(sub_dom_label).shape[0],
-                                                       np.asarray(sub_dom_label).shape[1] * np.asarray(sub_dom_label).shape[2]])
+            sub_dom_label = np.reshape(np.asarray(sub_dom_label), [np.asarray(sub_dom_label).shape[0],np.asarray(sub_dom_label).shape[1] * np.asarray(sub_dom_label).shape[2]])
             sub_score = np.asarray(sub_score)
-            sub_score = np.reshape(np.asarray(sub_score), [np.asarray(sub_score).shape[0],
-                                                           np.asarray(sub_score).shape[1] * np.asarray(sub_score).shape[
-                                                               2]])
+            sub_score = np.reshape(np.asarray(sub_score), [np.asarray(sub_score).shape[0],np.asarray(sub_score).shape[1] * np.asarray(sub_score).shape[2]])
 
             data[n_s][n_len]['feature_arr'] = sub_sample
             data[n_s][n_len]['label_arr'] = sub_label
