@@ -209,22 +209,23 @@ def get_sample_data_withoutOverlap(path1,path2):
                 sub_score.append(sample_score)
 
             print('sub_sample len....', len(sub_sample))
-            sub_sample = np.asarray(sub_sample)
-            sub_label = np.reshape(np.asarray(sub_label), [np.asarray(sub_label).shape[0],np.asarray(sub_label).shape[1] * np.asarray(sub_label).shape[2]])
-            sub_dis = np.asarray(sub_dis)
-            sub_dis = np.reshape(np.asarray(sub_dis), [np.asarray(sub_dis).shape[0],np.asarray(sub_dis).shape[1] * np.asarray(sub_dis).shape[2]])
-            sub_dom_label = np.asarray(sub_dom_label)
-            sub_dom_label = np.reshape(np.asarray(sub_dom_label), [np.asarray(sub_dom_label).shape[0],np.asarray(sub_dom_label).shape[1] * np.asarray(sub_dom_label).shape[2]])
-            sub_score = np.asarray(sub_score)
-            sub_score = np.reshape(np.asarray(sub_score), [np.asarray(sub_score).shape[0],np.asarray(sub_score).shape[1] * np.asarray(sub_score).shape[2]])
+            if len(sub_sample) != 0:
+                sub_sample = np.asarray(sub_sample)
+                sub_label = np.reshape(np.asarray(sub_label), [np.asarray(sub_label).shape[0],np.asarray(sub_label).shape[1] * np.asarray(sub_label).shape[2]])
+                sub_dis = np.asarray(sub_dis)
+                sub_dis = np.reshape(np.asarray(sub_dis), [np.asarray(sub_dis).shape[0],np.asarray(sub_dis).shape[1] * np.asarray(sub_dis).shape[2]])
+                sub_dom_label = np.asarray(sub_dom_label)
+                sub_dom_label = np.reshape(np.asarray(sub_dom_label), [np.asarray(sub_dom_label).shape[0],np.asarray(sub_dom_label).shape[1] * np.asarray(sub_dom_label).shape[2]])
+                sub_score = np.asarray(sub_score)
+                sub_score = np.reshape(np.asarray(sub_score), [np.asarray(sub_score).shape[0],np.asarray(sub_score).shape[1] * np.asarray(sub_score).shape[2]])
 
-            data[n_s][n_len]['feature_arr'] = sub_sample
-            data[n_s][n_len]['label_arr'] = sub_label
-            data[n_s][n_len]['dis_arr'] = sub_dis
-            data[n_s][n_len]['primary_arr'] = sub_dom_label
-            data[n_s][n_len]['score_arr'] = sub_score
+                data[n_s][n_len]['feature_arr'] = sub_sample
+                data[n_s][n_len]['label_arr'] = sub_label
+                data[n_s][n_len]['dis_arr'] = sub_dis
+                data[n_s][n_len]['primary_arr'] = sub_dom_label
+                data[n_s][n_len]['score_arr'] = sub_score
 
-            sin_sub.append(data[n_s][n_len])
+                sin_sub.append(data[n_s][n_len])
 
         all_sub.append(sin_sub)
         print('all sub....', all_sub[0][0]['feature_arr'].shape)
