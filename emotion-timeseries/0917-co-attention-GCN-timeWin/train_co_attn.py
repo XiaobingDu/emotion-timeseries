@@ -742,7 +742,6 @@ for epoch_num in range(num_epochs):
     epoch_loss = val_loss / len(valSet)
     # 每一个epoch pcc平均
     epoch_pcc = emopcc / len(valSet)
-    epoch_cosine = val_cosine / cnt
     epoch_accuracy = val_accuracy / cnt
     print('********',len(valSet))
     print('********',cnt)
