@@ -694,53 +694,6 @@ for epoch_num in range(num_epochs):
     ave_fbetaMicro = sum_fbetaMicro / cnt
     epoch_fbetaMicro += ave_fbetaMicro
 
-    print("\n================================================================================\n")
-    print("Test Emotion distribution test_loss:", val_testkl, "\Test Emotion distribution PCC:", val_emopcc.item())
-    result.write("\n------------------------------------------------------------------\n")
-    result.write('Epoch: [{0}]\t' "Test Emotion distribution test_loss:{test_loss: .4f}\n"
-                 "Test Emotion distribution PCC:{PCC: .4f}\t".format(epoch_num + 1, val_loss=val_testkl,
-                                                                     PCC=val_emopcc))
-
-    result.write('\n Epoch: [{0}]: Validation....\n'.format(epoch_num + 1))
-    result.write("\n========================================\n")
-    result.write('euclidean_dist: {euclidean_dist:.4f}\t'
-                 'chebyshev_dist: {chebyshev_dist:.4f}\t'
-                 'kldist: {kldist:.4f}\t'
-                 'clark_dist: {clark_dist:.4f}\t'
-                 'canberra_dist: {canberra_dist:.4f}\t'
-                 'cosine_dist: {cosine_dist:.4f}\t'
-                 'intersection_dist: {intersection_dist:.4f}\t'.format(euclidean_dist=euclidean,
-                                                                       chebyshev_dist=chebyshev, kldist=kldist,
-                                                                       clark_dist=clark, canberra_dist=canberra,
-                                                                       cosine_dist=cosine,
-                                                                       intersection_dist=intersection))
-    result.write("\n------------------------------------------------------------------\n")
-    result.write("Validation set results:\n")
-    result.write('Multilabel metrics: example-based-classification:\n')
-    result.write(
-        'hammingLoss: {hammingLoss:.4f}\t'
-        'accuracy: {accuracy:.4f}\t'
-        'precision: {precision:.4f}\t'
-        'recall: {recall:.4f}\t'
-        'fbeta: {fbeta:.4f}\t'.format(
-            hammingLoss=val_hammingLoss,
-            accuracy=val_eb_accuracy, precision=val_eb_precision,
-            recall=val_eb_recall, fbeta=val_eb_fbeta))
-
-    result.write("\n")
-    result.write('Multilabel metrics: example-based-ranking:\n')
-    result.write('oneError: {oneError:.4f}\t'
-                 'averagePrecision: {averagePrecision:.4f}\t'
-                 'rankingLoss: {rankingLoss:.4f}\t'.format(oneError=val_oneError,
-                                                           averagePrecision=val_averagePrecision,
-                                                           rankingLoss=val_rankingLoss))
-
-    result.write("\n")
-    result.write('Multilabel metrics: label-based-classification:\n')
-    result.write('accuracyMacro: {accuracyMacro:.4f}\t'
-                 'fbetaMicro: {fbetaMicro:.4f}\t'.format(accuracyMacro=val_accuracyMacro,
-                                                         fbetaMicro=val_fbetaMicro))
-
     result.write("\n================================================================================\n")
     result.write('Epoch: {epoch:.1f}\t'
                  'Val epoch_euclidean: {epoch_euclidean:.4f}\t'
