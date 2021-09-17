@@ -38,14 +38,14 @@ class MovieNet(nn.Module):
     def __init__(self, args, device=torch.device('cuda:0')):
         super(MovieNet, self).__init__()
         #the feature length of five brain regions
-        self.Frontal_len = args['Frontal_len']
-        self.Temporal_len = args['Temporal_len']
-        self.Central_len = args['Central_len']
-        self.Parietal_len = args['Parietal_len']
-        self.Occipital_len = args['Occipital_len']
+        self.T1_len = args['T1_len']
+        self.T2_len = args['T2_len']
+        self.T3_len = args['T3_len']
+        self.T4_len = args['T4_len']
+        self.T5_len = args['T5_len']
         self.out_layer = args['out_layer']
         #concate the length
-        self.total_mod_len = self.Frontal_len + self.Temporal_len +self.Central_len + self.Parietal_len + self.Occipital_len
+        self.total_mod_len = self.T1_len + self.T2_len +self.T3_len + self.T4_len + self.T5_len
 
         #super parameters
         self.embed_dim = args['embed_dim']
@@ -55,11 +55,11 @@ class MovieNet(nn.Module):
         self.dropout= args['dropout_prob']
 
         #fully-connected linear layer
-        self.Frontal_linear = nn.Linear(self.Frontal_len, self.h_dim, bias=True)
-        self.Temporal_linear = nn.Linear(self.Temporal_len, self.h_dim, bias=True)
-        self.Central_linear = nn.Linear(self.Central_len, self.h_dim, bias=True)
-        self.Parietal_linear = nn.Linear(self.Parietal_len, self.h_dim, bias=True)
-        self.Occipital_linear = nn.Linear(self.Occipital_len, self.h_dim, bias=True)
+        self.Frontal_linear = nn.Linear(self.T1_len, self.h_dim, bias=True)
+        self.T2_linear = nn.Linear(self.T2_len, self.h_dim, bias=True)
+        self.T3_linear = nn.Linear(self.T3_len, self.h_dim, bias=True)
+        self.T4_linear = nn.Linear(self.T4_len, self.h_dim, bias=True)
+        self.T5_linear = nn.Linear(self.T5_len, self.h_dim, bias=True)
 
         #co-attention leayer
         self.att_linear1 = nn.Sequential(nn.Dropout(self.dropout),nn.Linear(self.h_dim * 2, 1), nn.LeakyReLU()) #nn.Linear(self.h_dim * 2, 1)
@@ -76,10 +76,10 @@ class MovieNet(nn.Module):
         #unimodal single-modality for cLSTM
         #unimodal vs. multi-modal
         self.unimodal_Frontal = nn.Sequential(nn.Dropout(self.dropout),nn.Linear(self.h_dim, 1), nn.LeakyReLU())
-        self.unimodal_Temporal = nn.Sequential(nn.Dropout(self.dropout),nn.Linear(self.h_dim, 1), nn.LeakyReLU())
-        self.unimodal_Central = nn.Sequential(nn.Dropout(self.dropout),nn.Linear(self.h_dim, 1), nn.LeakyReLU())
-        self.unimodal_Parietal = nn.Sequential(nn.Dropout(self.dropout),nn.Linear(self.h_dim, 1), nn.LeakyReLU()) #nn.Linear(self.h_dim,1)
-        self.unimodal_Occipital = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.h_dim, 1),nn.LeakyReLU()) # nn.Linear(self.h_dim,1)
+        self.unimodal_T2 = nn.Sequential(nn.Dropout(self.dropout),nn.Linear(self.h_dim, 1), nn.LeakyReLU())
+        self.unimodal_T3 = nn.Sequential(nn.Dropout(self.dropout),nn.Linear(self.h_dim, 1), nn.LeakyReLU())
+        self.unimodal_T4 = nn.Sequential(nn.Dropout(self.dropout),nn.Linear(self.h_dim, 1), nn.LeakyReLU()) #nn.Linear(self.h_dim,1)
+        self.unimodal_T5 = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.h_dim, 1),nn.LeakyReLU()) # nn.Linear(self.h_dim,1)
 
         #Encoder Module
         #cLSTM module simultaneously
@@ -113,15 +113,15 @@ class MovieNet(nn.Module):
                        torch.device('cpu'))
         self.to(self.device)
 
-    def forward(self, x, Frontal_features, Temporal_features, Central_features, Parietal_features, Occipital_features, target=None, tgt_init=0.0):
+    def forward(self, x, T1_feature, T2_feature, T3_feature, T4_feature, T5_feature, target=None, tgt_init=0.0):
         # Get batch dim
         x = x.float()
 
-        Frontal_features=Frontal_features.float()
-        Temporal_features=Temporal_features.float()
-        Central_features=Central_features.float()
-        Parietal_features=Parietal_features.float()
-        Occipital_features = Occipital_features.float()
+        T1_feature=T1_feature.float()
+        T2_feature=T2_feature.float()
+        T3_feature=T3_feature.float()
+        T4_feature=T4_feature.float()
+        T5_feature = T5_feature.float()
         #batch_size , seq_len
         batch_size, seq_len = x.shape[0], x.shape[1]
         # Set initial hidden and cell states for encoder
@@ -129,62 +129,62 @@ class MovieNet(nn.Module):
         c0 = self.enc_c0.repeat(1, batch_size, 1)
 
         # 1.linear transform: dim = h_dim
-        Frontal_features_rep = self.Frontal_linear(Frontal_features)
-        Temporal_features_rep = self.Temporal_linear(Temporal_features)
-        Central_features_rep = self.Central_linear(Central_features)
-        Parietal_features_rep = self.Parietal_linear(Parietal_features)
-        Occipital_features_rep = self.Occipital_linear(Occipital_features)
+        T1_feature_rep = self.T1_linear(T1_feature)
+        T2_feature_rep = self.T2_linear(T2_feature)
+        T3_feature_rep = self.T3_linear(T3_feature)
+        T4_feature_rep = self.T4_linear(T4_feature)
+        T5_feature_rep = self.T5_linear(T5_feature)
 
         #Co-attention Scores
         #eq.7
         #2. co-attention
-        concat_features = torch.cat([Frontal_features_rep, Temporal_features_rep], dim=-1) # dim = -1; 第一维度拼接（横向拼接）；h_dim*2
+        concat_features = torch.cat([T1_feature_rep, T2_feature_rep], dim=-1) # dim = -1; 第一维度拼接（横向拼接）；h_dim*2
         # concat_features = torch.tanh(concat_features)
         # att_1
         att_1 = self.att_linear1(concat_features).squeeze(-1)
         att_1 = torch.softmax(att_1, dim=-1)
 
-        concat_features = torch.cat([Frontal_features_rep, Central_features_rep], dim=-1)
+        concat_features = torch.cat([T1_feature_rep, T3_feature_rep], dim=-1)
         # concat_features = torch.tanh(concat_features)
         att_2 = self.att_linear2(concat_features).squeeze(-1)
         att_2 = torch.softmax(att_2, dim=-1)
 
-        concat_features = torch.cat([Frontal_features_rep, Parietal_features_rep], dim=-1)
+        concat_features = torch.cat([T1_feature_rep, T4_feature_rep], dim=-1)
         # concat_features = torch.tanh(concat_features)
         att_3 = self.att_linear3(concat_features).squeeze(-1)
         att_3 = torch.softmax(att_3, dim=-1)
 
-        concat_features = torch.cat([Frontal_features_rep, Occipital_features_rep], dim=-1)
+        concat_features = torch.cat([T1_feature_rep, T5_feature_rep], dim=-1)
         # concat_features = torch.tanh(concat_features)
         att_4 = self.att_linear4(concat_features).squeeze(-1)
         att_4 = torch.softmax(att_4, dim=-1)
 
-        concat_features = torch.cat([Temporal_features_rep, Central_features_rep], dim=-1)
+        concat_features = torch.cat([T2_feature_rep, T3_feature_rep], dim=-1)
         # concat_features = torch.tanh(concat_features)
         att_5 = self.att_linear5(concat_features).squeeze(-1)
         att_5 = torch.softmax(att_5, dim=-1)
 
-        concat_features = torch.cat([Temporal_features_rep, Parietal_features_rep], dim=-1)
+        concat_features = torch.cat([T2_feature_rep, T4_feature_rep], dim=-1)
         # concat_features = torch.tanh(concat_features)
         att_6 = self.att_linear6(concat_features).squeeze(-1)
         att_6 = torch.softmax(att_6, dim=-1)
 
-        concat_features = torch.cat([Temporal_features_rep, Occipital_features_rep], dim=-1)
+        concat_features = torch.cat([T2_feature_rep, T5_feature_rep], dim=-1)
         # concat_features = torch.tanh(concat_features)
         att_7 = self.att_linear7(concat_features).squeeze(-1)
         att_7 = torch.softmax(att_7, dim=-1)
 
-        concat_features = torch.cat([Central_features_rep, Parietal_features_rep], dim=-1)
+        concat_features = torch.cat([T3_feature_rep, T4_feature_rep], dim=-1)
         # concat_features = torch.tanh(concat_features)
         att_8 = self.att_linear8(concat_features).squeeze(-1)
         att_8 = torch.softmax(att_8, dim=-1)
 
-        concat_features = torch.cat([Central_features_rep, Occipital_features_rep], dim=-1)
+        concat_features = torch.cat([T3_feature_rep, T5_feature_rep], dim=-1)
         # concat_features = torch.tanh(concat_features)
         att_9 = self.att_linear9(concat_features).squeeze(-1)
         att_9 = torch.softmax(att_9, dim=-1)
 
-        concat_features = torch.cat([Parietal_features_rep, Occipital_features_rep], dim=-1)
+        concat_features = torch.cat([T4_feature_rep, T5_feature_rep], dim=-1)
         # concat_features = torch.tanh(concat_features)
         att_10 = self.att_linear10(concat_features).squeeze(-1)
         att_10 = torch.softmax(att_10, dim=-1)
@@ -192,30 +192,30 @@ class MovieNet(nn.Module):
         #cLSTM Encoder
         #eq.5
         #befor input into cLSTM
-        unimodal_Frontal_input= Frontal_features_rep
-        unimodal_Frontal_input = self.unimodal_Frontal(unimodal_Frontal_input).squeeze(-1)
-        unimodal_Frontal_input = torch.softmax(unimodal_Frontal_input, dim=-1) #[32,20]
+        unimodal_T1_input= T1_feature_rep
+        unimodal_T1_input = self.unimodal_T1(unimodal_T1_input).squeeze(-1)
+        unimodal_T1_input = torch.softmax(unimodal_T1_input, dim=-1) #[32,20]
 
-        unimodal_Temporal_input= Temporal_features_rep
-        unimodal_Temporal_input = self.unimodal_Temporal(unimodal_Temporal_input).squeeze(-1)
-        unimodal_Temporal_input = torch.softmax(unimodal_Temporal_input, dim=-1) #[32,20]
+        unimodal_T2_input= T2_feature_rep
+        unimodal_T2_input = self.unimodal_T2(unimodal_T2_input).squeeze(-1)
+        unimodal_T2_input = torch.softmax(unimodal_T2_input, dim=-1) #[32,20]
 
-        unimodal_Central_input= Central_features_rep
-        unimodal_Central_input = self.unimodal_Central(unimodal_Central_input).squeeze(-1)
-        unimodal_Central_input = torch.softmax(unimodal_Central_input, dim=-1) #[32,20]
+        unimodal_T3_input= T3_feature_rep
+        unimodal_T3_input = self.unimodal_T3(unimodal_T3_input).squeeze(-1)
+        unimodal_T3_input = torch.softmax(unimodal_T3_input, dim=-1) #[32,20]
 
-        unimodal_Parietal_input= Parietal_features_rep
-        unimodal_Parietal_input = self.unimodal_Parietal(unimodal_Parietal_input).squeeze(-1)
-        unimodal_Parietal_input = torch.softmax(unimodal_Parietal_input, dim=-1) #[32,20]
+        unimodal_T4_input= T4_feature_rep
+        unimodal_T4_input = self.unimodal_T4(unimodal_T4_input).squeeze(-1)
+        unimodal_T4_input = torch.softmax(unimodal_T4_input, dim=-1) #[32,20]
 
-        unimodal_Occipital_input = Occipital_features_rep
-        unimodal_Occipital_input = self.unimodal_Occipital(unimodal_Occipital_input).squeeze(-1)
-        unimodal_Occipital_input = torch.softmax(unimodal_Occipital_input, dim=-1) #[32,20]
+        unimodal_T5_input = T5_feature_rep
+        unimodal_T5_input = self.unimodal_T5(unimodal_T5_input).squeeze(-1)
+        unimodal_T5_input = torch.softmax(unimodal_T5_input, dim=-1) #[32,20]
 
         # 列向拼接
         #X1:T =x1:T ⊘x1:T ⊘···⊘x1:T
         # [32,100]
-        enc_input_unimodal_cat=torch.cat([unimodal_Frontal_input, unimodal_Temporal_input, unimodal_Central_input, unimodal_Parietal_input, unimodal_Occipital_input], dim=-1)
+        enc_input_unimodal_cat=torch.cat([unimodal_T1_input, unimodal_T2_input, unimodal_T3_input, unimodal_T4_input, unimodal_T5_input], dim=-1)
         enc_input_unimodal_cat = enc_input_unimodal_cat.reshape(batch_size, seq_len, 5) #[32,20,5]
         #α=α1 ⊕α2 ⊕···⊕αm
         #att_1:[32, 20]; attn:[32,200]

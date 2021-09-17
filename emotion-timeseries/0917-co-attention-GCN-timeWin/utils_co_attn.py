@@ -32,18 +32,17 @@ class MediaEvalDataset(Dataset):
 
         #get the brain regions
         # 对应5个脑区的特征
-        # idx = [[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29],[7,11,12,16,17,21,22,26],[8,9,10,13,14,15,18,19,20],[23,24,25],[27,28,29]]
-        T1_idx = idx[0]  # [0,1,2,3,4,5,6] #[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29]
-        T2_idx = idx[1]  # [7,11,12,16,17,21,22,26] #[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29]
-        T3_idx = idx[2]  # [8,9,10,13,14,15,18,19,20] #[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29]
-        T4_idx = idx[3]  # [23,24,25] #[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29]
-        T5_idx = idx[4]  # [27,28,29] #[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29]
+        # idx = [[0,1,2,3,4,5,6],[7,11,12,16,17,21,22,26],[8,9,10,13,14,15,18,19,20],[23,24,25],[27,28,29]]
+        T1_idx = idx[0]  # [0,1,2,3,4,5,6]
+        T2_idx = idx[1]  # [7,11,12,16,17,21,22,26]
+        T3_idx = idx[2]  # [8,9,10,13,14,15,18,19,20]
+        T4_idx = idx[3]  # [23,24,25]
+        T5_idx = idx[4]  # [27,28,29]
         sample_nums = self.feature.shape[0]
         time_win = self.feature.shape[1]
         dim = self.feature.shape[2]
         PSD_dim = int(dim / self.channel)
         data = np.reshape(self.feature, [sample_nums, time_win, self.channel, PSD_dim])
-        # array转换成torch tensor，为了使用 data.unsquezze_(2)和 torch.cat((),dim=2)
         data = torch.Tensor(data)
 
         cnt = 0
@@ -55,7 +54,7 @@ class MediaEvalDataset(Dataset):
                 T1_featuer.unsqueeze_(2)
                 cnt = 1
             else:
-                T1_featuer = torch.cat((T1_featuer, data[:, :, f, :].unsqueeze_(2)), dim=2)
+                T1_featuer = torch.cat((T1_featuer, data[:, f, :, :].unsqueeze_(2)), dim=2)
 
         print('T1_featuer shape:', T1_featuer.shape) #[68832, 10, 7, 5]
         T1_ch = T1_featuer.shape[2]
@@ -73,7 +72,7 @@ class MediaEvalDataset(Dataset):
                 T2_feature.unsqueeze_(2)
                 cnt = 1
             else:
-                T2_feature = torch.cat((T2_feature, data[:, :, t, :].unsqueeze_(2)), dim=2)
+                T2_feature = torch.cat((T2_feature, data[:, t, :, :].unsqueeze_(2)), dim=2)
 
         print('T2_feature shape:', T2_feature.shape) #[68832, 10, 8, 5]
         T2_ch = T2_feature.shape[2]
@@ -90,7 +89,7 @@ class MediaEvalDataset(Dataset):
                 T3_feature.unsqueeze_(2)
                 cnt = 1
             else:
-                T3_feature = torch.cat((T3_feature, data[:, :, c, :].unsqueeze_(2)), dim=2)
+                T3_feature = torch.cat((T3_feature, data[:, c, :, :].unsqueeze_(2)), dim=2)
 
         print('T3_feature shape:', T3_feature.shape) #[68832, 10, 9, 5]
         T3_ch = T3_feature.shape[2]
@@ -107,7 +106,7 @@ class MediaEvalDataset(Dataset):
                 T4_feature.unsqueeze_(2)
                 cnt = 1
             else:
-                T4_feature = torch.cat((T4_feature, data[:, :, p, :].unsqueeze_(2)), dim=2)
+                T4_feature = torch.cat((T4_feature, data[:, p, :, :].unsqueeze_(2)), dim=2)
 
         print('T4_feature shape:', T4_feature.shape) #[68832, 10, 3, 5]
         T4_ch = T4_feature.shape[2]
@@ -123,7 +122,7 @@ class MediaEvalDataset(Dataset):
                 T5_feature.unsqueeze_(2)
                 cnt = 1
             else:
-                T5_feature = torch.cat((T5_feature, data[:, :, o, :].unsqueeze_(2)), dim=2)
+                T5_feature = torch.cat((T5_feature, data[:, o, :, :].unsqueeze_(2)), dim=2)
 
         print('T5_feature shape:', T5_feature.shape) #[68832, 10, 3, 5]
         T5_ch = T5_feature.shape[2]
