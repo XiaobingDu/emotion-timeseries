@@ -80,11 +80,11 @@ epoch_cosine_min = np.NINF
 epoch_accuracy_min = np.NINF
 
 ## Network Arguments
-args['T1_len'] = 30
-args['T2_len'] = 30
-args['T3_len'] = 30
-args['T4_len'] = 30
-args['T5_len'] = 30
+args['T1_len'] = 150
+args['T2_len'] = 150
+args['T3_len'] = 150
+args['T4_len'] = 150
+args['T5_len'] = 150
 args['use_cuda'] = True
 args['train_flag'] = True
 args['optimizer'] = 'adam'
