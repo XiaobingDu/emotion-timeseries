@@ -874,7 +874,7 @@ result.write('Epoch: {epoch:.1f}\t'
              'Val final_eb_fbeta: {final_eb_fbeta:.4f}\t'
              'Val final_hammingloss: {final_hammingloss:.4f}\t'
              'Val final_oneError: {final_oneError:.4f}\t'
-             'Val final_finalrageprecision: {final_Averageprecision:.4f}\t'
+             'Val final_averageprecision: {final_averageprecision:.4f}\t'
              'Val final_rankingloss: {final_rankingloss:.4f}\t'
              'Val final_accuracyMacro: {final_accuracyMacro:.4f}\t'
              'Val final_fbetaMicro: {final_fbetaMicro:.4f}\t'.format(epoch=epoch_num + 1,
