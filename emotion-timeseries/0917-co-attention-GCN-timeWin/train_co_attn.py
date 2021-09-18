@@ -515,6 +515,7 @@ for epoch_num in range(num_epochs):
         val_hammingLoss = hammingLoss(dom_label, label_prediction)
         sum_hammingLoss += val_hammingLoss
         val_eb_accuracy = accuracy(dom_label, label_prediction)
+        val_accuracy += val_eb_accuracy
         sum_eb_accuracy += val_eb_accuracy
         val_eb_precision = precision(dom_label, label_prediction)
         sum_eb_precision += val_eb_precision
@@ -1100,7 +1101,6 @@ result.write('Epoch: {epoch:.1f}\t'
 #multi-label classification
 result.write("\n================================================================================\n")
 result.write('Epoch: {epoch:.1f}\t'
-                     'Test epoch_accuracy: {epoch_accuracy:.4f}\t'
                      'Test epoch_eb_accuracy: {epoch_eb_accuracy:.4f}\t'
                      'Test epoch_eb_precision: {epoch_eb_precision:.4f}\t'
                      'Test epoch_eb_recall: {epoch_eb_recall:.4f}\t'
@@ -1111,7 +1111,6 @@ result.write('Epoch: {epoch:.1f}\t'
                      'Test epoch_rankingloss: {epoch_rankingloss:.4f}\t'
                      'Test epoch_accuracyMacro: {epoch_accuracyMacro:.4f}\t'
                      'Test epoch_fbetaMicro: {epoch_fbetaMicro:.4f}\t'.format(epoch=epoch_num+1,
-                                                                            epoch_accuracy=epoch_accuracy,
                                                                             epoch_eb_accuracy=ave_eb_accuracy,
                                                                             epoch_eb_precision=ave_eb_precision,
                                                                             epoch_eb_recall=ave_eb_recall,
