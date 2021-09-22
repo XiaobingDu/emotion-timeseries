@@ -99,8 +99,8 @@ class MovieNet(nn.Module):
                                   nn.Linear(512, 256),
                                  nn.LeakyReLU(),
                                  nn.Linear(256, 128),
-                                 nn.LeakyReLU(),
-                                 nn.Linear(128, self.out_layer) #withoutGCN
+                                 # nn.LeakyReLU(),
+                                 # nn.Linear(128, self.out_layer) #withoutGCN
                                  )
         self.GCN_out = nn.Sequential(nn.Linear(2048, 512),
                                   nn.LeakyReLU(),
@@ -251,18 +251,19 @@ class MovieNet(nn.Module):
         predicted = self.out(dec_out).view(batch_size, seq_len, self.out_layer)
         ##[32,128]
         predicted_last = predicted[:, -1, :]
-        predict = predicted_last
+        #without GCN
+        # predict = predicted_last
 
         # GCN module
         # num_class = 9
-        # GCN_module = GCN(num_classes=9, in_channel=300, t=0.4, adj_file='embedding/positiveEmotion_adj.pkl') #t-0.4
-        # GCN_output = GCN_module(inp='embedding/positiveEmotion_glove_word2vec.pkl')  # [9,2048]
-        # GCN_output = self.GCN_out(GCN_output.cuda()) #[9,128]
-        # GCN_output = GCN_output.transpose(0, 1).cuda()  # [128,9]
-        #
-        # # GCN output * LSTM lastTimestep
-        # ## [32,9]
-        # predict = torch.matmul(predicted_last, GCN_output)  # ML-GCN eq.4
+        GCN_module = GCN(num_classes=9, in_channel=300, t=0.4, adj_file='embedding/positiveEmotion_adj.pkl') #t-0.4
+        GCN_output = GCN_module(inp='embedding/positiveEmotion_glove_word2vec.pkl')  # [9,2048]
+        GCN_output = self.GCN_out(GCN_output.cuda()) #[9,128]
+        GCN_output = GCN_output.transpose(0, 1).cuda()  # [128,9]
+
+        # GCN output * LSTM lastTimestep
+        ## [32,9]
+        predict = torch.matmul(predicted_last, GCN_output)  # ML-GCN eq.4
 
 
         return predict, enc_input_unimodal_cat, self.shared_encoder, att_1, att_2, att_3, att_4, att_5, att_6, att_7, att_8, att_9, att_10
