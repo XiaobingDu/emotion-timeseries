@@ -84,7 +84,7 @@ def get_sample_data(path1,path2):
 
     data,info  = get_data_info(path1)###########
     win_size = 120 #choices=[10,20,30]
-    strides = 30 #choices=[1,10,20]
+    strides = 60 #choices=[1,10,20]
 
     n_feature = sio.loadmat(path2)['feature_arr'] #'EEG_PSD_multilabel_9_win/featureAll.mat
 
