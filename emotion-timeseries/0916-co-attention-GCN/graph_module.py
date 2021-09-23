@@ -49,10 +49,12 @@ class GCN(nn.Module):
         #定义 GCN 2-layers
         self.hidden_size = 1024
         self.output_size = 2048
-        self.gc1 = GraphConvolution(in_channel, self.hidden_size)
-        self.gc2 = GraphConvolution(self.hidden_size, self.output_size)
+        #GCN 1-layer
+        self.gc1 = GraphConvolution(in_channel, self.output_size)
+        #GCN 2-layer
+        # self.gc1 = GraphConvolution(in_channel, self.hidden_size)
+        # self.gc2 = GraphConvolution(self.hidden_size, self.output_size)
         self.relu = nn.LeakyReLU(0.2)
-
         _adj = gen_A(num_classes, t, adj_file)
         self.A = Parameter(torch.from_numpy(_adj).float())
 
@@ -64,9 +66,13 @@ class GCN(nn.Module):
         embedding = torch.Tensor(embedding)
         inp = embedding
         adj = gen_adj(self.A).detach()
+        #GCN 1-layer
         x = self.gc1(inp, adj)
         x = self.relu(x)
-        x = self.gc2(x, adj) # gcn output
+        #GCN 2-layer
+        # x = self.gc1(inp, adj)
+        # x = self.relu(x)
+        # x = self.gc2(x, adj) # gcn output
 
         return x
 
@@ -74,5 +80,5 @@ class GCN(nn.Module):
         return [
                 {'params': self.features.parameters(), 'lr': lr * lrp},
                 {'params': self.gc1.parameters(), 'lr': lr},
-                {'params': self.gc2.parameters(), 'lr': lr},
+                # {'params': self.gc2.parameters(), 'lr': lr},
                 ]
