@@ -47,8 +47,8 @@ class GCN(nn.Module):
         super(GCN, self).__init__()
         self.num_classes = num_classes
         #定义 GCN 2-layers
-        self.hidden_size = 1024
-        self.output_size = 2048
+        self.hidden_size = 128 #1024
+        self.output_size = 256 #2048
         #GCN 1-layer
         self.gc1 = GraphConvolution(in_channel, self.output_size)
         #GCN 2-layer
