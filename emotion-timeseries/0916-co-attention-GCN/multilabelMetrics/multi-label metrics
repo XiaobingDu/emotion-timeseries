@@ -1,0 +1,8 @@
+
+https://mmuratarat.github.io/2020-01-25/multilabel_classification_metrics
+在这个链接中对example-based metrics进行了介绍
+
+使用的metrics：
+labelbasedclassification.py
+examplebasedranking.py
+examplebasedclassification.py
