@@ -56,7 +56,7 @@ parser.add_argument('--LSTM_layers', type=int, default=2,
                     help='Number of LSTM layers.')
 parser.add_argument('--LSTM_hidden', type=int, default=512,
                     help='Number of hidden units.')
-parser.add_argument('--attn_len', type=int, default=10,
+parser.add_argument('--attn_len', type=int, default=1,
                     help='attn_len = time_sequence')
 parser.add_argument('--out_layer', type=int, default=9)
 parser.add_argument('--encoder_size', type=int, default=64)
