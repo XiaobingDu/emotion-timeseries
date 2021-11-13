@@ -42,7 +42,7 @@ class MovieNet(nn.Module):
         self.right_len = args['right_len']
         self.out_layer = args['out_layer']
         #concate the length
-        self.total_mod_len = self.left_len + self.right_len +self.Central_len + self.Parietal_len + self.Occipital_len
+        self.total_mod_len = self.left_len + self.right_len
 
         #super parameters
         self.embed_dim = args['embed_dim']
@@ -95,7 +95,7 @@ class MovieNet(nn.Module):
                        torch.device('cpu'))
         self.to(self.device)
 
-    def forward(self, x, left_features, right_features, Central_features, Parietal_features, Occipital_features, target=None, tgt_init=0.0):
+    def forward(self, x, left_features, right_features, target=None, tgt_init=0.0):
         # Get batch dim
         x = x.float()
 
