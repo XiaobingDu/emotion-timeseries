@@ -59,12 +59,13 @@ class MediaEvalDataset(Dataset):
         cnt = 0
         # right channel
         for r in right_idx:
-            print('T_idx:', r)
+            print('r_idx:', r)
             if cnt == 0:
                 right_feature = data[:, :, r, :]
                 right_feature.unsqueeze_(2)
                 cnt = 1
             else:
+                print('*'*20, right_feature.shape)
                 right_feature = torch.cat((right_feature, data[:, :, r, :].unsqueeze_(2)), dim=2)
 
         print('right_feature shape:', right_feature.shape) #[68832, 10, 8, 5]
