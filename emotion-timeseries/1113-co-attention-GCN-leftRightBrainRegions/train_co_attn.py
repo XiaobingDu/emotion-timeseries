@@ -345,6 +345,7 @@ for epoch_num in range(num_epochs):
 
 
             result = codecs.open(FLAGS.save_file, 'a', 'utf-8')
+            print('*'*100)
             result.write("\n------------------------------------------------------------------\n")
             result.write("Training GC_est:\n")
             result.write('%s\n' % GC_est)
