@@ -241,14 +241,12 @@ for epoch_num in range(num_epochs):
         dis = torch.squeeze(dis, dim=1)
         # loss1: KLDivLoss
         loss1 = kl_div(dis_prediction.log(), dis)
-        # for loss2
-        label_prediction = predict
         # loss2: BCELoss
         target_gt = dom_label
         target_gt = target_gt.detach()
-        loss2 = mutilabel_criterion(label_prediction, target_gt)
+        loss2 = mutilabel_criterion(predict, target_gt)
         # loss2: MLSML
-        # loss2 = MLSML(label_prediction.cuda(), target_gt.cuda())
+        # loss2 = MLSML(predict.cuda(), target_gt.cuda())
         loss = lamda * loss1 + (1 - lamda) * loss2
 
         # Backprop and update weights
@@ -279,28 +277,28 @@ for epoch_num in range(num_epochs):
 
         # for multilabel prediction
         # # example-based-classification
-        train_subsetAccuracy = subsetAccuracy(dom_label, label_prediction)
-        train_hammingLoss = hammingLoss(dom_label, label_prediction)
-        train_eb_accuracy = accuracy(dom_label, label_prediction)
-        train_eb_precision = precision(dom_label, label_prediction)
-        train_eb_recall = recall(dom_label, label_prediction)
-        train_eb_fbeta = fbeta(dom_label, label_prediction)
+        train_subsetAccuracy = subsetAccuracy(dom_label, predict)
+        train_hammingLoss = hammingLoss(dom_label, predict)
+        train_eb_accuracy = accuracy(dom_label, predict)
+        train_eb_precision = precision(dom_label, predict)
+        train_eb_recall = recall(dom_label, predict)
+        train_eb_fbeta = fbeta(dom_label, predict)
         #
         # # example-based-ranking
-        train_oneError = oneError(dom_label, label_prediction)
-        train_coverage = coverage(dom_label, label_prediction)
-        train_averagePrecision = averagePrecision(dom_label, label_prediction)
-        train_rankingLoss = rankingLoss(dom_label, label_prediction)
+        train_oneError = oneError(dom_label, predict)
+        train_coverage = coverage(dom_label, predict)
+        train_averagePrecision = averagePrecision(dom_label, predict)
+        train_rankingLoss = rankingLoss(dom_label, predict)
         #
         # # label-based-classification
-        train_accuracyMacro = accuracyMacro(dom_label, label_prediction)
-        train_accuracyMicro = accuracyMicro(dom_label, label_prediction)
-        train_precisionMacro = precisionMacro(dom_label, label_prediction)
-        train_precisionMicro = precisionMicro(dom_label, label_prediction)
-        train_recallMacro = recallMacro(dom_label, label_prediction)
-        train_recallMicro = recallMicro(dom_label, label_prediction)
-        train_fbetaMacro = fbetaMacro(dom_label, label_prediction)
-        train_fbetaMicro = fbetaMicro(dom_label, label_prediction)
+        train_accuracyMacro = accuracyMacro(dom_label, predict)
+        train_accuracyMicro = accuracyMicro(dom_label, predict)
+        train_precisionMacro = precisionMacro(dom_label, predict)
+        train_precisionMicro = precisionMicro(dom_label, predict)
+        train_recallMacro = recallMacro(dom_label, predict)
+        train_recallMicro = recallMicro(dom_label, predict)
+        train_fbetaMacro = fbetaMacro(dom_label, predict)
+        train_fbetaMicro = fbetaMicro(dom_label, predict)
 
 
         #results
@@ -458,13 +456,11 @@ for epoch_num in range(num_epochs):
         dis_prediction = dis_prediction.squeeze(dim=0)  # [32,9]
         dis = torch.squeeze(dis, dim=1)
         loss1 = kl_div(dis_prediction.log(), dis)
-        # for loss2
-        label_prediction = predict
         # loss2: BCELoss
         dom_label = dom_label.detach()
-        loss2 = mutilabel_criterion(label_prediction, dom_label)
+        loss2 = mutilabel_criterion(predict, dom_label)
         # loss2: MLSML
-        # loss2 = MLSML(label_prediction.cuda(), target_gt.cuda())
+        # loss2 = MLSML(predict.cuda(), target_gt.cuda())
         loss = lamda * loss1 + (1 - lamda) * loss2
         val_loss = loss.item()
         val_loss += val_loss / dis.shape[0]
@@ -494,44 +490,44 @@ for epoch_num in range(num_epochs):
 
         # for multilabel prediction
         # example-based-classification
-        val_hammingLoss = hammingLoss(dom_label, label_prediction)
+        val_hammingLoss = hammingLoss(dom_label, predict)
         sum_hammingLoss += val_hammingLoss
-        val_eb_accuracy = accuracy(dom_label, label_prediction)
+        val_eb_accuracy = accuracy(dom_label, predict)
         val_accuracy += val_eb_accuracy
         sum_eb_accuracy += val_eb_accuracy
-        val_eb_precision = precision(dom_label, label_prediction)
+        val_eb_precision = precision(dom_label, predict)
         sum_eb_precision += val_eb_precision
-        val_eb_recall = recall(dom_label, label_prediction)
+        val_eb_recall = recall(dom_label, predict)
         sum_eb_recall += val_eb_recall
-        val_eb_fbeta = fbeta(dom_label, label_prediction)
+        val_eb_fbeta = fbeta(dom_label, predict)
         sum_eb_fbeta += val_eb_fbeta
 
         # example-based-ranking
-        val_oneError = oneError(dom_label, label_prediction)
+        val_oneError = oneError(dom_label, predict)
         sum_oneError += val_oneError
-        val_coverage = coverage(dom_label, label_prediction)
+        val_coverage = coverage(dom_label, predict)
         sum_coverage += val_coverage
-        val_averagePrecision = averagePrecision(dom_label, label_prediction)
+        val_averagePrecision = averagePrecision(dom_label, predict)
         sum_averagePrecision += val_averagePrecision
-        val_rankingLoss = rankingLoss(dom_label, label_prediction)
+        val_rankingLoss = rankingLoss(dom_label, predict)
         sum_rankingLoss += val_rankingLoss
 
         # label-based-classification
-        val_accuracyMacro = accuracyMacro(dom_label, label_prediction)
+        val_accuracyMacro = accuracyMacro(dom_label, predict)
         sum_accuracyMacro += val_accuracyMacro
-        val_accuracyMicro = accuracyMicro(dom_label, label_prediction)
+        val_accuracyMicro = accuracyMicro(dom_label, predict)
         sum_accuracyMicro += val_accuracyMicro
-        val_precisionMacro = precisionMacro(dom_label, label_prediction)
+        val_precisionMacro = precisionMacro(dom_label, predict)
         sum_precisionMacro += val_precisionMacro
-        val_precisionMicro = precisionMicro(dom_label, label_prediction)
+        val_precisionMicro = precisionMicro(dom_label, predict)
         sum_precisionMicro += val_accuracyMicro
-        val_recallMacro = recallMacro(dom_label, label_prediction)
+        val_recallMacro = recallMacro(dom_label, predict)
         sum_recallMacro += val_recallMacro
-        val_recallMicro = recallMicro(dom_label, label_prediction)
+        val_recallMicro = recallMicro(dom_label, predict)
         sum_recallMicro += val_recallMicro
-        val_fbetaMacro = fbetaMacro(dom_label, label_prediction)
+        val_fbetaMacro = fbetaMacro(dom_label, predict)
         sum_fbetaMacro += val_fbetaMacro
-        val_fbetaMicro = fbetaMicro(dom_label, label_prediction)
+        val_fbetaMicro = fbetaMicro(dom_label, predict)
         sum_fbetaMicro += val_fbetaMicro
 
 
@@ -930,13 +926,11 @@ for i, data in enumerate(testDataloader):
     dis_prediction = dis_prediction.squeeze(dim=0)# [32,9]
     dis = torch.squeeze(dis, dim=1)
     loss1 = kl_div(dis_prediction.log(), dis)
-    #for loss2
-    label_prediction = predict
     #loss2: BCELoss
     dom_label = dom_label.detach()
-    loss2 = mutilabel_criterion(label_prediction, dom_label)
+    loss2 = mutilabel_criterion(predict, dom_label)
     #loss2: MLSML
-    # loss2 = MLSML(label_prediction.cuda(), target_gt.cuda())
+    # loss2 = MLSML(predict.cuda(), target_gt.cuda())
     loss = lamda * loss1 + (1 - lamda) * loss2
     test_loss = loss.item()
     test_loss += test_loss / dis.shape[0]
@@ -966,43 +960,43 @@ for i, data in enumerate(testDataloader):
 
     # for multilabel prediction
     # example-based-classification
-    test_hammingLoss = hammingLoss(dom_label, label_prediction)
+    test_hammingLoss = hammingLoss(dom_label, predict)
     sum_hammingLoss += test_hammingLoss
-    test_eb_accuracy = accuracy(dom_label, label_prediction)
+    test_eb_accuracy = accuracy(dom_label, predict)
     sum_eb_accuracy += test_eb_accuracy
-    test_eb_precision = precision(dom_label, label_prediction)
+    test_eb_precision = precision(dom_label, predict)
     sum_eb_precision += test_eb_precision
-    test_eb_recall = recall(dom_label, label_prediction)
+    test_eb_recall = recall(dom_label, predict)
     sum_eb_recall += test_eb_recall
-    test_eb_fbeta = fbeta(dom_label, label_prediction)
+    test_eb_fbeta = fbeta(dom_label, predict)
     sum_eb_fbeta += test_eb_fbeta
 
     # example-based-ranking
-    test_oneError = oneError(dom_label, label_prediction)
+    test_oneError = oneError(dom_label, predict)
     sum_oneError += test_oneError
-    test_coverage = coverage(dom_label, label_prediction)
+    test_coverage = coverage(dom_label, predict)
     sum_coverage += test_coverage
-    test_averagePrecision = averagePrecision(dom_label, label_prediction)
+    test_averagePrecision = averagePrecision(dom_label, predict)
     sum_averagePrecision += test_averagePrecision
-    test_rankingLoss = rankingLoss(dom_label, label_prediction)
+    test_rankingLoss = rankingLoss(dom_label, predict)
     sum_rankingLoss += test_rankingLoss
 
     # label-based-classification
-    test_accuracyMacro = accuracyMacro(dom_label, label_prediction)
+    test_accuracyMacro = accuracyMacro(dom_label, predict)
     sum_accuracyMacro += test_accuracyMacro
-    test_accuracyMicro = accuracyMicro(dom_label, label_prediction)
+    test_accuracyMicro = accuracyMicro(dom_label, predict)
     sum_accuracyMicro += test_accuracyMicro
-    test_precisionMacro = precisionMacro(dom_label, label_prediction)
+    test_precisionMacro = precisionMacro(dom_label, predict)
     sum_precisionMacro += test_precisionMacro
-    test_precisionMicro = precisionMicro(dom_label, label_prediction)
+    test_precisionMicro = precisionMicro(dom_label, predict)
     sum_precisionMicro += test_precisionMicro
-    test_recallMacro = recallMacro(dom_label, label_prediction)
+    test_recallMacro = recallMacro(dom_label, predict)
     sum_recallMacro += test_recallMacro
-    test_recallMicro = recallMicro(dom_label, label_prediction)
+    test_recallMicro = recallMicro(dom_label, predict)
     sum_precisionMicro += test_precisionMicro
-    test_fbetaMacro = fbetaMacro(dom_label, label_prediction)
+    test_fbetaMacro = fbetaMacro(dom_label, predict)
     sum_fbetaMacro += test_fbetaMacro
-    test_fbetaMicro = fbetaMicro(dom_label, label_prediction)
+    test_fbetaMicro = fbetaMicro(dom_label, predict)
     sum_fbetaMicro += test_fbetaMicro
 
 
