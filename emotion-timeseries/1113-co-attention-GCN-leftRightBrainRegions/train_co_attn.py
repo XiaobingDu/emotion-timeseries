@@ -210,7 +210,7 @@ for epoch_num in range(num_epochs):
     # Variables to track training performance:
     avg_tr_loss = 0
     for i, data in enumerate(trDataloader):
-        print("Training .... 第 {} 个Batch.....".format(i))
+        print("Training .... 第 {} 个Batch.....".format(i + 1))
         st_time = time.time()
         train, dis, dom_label, left, right = data  # get training date
 
