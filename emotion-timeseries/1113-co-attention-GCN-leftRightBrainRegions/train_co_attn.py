@@ -235,7 +235,7 @@ for epoch_num in range(num_epochs):
         # loss1: KLDivLoss
         loss1 = kl_div(dis_prediction.log(), dis)
         # for loss2
-        label_prediction = torch.sigmoid(predict)
+        label_prediction = predict
         # loss2: BCELoss
         target_gt = dom_label
         target_gt = target_gt.detach()
@@ -438,7 +438,7 @@ for epoch_num in range(num_epochs):
         dis = torch.squeeze(dis, dim=1)
         loss1 = kl_div(dis_prediction.log(), dis)
         # for loss2
-        label_prediction = torch.sigmoid(predict)
+        label_prediction = predict
         # loss2: BCELoss
         dom_label = dom_label.detach()
         loss2 = mutilabel_criterion(label_prediction, dom_label)
@@ -816,7 +816,7 @@ for i, data in enumerate(testDataloader):
     dis = torch.squeeze(dis, dim=1)
     loss1 = kl_div(dis_prediction.log(), dis)
     #for loss2
-    label_prediction = torch.sigmoid(predict)
+    label_prediction = predict
     #loss2: BCELoss
     dom_label = dom_label.detach()
     loss2 = mutilabel_criterion(label_prediction, dom_label)
