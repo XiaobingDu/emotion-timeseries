@@ -23,6 +23,10 @@ def accuracyMacro(y_test, predictions):
 
     accuracymacro = 0.0
     TP, FP, TN, FN = multilabelConfussionMatrix(y_test, predict_label)
+    print(TP)
+    print(FP)
+    print(TN)
+    print(FN)
     for i in range(len(TP)):
         accuracymacro = accuracymacro + ((TP[i] + TN[i]) / (TP[i] + FP[i] + TN[i] + FN[i]))
 
