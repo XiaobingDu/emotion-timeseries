@@ -17,7 +17,9 @@ def accuracyMacro(y_test, predictions):
     """
     y_test = y_test.cpu().detach().numpy()
     predictions = predictions.cpu().detach().numpy()
+    print('####', predictions)
     predict_label = np.array(predictions > 0.500, dtype=float)
+    print('****', predict_label)
 
     accuracymacro = 0.0
     TP, FP, TN, FN = multilabelConfussionMatrix(y_test, predict_label)
