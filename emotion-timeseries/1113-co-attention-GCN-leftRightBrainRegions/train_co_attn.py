@@ -144,9 +144,9 @@ valSet = MediaEvalDataset(val_data, val_dis, val_dom_label, idx)
 testSet = MediaEvalDataset(test_data, test_dis, test_dom_label, idx)
 
 #读取数据
-trDataloader = DataLoader(trSet ,batch_size=batch_size ,shuffle=True ,num_workers=0) # len = 5079 (batches)
-valDataloader = DataLoader(valSet ,batch_size=batch_size ,shuffle=True ,num_workers=0) #len = 3172
-testDataloader = DataLoader(testSet ,batch_size=batch_size ,shuffle=True ,num_workers=0) #len = 2151
+trDataloader = DataLoader(trSet,batch_size=batch_size ,shuffle=True ,num_workers=0) # len = 5079 (batches)
+valDataloader = DataLoader(valSet,batch_size=batch_size ,shuffle=True ,num_workers=0) #len = 3172
+testDataloader = DataLoader(testSet,batch_size=batch_size ,shuffle=True ,num_workers=0) #len = 2151
 
 # Initialize network
 net = MovieNet(args)
@@ -210,7 +210,7 @@ for epoch_num in range(num_epochs):
     # Variables to track training performance:
     avg_tr_loss = 0
     for i, data in enumerate(trDataloader):
-        # print("Training .... 第 {} 个Batch.....".format(i))
+        print("Training .... 第 {} 个Batch.....".format(i))
         st_time = time.time()
         train, dis, dom_label, left, right = data  # get training date
 
@@ -345,7 +345,6 @@ for epoch_num in range(num_epochs):
 
 
             result = codecs.open(FLAGS.save_file, 'a', 'utf-8')
-            print('*'*100)
             result.write("\n------------------------------------------------------------------\n")
             result.write("Training GC_est:\n")
             result.write('%s\n' % GC_est)
