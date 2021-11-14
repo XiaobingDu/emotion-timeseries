@@ -26,8 +26,6 @@ def oneError(y_test, probabilities):
         index = np.argmin(ranking[i, :])
         if y_test[i, index] == 0:
             oneerror += 1.0
-        print('&&&&&'*20)
-
     oneerror = float(oneerror) / float(y_test.shape[0])
 
     return oneerror
