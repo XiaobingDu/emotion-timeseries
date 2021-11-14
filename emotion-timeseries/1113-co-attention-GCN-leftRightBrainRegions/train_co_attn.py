@@ -436,7 +436,7 @@ for epoch_num in range(num_epochs):
 
     for i, data in enumerate(valDataloader):
         cnt += 1
-        print("Val ..... 第 {} 个Batch.....".format(i))
+        print("Val ..... 第 {} 个Batch.....".format(i + 1))
         st_time = time.time()
         val, dis, dom_label, left, right = data
 
