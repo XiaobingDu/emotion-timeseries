@@ -188,10 +188,17 @@ epoch_eb_precision = 0
 epoch_eb_recall = 0
 epoch_eb_fbeta = 0
 epoch_oneError = 0
+epoch_coverage = 0
 epoch_averagePrecision = 0
 epoch_rankingLoss = 0
 epoch_accuracyMacro = 0
 epoch_fbetaMicro = 0
+epoch_accuracyMicro = 0
+epoch_precisionMacro = 0
+epoch_precisionMicro = 0
+epoch_recallMacro = 0
+epoch_recallMicro = 0
+epoch_fbetaMacro = 0
 
 for epoch_num in range(num_epochs):
     #    """Sets the learning rate to the initial LR decayed by 10 every 30 epochs"""
@@ -281,18 +288,18 @@ for epoch_num in range(num_epochs):
         #
         # # example-based-ranking
         train_oneError = oneError(dom_label, label_prediction)
-        # train_coverage = coverage(dom_label, label_prediction)
+        train_coverage = coverage(dom_label, label_prediction)
         train_averagePrecision = averagePrecision(dom_label, label_prediction)
         train_rankingLoss = rankingLoss(dom_label, label_prediction)
         #
         # # label-based-classification
         train_accuracyMacro = accuracyMacro(dom_label, label_prediction)
-        # train_accuracyMicro = accuracyMicro(dom_label, label_prediction)
-        # train_precisionMacro = precisionMacro(dom_label, label_prediction)
-        # train_precisionMicro = precisionMicro(dom_label, label_prediction)
-        # train_recallMacro = recallMacro(dom_label, label_prediction)
-        # train_recallMicro = recallMicro(dom_label, label_prediction)
-        # train_fbetaMacro = fbetaMacro(dom_label, label_prediction)
+        train_accuracyMicro = accuracyMicro(dom_label, label_prediction)
+        train_precisionMacro = precisionMacro(dom_label, label_prediction)
+        train_precisionMicro = precisionMicro(dom_label, label_prediction)
+        train_recallMacro = recallMacro(dom_label, label_prediction)
+        train_recallMicro = recallMicro(dom_label, label_prediction)
+        train_fbetaMacro = fbetaMacro(dom_label, label_prediction)
         train_fbetaMicro = fbetaMicro(dom_label, label_prediction)
 
 
@@ -317,19 +324,26 @@ for epoch_num in range(num_epochs):
                   "accuracy= {:.4f}".format(train_eb_accuracy),
                   "precision= {:.4f}".format(train_eb_precision),
                   "recall= {:.4f}".format(train_eb_recall),
-                  "fbeta= {:.4f}".format(train_eb_fbeta)
+                  "f-1= {:.4f}".format(train_eb_fbeta)
                   )
 
             print("Training set results:\n",
                   'Multilabel metrics: example-based-ranking:\n',
                   "oneError= {:.4f}".format(train_oneError),
+                  "converage= {:.4f}".format(train_coverage),
                   "averagePrecision= {:.4f}".format(train_averagePrecision),
                   "rankingLoss= {:.4f}".format(train_rankingLoss))
 
             print("Training set results:\n",
                   'Multilabel metrics: label-based-classification:\n',
                   "accuracyMacro= {:.4f}".format(train_accuracyMacro),
-                  "fbetaMicro= {:.4f}".format(train_fbetaMicro))
+                  "accuracyMicro= {:.4f}".format(train_accuracyMicro),
+                  "precisionMacro= {:.4f}".format(train_precisionMacro),
+                  "precisionMicro= {:.4f}".format(train_precisionMicro),
+                  "recallMacro= {:.4f}".format(train_recallMacro),
+                  "recallMicro= {:.4f}".format(train_recallMicro),
+                  "f-1Macro= {:.4f}".format(train_fbetaMacro),
+                  "f-1Micro= {:.4f}".format(train_fbetaMicro))
 
 
             result = codecs.open(FLAGS.save_file, 'a', 'utf-8')
@@ -413,6 +427,13 @@ for epoch_num in range(num_epochs):
     sum_rankingLoss = 0
     sum_accuracyMacro = 0
     sum_fbetaMicro = 0
+    sum_coverage = 0
+    sum_accuracyMicro = 0
+    sum_precisionMacro = 0
+    sum_precisionMicro = 0
+    sum_recallMacro = 0
+    sum_recallMicro = 0
+    sum_fbetaMacro = 0
     cnt = 0
 
     for i, data in enumerate(valDataloader):
@@ -488,6 +509,8 @@ for epoch_num in range(num_epochs):
         # example-based-ranking
         val_oneError = oneError(dom_label, label_prediction)
         sum_oneError += val_oneError
+        val_coverage = coverage(dom_label, label_prediction)
+        sum_coverage += val_coverage
         val_averagePrecision = averagePrecision(dom_label, label_prediction)
         sum_averagePrecision += val_averagePrecision
         val_rankingLoss = rankingLoss(dom_label, label_prediction)
@@ -496,8 +519,21 @@ for epoch_num in range(num_epochs):
         # label-based-classification
         val_accuracyMacro = accuracyMacro(dom_label, label_prediction)
         sum_accuracyMacro += val_accuracyMacro
+        val_accuracyMicro = accuracyMicro(dom_label, label_prediction)
+        sum_accuracyMicro += val_accuracyMicro
+        val_precisionMacro = precisionMacro(dom_label, label_prediction)
+        sum_precisionMacro += val_precisionMacro
+        val_precisionMicro = precisionMicro(dom_label, label_prediction)
+        sum_precisionMicro += val_accuracyMicro
+        val_recallMacro = recallMacro(dom_label, label_prediction)
+        sum_recallMacro += val_recallMacro
+        val_recallMicro = recallMicro(dom_label, label_prediction)
+        sum_recallMicro += val_recallMicro
+        val_fbetaMacro = fbetaMacro(dom_label, label_prediction)
+        sum_fbetaMacro += val_fbetaMacro
         val_fbetaMicro = fbetaMicro(dom_label, label_prediction)
         sum_fbetaMicro += val_fbetaMicro
+
 
         if i % 10 == 0:
             print('euclidean_dist: {euclidean_dist:.4f}\t'
@@ -523,13 +559,21 @@ for epoch_num in range(num_epochs):
             print("Val set results:\n",
                   'Multilabel metrics: example-based-ranking:\n',
                   "oneError= {:.4f}".format(val_oneError),
+                  "coverage= {:.4f}".format(val_coverage),
                   "averagePrecision= {:.4f}".format(val_averagePrecision),
                   "rankingLoss= {:.4f}".format(val_rankingLoss))
 
             print("Val set results:\n",
                   'Multilabel metrics: label-based-classification:\n',
                   "accuracyMacro= {:.4f}".format(val_accuracyMacro),
-                  "fbetaMicro= {:.4f}".format(val_fbetaMicro))
+                  "accuracyMicro= {:.4f}".format(val_accuracyMicro),
+                  "precisionMacro= {:.4f}".format(val_precisionMacro),
+                  "precisionMicro= {:.4f}".format(val_precisionMicro),
+                  "recallMacro= {:.4f}".format(val_recallMacro),
+                  "recallMicro= {:.4f}".format(val_recallMicro),
+                  "f-1Macro= {:.4f}".format(val_fbetaMacro),
+                  "f-1Micro= {:.4f}".format(val_fbetaMicro))
+
 
             result.write("\n------------------------------------------------------------------\n")
             result.write('Val co-attention:\n ')
@@ -564,15 +608,30 @@ for epoch_num in range(num_epochs):
             result.write("\n")
             result.write('Multilabel metrics: example-based-ranking:\n')
             result.write('oneError: {oneError:.4f}\t'
+                         'coverage: {coverage:.4f}\t'
                          'averagePrecision: {averagePrecision:.4f}\t'
                          'rankingLoss: {rankingLoss:.4f}\t'.format(oneError=val_oneError,
+                                                                   coverage=val_coverage,
                                                                    averagePrecision=val_averagePrecision,
                                                                    rankingLoss=val_rankingLoss))
             result.write("\n")
             result.write('Multilabel metrics: label-based-classification:\n')
             result.write('accuracyMacro: {accuracyMacro:.4f}\t'
+                         'accuracyMicro: {accuracyMicro:.4f}\t'
+                         'precisionMacro: {precisionMacro:.4f}\t'
+                         'precisionMicro: {precisionMicro:.4f}\t'
+                         'recallMacro: {recallMacro:.4f}\t'
+                         'recallMicro: {recallMicro:.4f}\t'
+                         'fbetaMacro: {fbetaMacro:.4f}\t'
                          'fbetaMicro: {fbetaMicro:.4f}\t'.format(accuracyMacro=val_accuracyMacro,
+                                                                 accuracyMicro=val_accuracyMicro,
+                                                                 precisionMacro=val_precisionMacro,
+                                                                 precisionMicro=val_precisionMicro,
+                                                                 recallMacro=val_precisionMacro,
+                                                                 recallMicro=val_precisionMicro,
+                                                                 fbetaMacro=val_fbetaMacro,
                                                                  fbetaMicro=val_fbetaMicro))
+
         # pearson correlation
         emopcc += pearsonr(dis_prediction.cpu().detach().numpy(), dis.cpu().detach().numpy())[0]
 
@@ -619,6 +678,20 @@ for epoch_num in range(num_epochs):
     epoch_accuracyMacro += ave_accuracyMacro
     ave_fbetaMicro = sum_fbetaMicro / cnt
     epoch_fbetaMicro += ave_fbetaMicro
+    ave_coverage = sum_coverage / cnt
+    epoch_coverage += ave_coverage
+    ave_accuracyMicro = sum_accuracyMicro / cnt
+    epoch_accuracyMicro += ave_accuracyMicro
+    ave_precisionMacro = sum_precisionMacro / cnt
+    epoch_precisionMacro += ave_precisionMacro
+    ave_precisionMicro = sum_precisionMicro / cnt
+    epoch_precisionMicro += ave_precisionMicro
+    ave_recallMacro = sum_recallMacro / cnt
+    epoch_recallMacro += ave_recallMacro
+    ave_recallMicro = sum_recallMicro / cnt
+    epoch_recallMicro += ave_recallMicro
+    ave_fbetaMacro = sum_fbetaMacro / cnt
+    epoch_fbetaMacro += ave_fbetaMacro
 
     result.write("\n================================================================================\n")
     result.write('Epoch: {epoch:.1f}\t'
@@ -646,9 +719,16 @@ for epoch_num in range(num_epochs):
                  'Val epoch_eb_fbeta: {epoch_eb_fbeta:.4f}\t'
                  'Val epoch_hammingloss: {epoch_hammingloss:.4f}\t'
                  'Val epoch_oneError: {epoch_oneError:.4f}\t'
+                 'Val epoch_coverage: {epoch_coverage:.4f}\t'
                  'Val epoch_Averageprecision: {epoch_Averageprecision:.4f}\t'
                  'Val epoch_rankingloss: {epoch_rankingloss:.4f}\t'
                  'Val epoch_accuracyMacro: {epoch_accuracyMacro:.4f}\t'
+                 'Val epoch_accuracyMicro: {epoch_accuracyMicro:.4f}\t'
+                 'Val epoch_precisionMacro: {epoch_precisionMacro:.4f}\t'
+                 'Val epoch_precisionMicro: {epoch_precisionMicro:.4f}\t'
+                 'Val epoch_recallMacro: {epoch_recallMacro:.4f}\t'
+                 'Val epoch_recallMicro: {epoch_recallMicro:.4f}\t'
+                 'Val epoch_fbetaMacro: {epoch_fbetaMacro:.4f}\t'
                  'Val epoch_fbetaMicro: {epoch_fbetaMicro:.4f}\t'.format(epoch=epoch_num + 1,
                                                                          epoch_eb_accuracy=ave_eb_accuracy,
                                                                          epoch_eb_precision=ave_eb_precision,
@@ -656,9 +736,16 @@ for epoch_num in range(num_epochs):
                                                                          epoch_eb_fbeta=ave_eb_fbeta,
                                                                          epoch_hammingloss=ave_hammingLoss,
                                                                          epoch_oneError=ave_oneError,
+                                                                         epoch_coverage=ave_coverage,
                                                                          epoch_Averageprecision=ave_averagePrecision,
                                                                          epoch_rankingloss=ave_rankingLoss,
                                                                          epoch_accuracyMacro=ave_accuracyMacro,
+                                                                         epoch_accuracyMicro=ave_accuracyMicro,
+                                                                         epoch_precisionMacro=ave_precisionMacro,
+                                                                         epoch_precisionMicro=ave_precisionMicro,
+                                                                         epoch_recallMacro=ave_recallMacro,
+                                                                         epoch_recallMicro=ave_recallMicro,
+                                                                         epoch_fbetaMacro=ave_fbetaMacro,
                                                                          epoch_fbetaMicro=ave_fbetaMicro))
 
     # Pearson correlation
@@ -726,6 +813,13 @@ final_averagePrecision = epoch_averagePrecision / num_epochs
 final_rankingLoss = epoch_rankingLoss / num_epochs
 final_accuracyMacro = epoch_accuracyMacro / num_epochs
 final_fbetaMicro = epoch_fbetaMicro / num_epochs
+final_coverage = epoch_coverage / num_epochs
+final_accuracyMicro = epoch_accuracyMicro / num_epochs
+final_precisionMacro = epoch_precisionMacro / num_epochs
+final_precisionMicro = epoch_precisionMicro / num_epochs
+final_recallMacro = epoch_recallMacro / num_epochs
+final_recallMicro = epoch_recallMicro / num_epochs
+final_fbetaMacro = epoch_fbetaMacro / num_epochs
 
 result.write("\n================================================================================\n")
 result.write('Epoch: {epoch:.1f}\t'
@@ -753,9 +847,16 @@ result.write('Epoch: {epoch:.1f}\t'
              'Val final_eb_fbeta: {final_eb_fbeta:.4f}\t'
              'Val final_hammingloss: {final_hammingloss:.4f}\t'
              'Val final_oneError: {final_oneError:.4f}\t'
+             'Val final_coverage: {final_coverage:.4f}\t'
              'Val final_averageprecision: {final_averageprecision:.4f}\t'
              'Val final_rankingloss: {final_rankingloss:.4f}\t'
              'Val final_accuracyMacro: {final_accuracyMacro:.4f}\t'
+             'Val final_accuracyMicro: {final_accuracyMicro:.4f}\t'
+             'Val final_precisionMacro: {final_precisionMacro:.4f}\t'
+             'Val final_precisionMicro: {final_precisionMicro:.4f}\t'
+             'Val final_recallMacro: {final_recallMacro:.4f\t'
+             'Val final_recallMicro: {final_recallMicro:.4f}\t'
+             'Val final_fbetaMacro: {final_fbetaMacro:.4f}\t'
              'Val final_fbetaMicro: {final_fbetaMicro:.4f}\t'.format(epoch=epoch_num + 1,
                                                                      final_eb_accuracy=final_eb_accuracy,
                                                                      final_eb_precision=final_eb_precision,
@@ -763,9 +864,16 @@ result.write('Epoch: {epoch:.1f}\t'
                                                                      final_eb_fbeta=final_eb_fbeta,
                                                                      final_hammingloss=final_hammingLoss,
                                                                      final_oneError=final_oneError,
+                                                                     final_coverage=final_coverage,
                                                                      final_averageprecision=final_averagePrecision,
                                                                      final_rankingloss=final_rankingLoss,
                                                                      final_accuracyMacro=final_accuracyMacro,
+                                                                     final_accuracyMicro=final_accuracyMicro,
+                                                                     final_precisionMacro=final_precisionMacro,
+                                                                     final_precisionMicro=final_precisionMicro,
+                                                                     final_recallMacro=final_recallMacro,
+                                                                     final_recallMicro=final_recallMicro,
+                                                                     final_fbetaMacro=final_fbetaMacro,
                                                                      final_fbetaMicro=final_fbetaMicro))
 
 # testing
@@ -792,6 +900,13 @@ sum_averagePrecision = 0
 sum_rankingLoss = 0
 sum_accuracyMacro = 0
 sum_fbetaMicro = 0
+sum_converage = 0
+sum_accuracyMicro = 0
+sum_precisionMacro = 0
+sum_precisionMicro = 0
+sum_recallMacro = 0
+sum_recallMicro = 0
+sum_fbetaMacro = 0
 count = 0
 for i, data in enumerate(testDataloader):
     count = count + 1
@@ -865,6 +980,8 @@ for i, data in enumerate(testDataloader):
     # example-based-ranking
     test_oneError = oneError(dom_label, label_prediction)
     sum_oneError += test_oneError
+    test_coverage = coverage(dom_label, label_prediction)
+    sum_coverage += test_coverage
     test_averagePrecision = averagePrecision(dom_label, label_prediction)
     sum_averagePrecision += test_averagePrecision
     test_rankingLoss = rankingLoss(dom_label, label_prediction)
@@ -873,6 +990,18 @@ for i, data in enumerate(testDataloader):
     # label-based-classification
     test_accuracyMacro = accuracyMacro(dom_label, label_prediction)
     sum_accuracyMacro += test_accuracyMacro
+    test_accuracyMicro = accuracyMicro(dom_label, label_prediction)
+    sum_accuracyMicro += test_accuracyMicro
+    test_precisionMacro = precisionMacro(dom_label, label_prediction)
+    sum_precisionMacro += test_precisionMacro
+    test_precisionMicro = precisionMicro(dom_label, label_prediction)
+    sum_precisionMicro += test_precisionMicro
+    test_recallMacro = recallMacro(dom_label, label_prediction)
+    sum_recallMacro += test_recallMacro
+    test_recallMicro = recallMicro(dom_label, label_prediction)
+    sum_precisionMicro += test_precisionMicro
+    test_fbetaMacro = fbetaMacro(dom_label, label_prediction)
+    sum_fbetaMacro += test_fbetaMacro
     test_fbetaMicro = fbetaMicro(dom_label, label_prediction)
     sum_fbetaMicro += test_fbetaMicro
 
@@ -901,12 +1030,19 @@ for i, data in enumerate(testDataloader):
         print("Test set results:\n",
               'Multilabel metrics: example-based-ranking:\n',
               "oneError= {:.4f}".format(test_oneError),
+              "coverage= {:.4f}".format(test_coverage),
               "averagePrecision= {:.4f}".format(test_averagePrecision),
               "rankingLoss= {:.4f}".format(test_rankingLoss))
 
         print("Test set results:\n",
               'Multilabel metrics: label-based-classification:\n',
               "accuracyMacro= {:.4f}".format(test_accuracyMacro),
+              "accuracyMicro= {:.4f}".format(test_accuracyMicro),
+              "precisionMacro= {:.4f}".format(test_precisionMacro),
+              "precisionMicro= {:.4f}".format(test_precisionMicro),
+              "recallMacro= {:.4f}".format(test_recallMacro),
+              "recallMicro= {:.4f}".format(test_recallMicro),
+              "fbetaMacro= {:.4f}".format(test_fbetaMacro),
               "fbetaMicro= {:.4f}".format(test_fbetaMicro))
 
 
@@ -943,14 +1079,28 @@ for i, data in enumerate(testDataloader):
         result.write("\n")
         result.write('Multilabel metrics: example-based-ranking:\n')
         result.write('oneError: {oneError:.4f}\t'
+                     'coverage: {coverage:.4f}\t'
                      'averagePrecision: {averagePrecision:.4f}\t'
                      'rankingLoss: {rankingLoss:.4f}\t'.format(oneError=test_oneError,
+                                                               coverage=test_coverage,
                                                                averagePrecision=test_averagePrecision,
                                                                rankingLoss=test_rankingLoss))
         result.write("\n")
         result.write('Multilabel metrics: label-based-classification:\n')
         result.write('accuracyMacro: {accuracyMacro:.4f}\t'
+                     'accuracyMicro: {accuracyMicro:.4f}\t'
+                     'precisionMacro: {precisionMacro:.4f}\t'
+                     'precisionMicro: {precisionMicro:.4f}\t'
+                     'recallMacro: {recallMacro:.4f}\t'
+                     'recallMicro: {recallMicro:.4f}\t'
+                     'fbetaMacro: {fbetaMacro:.4f}\t'
                      'fbetaMicro: {fbetaMicro:.4f}\t'.format(accuracyMacro=test_accuracyMacro,
+                                                             accuracyMicro=test_accuracyMicro,
+                                                             precisionMacro=test_precisionMacro,
+                                                             precisionMicro=test_precisionMicro,
+                                                             recallMacro=test_recallMacro,
+                                                             recallMicro=test_recallMicro,
+                                                             fbetaMacro=test_fbetaMacro,
                                                              fbetaMicro=test_fbetaMicro))
     # pearson correlation
     emopcc += pearsonr(dis_prediction.cpu().detach().numpy(), dis.cpu().detach().numpy())[0]
@@ -975,6 +1125,12 @@ ave_averagePrecision = sum_averagePrecision/count
 ave_rankingLoss = sum_rankingLoss/count
 ave_accuracyMacro = sum_accuracyMacro/count
 ave_fbetaMicro = sum_fbetaMicro/count
+ave_coverage = sum_coverage / count
+ave_accuracyMicro = sum_accuracyMicro / count
+ave_precisionMacro = sum_precisionMacro / count
+ave_precisionMicro = sum_precisionMicro / count
+ave_recallMacro = sum_recallMacro / count
+ave_recallMicro = sum_recallMicro / count
 
 print("\n================================================================================\n")
 print("Test Emotion distribution test_loss:", test_testkl, "\Test Emotion distribution PCC:", test_emopcc.item())
@@ -1009,9 +1165,16 @@ result.write('Epoch: {epoch:.1f}\t'
                      'Test epoch_eb_fbeta: {epoch_eb_fbeta:.4f}\t'
                      'Test epoch_hammingloss: {epoch_hammingloss:.4f}\t'
                      'Test epoch_oneError: {epoch_oneError:.4f}\t'
+                     'Test epoch_coverage: {coverage:.4f}\t'
                      'Test epoch_Averageprecision: {epoch_Averageprecision:.4f}\t'
                      'Test epoch_rankingloss: {epoch_rankingloss:.4f}\t'
                      'Test epoch_accuracyMacro: {epoch_accuracyMacro:.4f}\t'
+                     'Test epoch_accuracyMicro: {epoch_accuracyMicro:.4f}\t'
+                     'Test epoch_precisionMacro: {epoch_precisionMacro:4f}\t'
+                     'Test epoch_precisionMicro: {epoch_precisionMicro:.4f}\t'
+                     'Test epoch_recallMacro: {epoch_recallMacro:.4f}\t'
+                     'Test epoch_recallMicro: {epoch_recallMicro:.4f}\t'
+                     'Test epoch_fbetaMacro: {epoch_fbetaMacro:.4f}\t'
                      'Test epoch_fbetaMicro: {epoch_fbetaMicro:.4f}\t'.format(epoch=epoch_num+1,
                                                                             epoch_accuracy=epoch_accuracy,
                                                                             epoch_eb_accuracy=ave_eb_accuracy,
@@ -1020,9 +1183,16 @@ result.write('Epoch: {epoch:.1f}\t'
                                                                             epoch_eb_fbeta=ave_eb_fbeta,
                                                                             epoch_hammingloss=ave_hammingLoss,
                                                                             epoch_oneError=ave_oneError,
+                                                                            epoch_coverage=ave_coverage,
                                                                             epoch_Averageprecision=ave_averagePrecision,
                                                                             epoch_rankingloss=ave_rankingLoss,
                                                                             epoch_accuracyMacro=ave_accuracyMacro,
+                                                                            epoch_accuracyMicro=ave_accuracyMicro,
+                                                                            epoch_precisionMacro=ave_precisionMacro,
+                                                                            epoch_precisionMicro=ave_precisionMicro,
+                                                                            epoch_recallMacro=ave_recallMacro,
+                                                                            epoch_recallMicro=ave_recallMicro,
+                                                                            epoch_fbetaMacro=ave_fbetaMacro,
                                                                             epoch_fbetaMicro=ave_fbetaMicro))
 
 
