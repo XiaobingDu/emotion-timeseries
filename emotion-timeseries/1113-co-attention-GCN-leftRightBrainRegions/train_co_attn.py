@@ -854,7 +854,7 @@ result.write('Epoch: {epoch:.1f}\t'
              'Val final_accuracyMicro: {final_accuracyMicro:.4f}\t'
              'Val final_precisionMacro: {final_precisionMacro:.4f}\t'
              'Val final_precisionMicro: {final_precisionMicro:.4f}\t'
-             'Val final_recallMacro: {final_recallMacro:.4f\t'
+             'Val final_recallMacro: {final_recallMacro:.4f}\t'
              'Val final_recallMicro: {final_recallMicro:.4f}\t'
              'Val final_fbetaMacro: {final_fbetaMacro:.4f}\t'
              'Val final_fbetaMicro: {final_fbetaMicro:.4f}\t'.format(epoch=epoch_num + 1,
