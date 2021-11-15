@@ -44,13 +44,15 @@ def multilabelConfussionMatrix(y_test, predictions):
             if int(y_test[i, j]) == 1:
                 if int(y_test[i, j]) == 1 and int(predictions[i, j]) == 1:
                     TPaux += 1
-                else:
-                    FPaux += 1
-            else:
+                elif int(predictions[i, j]) == 0:
+                    # FPaux += 1
+                    FNaux += 1
+            elif int(y_test[i, j]) == 0:
                 if int(y_test[i, j]) == 0 and int(predictions[i, j]) == 0:
                     TNaux += 1
-                else:
-                    FNaux += 1
+                elif int(predictions[i, j]) == 1:
+                    # FNaux += 1
+                    FPaux += 1
         TP[j] = TPaux
         FP[j] = FPaux
         TN[j] = TNaux
