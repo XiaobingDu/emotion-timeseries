@@ -136,16 +136,15 @@ class Embedding(nn.Module):
         self.model_dim = model_dim
 
         self.encoder = nn.Embedding(seq_len, model_dim)
-        print('.........:', self.encoder.shape)
         self.decoder = nn.Linear(model_dim, seq_len, bias=False)
-        print('.........:', self.decoder.shape)
 
         self.decoder.weight = self.encoder.weight
 
     def forward(self, x, inverse=False):
         if inverse:
             return self.decoder(x)
-
+        print('...........:', self.encoder(x.to(torch.int64)))
+        print('...........:',  np.sqrt(self.model_dim))
         return self.encoder(x.to(torch.int64)) * np.sqrt(self.model_dim)
 
 
