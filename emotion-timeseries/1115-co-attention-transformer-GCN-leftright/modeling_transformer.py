@@ -326,9 +326,9 @@ class TransformerEncoder(nn.Module):
     def forward(self, src):
 
         # self.src_embedding = self.embedding(src)
-
+        src = src.cuda()
         src_pe = self.pos_enc(src)
-
+        src_pe = src_pe.cuda()
         enc = self.encoder(src_pe)
 
         return enc
