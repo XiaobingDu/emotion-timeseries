@@ -43,11 +43,14 @@ class MediaEvalDataset(Dataset):
             else:
                 left_feature = torch.cat((left_feature, data[:, :, l, :].unsqueeze_(2)), dim=2)
 
-        print('left_feature shape:', left_feature.shape) #[68832, 10, 7, 5]
+        print('left_feature shape:', left_feature.shape) # ([991, 120, 15, 5])
+        # transpose
+        left_feature = np.transpose(left_feature, (0, 2, 1, 3))
+        print('left_feature shape:', left_feature.shape) # [991, 15, 120, 5]
         # reshape
         left_feature = np.reshape(left_feature, [left_feature.shape[0], left_feature.shape[1],
                                                          int(left_feature.shape[2] * left_feature.shape[3])])
-        print('left_feature shape:', left_feature.shape) #[68832, 10, 35]
+        print('left_feature shape:', left_feature.shape) # ([991, 15, 600])
 
         cnt = 0
         # right channel
@@ -61,10 +64,14 @@ class MediaEvalDataset(Dataset):
                 print('*'*20, right_feature.shape)
                 right_feature = torch.cat((right_feature, data[:, :, r, :].unsqueeze_(2)), dim=2)
 
-        print('right_feature shape:', right_feature.shape) #[68832, 10, 8, 5]
+        print('right_feature shape:', right_feature.shape) # ([991, 120, 15, 5])
+        # transpose
+        right_feature = np.transpose(right_feature, (0, 2, 1, 3))
+        print('right_feature shape:', right_feature.shape) # ([991, 15, 120, 5])
+        # reshape
         right_feature = np.reshape(right_feature, [right_feature.shape[0], right_feature.shape[1],
                                                        int(right_feature.shape[2] * right_feature.shape[3])])
-        print('right_feature shape:', right_feature.shape) #[68832, 10, 40]
+        print('right_feature shape:', right_feature.shape) # ([991, 15, 600])
 
         self.left = left_feature
         self.right = right_feature
