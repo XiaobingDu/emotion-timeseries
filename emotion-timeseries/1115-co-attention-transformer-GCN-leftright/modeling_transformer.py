@@ -1,6 +1,5 @@
 """Implement transformer model as presented in https://arxiv.org/abs/1706.03762."""
-import os
-os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
+
 import copy
 from collections import OrderedDict
 from torch.autograd import Variable
@@ -8,6 +7,8 @@ import torch
 import torch.nn.functional as F
 import torch.nn as nn
 import numpy as np
+import os
+os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 

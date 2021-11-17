@@ -1,6 +1,5 @@
 #-*-coding:utf-8-*-
-import os
-os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
+
 from __future__ import division
 import torch
 import torch.nn as nn
@@ -8,6 +7,8 @@ from modeling_transformer import TransformerEncoder
 from graph_module import GCN
 import warnings
 warnings.filterwarnings('ignore')
+import os
+os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
 
 def pad_shift(x, shift, padv=0.0):
     """Shift 3D tensor forwards in time with padding."""
