@@ -48,7 +48,8 @@ class EEGEncoder(nn.Module):
         self.attn_len = args['attn_len']
         self.dropout= args['dropout_prob']
 
-        self.enc_all_linear = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.enc_dim, 2, nn.LeakyReLU()))
+        self.enc_all_linear1 = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.feature_len, self.enc_dim, nn.LeakyReLU()))
+        self.enc_all_linear2 = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.enc_dim, 2, nn.LeakyReLU()))
         self.left_linear = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.feature_dim, self.enc_dim, nn.LeakyReLU()))
         self.right_linear = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.feature_dim, self.enc_dim, nn.LeakyReLU()))
 
@@ -118,7 +119,8 @@ class EEGEncoder(nn.Module):
         print('all_feature shape:', all_features.shape)
         presentation = self.all_transformer_enc(all_features)
         print('presentation shape:', presentation.shape)
-        presentation = self.enc_all_linear(presentation).aqueeze(-1)
+        presentation = self.enc_all_linear1(presentation)
+        presentation = self.enc_all_linear2(presentation).aqueeze(-1)
         presentation = torch.softmax(presentation)
         print('presentation shape:', presentation.shape)
 
