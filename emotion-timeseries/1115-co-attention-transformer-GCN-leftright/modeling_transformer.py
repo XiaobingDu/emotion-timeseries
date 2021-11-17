@@ -128,14 +128,14 @@ class MultiHeadAttention(nn.Module):
 class Embedding(nn.Module):
     """Implement input and output embedding with tied weights."""
 
-    def __init__(self, vocab_size, model_dim):
+    def __init__(self, seq_len, model_dim):
         super(Embedding, self).__init__()
 
-        self.vocab_size = vocab_size
+        self.seq_len = seq_len
         self.model_dim = model_dim
 
-        self.encoder = nn.Embedding(vocab_size, model_dim)
-        self.decoder = nn.Linear(model_dim, vocab_size, bias=False)
+        self.encoder = nn.Embedding(seq_len, model_dim.to(torch.int64))
+        self.decoder = nn.Linear(model_dim, seq_len, bias=False)
 
         self.decoder.weight = self.encoder.weight
 
@@ -143,7 +143,7 @@ class Embedding(nn.Module):
         if inverse:
             return self.decoder(x)
 
-        return self.encoder(x) * np.sqrt(self.model_dim)
+        return self.encoder(x.to(torch.int64)) * np.sqrt(self.model_dim)
 
 
 class PositionalEncoder(nn.Module):
@@ -226,7 +226,7 @@ class Transformer(nn.Module):
     """Implement transformer model.
 
     Args:
-        vocab_size: number of unique tokens in vocabulary.
+        seq_len: number of unique tokens in vocabulary.
         model_dim: dimension of embedding.
         hidden_dim: size of hidden layer in feed forward sub-layers.
         nheads: number of attention heads.
@@ -236,7 +236,7 @@ class Transformer(nn.Module):
 
     def __init__(
             self,
-            vocab_size,
+            seq_len,
             model_dim,
             hidden_dim,
             nheads,
@@ -245,7 +245,7 @@ class Transformer(nn.Module):
             max_len=5000,
     ):
         super(Transformer, self).__init__()
-        self.embedding = Embedding(vocab_size, model_dim)
+        self.embedding = Embedding(seq_len, model_dim)
         self.pos_enc = PositionalEncoder(model_dim, max_len, p)
 
         self.encoder = seq_clones(
@@ -290,7 +290,7 @@ class TransformerEncoder(nn.Module):
     """Implement transformer model.
 
     Args:
-        vocab_size: number of unique tokens in vocabulary.
+        seq_len: number of unique tokens in vocabulary.
         model_dim: dimension of embedding.
         hidden_dim: size of hidden layer in feed forward sub-layers.
         nheads: number of attention heads.
@@ -300,7 +300,7 @@ class TransformerEncoder(nn.Module):
 
     def __init__(
             self,
-            vocab_size,
+            seq_len,
             model_dim,
             hidden_dim,
             nheads,
@@ -309,7 +309,7 @@ class TransformerEncoder(nn.Module):
             max_len=5000,
     ):
         super(TransformerEncoder, self).__init__()
-        self.embedding = Embedding(vocab_size, model_dim)
+        self.embedding = Embedding(seq_len, model_dim)
         self.pos_enc = PositionalEncoder(model_dim, max_len, p)
 
         self.encoder = seq_clones(

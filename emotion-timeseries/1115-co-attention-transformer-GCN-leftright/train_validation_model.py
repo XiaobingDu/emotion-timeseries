@@ -77,8 +77,8 @@ args['left_len'] = 15
 args['right_len'] = 15
 args['feature_dim'] = 600
 args['out_layer'] = FLAGS.out_layer
-args['sequence_len'] = 120 # 120 timesteps
-args['feature_len'] = 150 # 30*5 = 150
+args['sequence_len'] = 120  # 120 timesteps
+args['feature_len'] = 150  # 30*5 = 150
 args['enc_dim'] = 1024
 args['hidden_dim'] = 1024
 args['attn_len'] = FLAGS.attn_len
