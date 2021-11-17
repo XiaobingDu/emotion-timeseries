@@ -134,7 +134,7 @@ class Embedding(nn.Module):
         self.seq_len = seq_len
         self.model_dim = model_dim
 
-        self.encoder = nn.Embedding(seq_len, model_dim.to(torch.int64))
+        self.encoder = nn.Embedding(seq_len, model_dim)
         self.decoder = nn.Linear(model_dim, seq_len, bias=False)
 
         self.decoder.weight = self.encoder.weight
