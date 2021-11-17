@@ -112,7 +112,7 @@ class EEGEncoder(nn.Module):
         right_features = torch.transpose(right_features, (0, 2, 1, 3))
         right_features = torch.reshape(right_features, [right_features.shape[0], right_features.shape[1], 600])
         print('right_feature shape:', right_features.shape)
-        all_features = torch.cat([left_features, right_features], dim=0)
+        all_features = torch.cat([left_features, right_features], dim=-1)
         print('all_feature shape:', all_features.shape)
         presentation = self.all_transformer_enc(all_features)
         print('presentation shape:', presentation.shape)
