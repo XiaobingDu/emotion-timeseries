@@ -219,7 +219,7 @@ for epoch_num in range(num_epochs):
         right.requires_grad_()
 
         # Forward pass
-        predict, _, _, att_1 = net(train, left, right, dis)
+        predict, att_1 = net(train, left, right, dis)
 
         # for loss1
         # softmax layer
@@ -437,7 +437,7 @@ for epoch_num in range(num_epochs):
             right = torch.nn.Parameter(right).cuda()
 
         # Forward pass
-        predict, _, _, att_1 = net(val, left, right, dis)
+        predict, att_1 = net(val, left, right, dis)
 
         # for loss1
         softmax = torch.nn.Softmax(dim=1)
@@ -909,7 +909,7 @@ for i, data in enumerate(testDataloader):
         right = torch.nn.Parameter(right).cuda()
 
     # Forward pass
-    predict, _, _, att_1 = net(test, left, right, dis)
+    predict, att_1 = net(test, left, right, dis)
 
     #for loss1
     softmax = torch.nn.Softmax(dim=1)
