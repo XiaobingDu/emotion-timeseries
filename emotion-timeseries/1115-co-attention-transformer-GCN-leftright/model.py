@@ -37,19 +37,19 @@ class EEGEncoder(nn.Module):
     def __init__(self, args, device=torch.cuda.set_device(0)): # torch.device('cuda:0')
         super(EEGEncoder, self).__init__()
         #the feature length of five brain regions
-        self.left_len = args['left_len'] # 15
-        self.right_len = args['right_len'] # 15
-        self.feature_dim = args['feature_dim'] #150
+        self.left_len = args['left_len'] # 30
+        self.right_len = args['right_len'] # 30
+        self.feature_dim = args['feature_dim'] # 75 = 15channels *5
         self.out_layer = args['out_layer']
         self.sequence_len = args['sequence_len'] # 30 timesteps
-        self.feature_len = args['feature_len'] # 30*5 = 150
+        self.feature_len = args['feature_len'] # 150 = 30channels * 5
         self.enc_dim = args['enc_dim'] # 1024
         self.hidden_dim = args['hidden_dim'] # 1024
         self.attn_len = args['attn_len']
         self.dropout= args['dropout_prob']
 
         self.enc_all_linear1 = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.feature_len, self.enc_dim, nn.LeakyReLU()))
-        self.enc_all_linear2 = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.enc_dim, 2, nn.LeakyReLU()))
+        self.enc_all_linear2 = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.enc_dim, 1, nn.LeakyReLU()))
         self.left_linear = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.feature_dim, self.enc_dim, nn.LeakyReLU()))
         self.right_linear = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.feature_dim, self.enc_dim, nn.LeakyReLU()))
 
@@ -109,13 +109,13 @@ class EEGEncoder(nn.Module):
         print('att_score....:', att_score.shape)
 
         # all_transformer
-        left_features = torch.reshape(left_features,[left_features.shape[0],left_features.shape[1], int(left_features.shape[2]/5), 5])
-        left_features = left_features.permute(0,2,1,3)
-        left_features = torch.reshape(left_features,[left_features.shape[0],left_features.shape[1],left_features.shape[2]*left_features.shape[3]])
+        # left_features = torch.reshape(left_features,[left_features.shape[0],left_features.shape[1], int(left_features.shape[2]/5), 5])
+        # left_features = left_features.permute(0,2,1,3)
+        # left_features = torch.reshape(left_features,[left_features.shape[0],left_features.shape[1],left_features.shape[2]*left_features.shape[3]])
         print('left_feature shape:', left_features.shape)
-        right_features = torch.reshape(right_features, [right_features.shape[0], right_features.shape[1], int(right_features.shape[2]/5), 5])
-        right_features = right_features.permute(0, 2, 1, 3)
-        right_features = torch.reshape(right_features, [right_features.shape[0], right_features.shape[1], right_features.shape[2]*right_features.shape[3]])
+        # right_features = torch.reshape(right_features, [right_features.shape[0], right_features.shape[1], int(right_features.shape[2]/5), 5])
+        # right_features = right_features.permute(0, 2, 1, 3)
+        # right_features = torch.reshape(right_features, [right_features.shape[0], right_features.shape[1], right_features.shape[2]*right_features.shape[3]])
         print('right_feature shape:', right_features.shape)
         all_features = torch.cat([left_features, right_features], dim=-1)
         print('all_feature shape:', all_features.shape)
