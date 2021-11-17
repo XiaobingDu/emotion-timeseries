@@ -84,11 +84,13 @@ class EEGEncoder(nn.Module):
         batch_size, seq_len = x.shape[0], x.shape[1]
 
         # left transformer
+        print('left_feature shape:', left_features.shape)
         left_enc = self.left_transformer_enc(left_features)
-        print('left enc shape:', left_enc)
+        print('left enc shape:', left_enc.shape)
         # right transformer
+        print('right_feature shape:', right_features.shape)
         right_enc = self.right_transformer_enc(right_features)
-        print('right enc shape:', right_enc)
+        print('right enc shape:', right_enc.shape)
 
         # Co-attention Scores
         concat_features = torch.cat([left_enc, right_enc], dim=-1)
@@ -97,6 +99,7 @@ class EEGEncoder(nn.Module):
 
         # all_transformer
         all_features = torch.cat([left_enc, right_enc], dim=0)
+        print('all_feature shape:', all_features.shape)
         presentation = self.all_transformer_enc(all_features)
         print('presentation shape:', presentation.shape)
 
