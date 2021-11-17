@@ -54,9 +54,7 @@ class EEGEncoder(nn.Module):
 
         self.left_transformer_enc = TransformerEncoder(self.left_len, self.feature_dim, self.hidden_dim,  nheads=5, depth=2, p=0.1, max_len=600)
         self.right_transformer_enc = TransformerEncoder(self.right_len, self.feature_dim,self.hidden_dim, nheads=5, depth=2, p=0.1, max_len=600)
-        # self.all_transformer_enc = TransformerEncoder(self.sequence_len, self.feature_len,self.hidden_dim, nheads=5, depth=2, p=0.1, max_len=600)
-        self.all_transformer_enc = TransformerEncoder(self.right_len, self.feature_dim,self.hidden_dim, nheads=5, depth=2, p=0.1, max_len=600)
-
+        self.all_transformer_enc = TransformerEncoder(self.sequence_len, self.feature_len,self.hidden_dim, nheads=5, depth=2, p=0.1, max_len=600)
 
         # [left right]-->att_linear
         self.att_linear = nn.Sequential(nn.Dropout(self.dropout),nn.Linear(self.hidden_dim * 2, 1), nn.LeakyReLU())
@@ -118,8 +116,7 @@ class EEGEncoder(nn.Module):
         print('right_feature shape:', right_features.shape)
         all_features = torch.cat([left_features, right_features], dim=-1).cuda()
         print('all_feature shape:', all_features.shape)
-        # presentation = self.all_transformer_enc(all_features)
-        presentation = self.all_transformer_enc(left_features)
+        presentation = self.all_transformer_enc(all_features)
         print('presentation shape:', presentation.shape)
 
         presentation = self.enc_all_linear(presentation).aqueeze(-1)
