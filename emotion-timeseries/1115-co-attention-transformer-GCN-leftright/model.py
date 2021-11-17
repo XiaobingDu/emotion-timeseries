@@ -105,11 +105,11 @@ class EEGEncoder(nn.Module):
 
         # all_transformer
         left_features = torch.reshape(left_features,[left_features.shape[0],left_features.shape[1], 120, 5])
-        left_features = torch.transpose(left_features, (0,2,1,3))
+        left_features = left_features.permute(0,2,1,3)
         left_features = torch.reshape(left_features,[left_features.shape[0],left_features.shape[1],left_features.shape[2]*left_features.shape[3]])
         print('left_feature shape:', left_features.shape)
         right_features = torch.reshape(right_features, [right_features.shape[0], right_features.shape[1], 120, 5])
-        right_features = torch.transpose(right_features, (0, 2, 1, 3))
+        right_features = right_features.permute(0, 2, 1, 3)
         right_features = torch.reshape(right_features, [right_features.shape[0], right_features.shape[1], right_features.shape[2]*right_features.shape[3]])
         print('right_feature shape:', right_features.shape)
         all_features = torch.cat([left_features, right_features], dim=-1)
