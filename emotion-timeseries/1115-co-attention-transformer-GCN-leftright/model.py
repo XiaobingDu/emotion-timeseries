@@ -104,7 +104,9 @@ class EEGEncoder(nn.Module):
         # Co-attention Scores
         concat_features = torch.cat([left_enc, right_enc], dim=-1)
         att_score = self.att_linear(concat_features).squeeze(-1)
+        print('att_score....:', att_score.shape)
         att_score = torch.softmax(att_score, dim=-1)
+        print('att_score....:', att_score.shape)
 
         # all_transformer
         left_features = torch.reshape(left_features,[left_features.shape[0],left_features.shape[1], int(left_features.shape[2]/5), 5])
@@ -123,7 +125,7 @@ class EEGEncoder(nn.Module):
         print('presentation shape:', presentation.shape)
         presentation = self.enc_all_linear2(presentation)
         print('presentation shape:', presentation.shape)
-        presentation = torch.softmax(presentation)
+        presentation = torch.softmax(presentation, dim=-1)
         print('presentation shape:', presentation.shape)
 
         attn = att_score
