@@ -130,12 +130,15 @@ class Embedding(nn.Module):
 
     def __init__(self, seq_len, model_dim):
         super(Embedding, self).__init__()
-
+        print('seq_len......:', seq_len)
+        print('model_dim......:', model_dim)
         self.seq_len = seq_len
         self.model_dim = model_dim
 
         self.encoder = nn.Embedding(seq_len, model_dim)
+        print('.........:', self.encoder.shape)
         self.decoder = nn.Linear(model_dim, seq_len, bias=False)
+        print('.........:', self.decoder.shape)
 
         self.decoder.weight = self.encoder.weight
 
