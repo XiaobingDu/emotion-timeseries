@@ -39,9 +39,9 @@ class EEGEncoder(nn.Module):
         #the feature length of five brain regions
         self.left_len = args['left_len'] # 15
         self.right_len = args['right_len'] # 15
-        self.feature_dim = args['feature_dim'] #300
+        self.feature_dim = args['feature_dim'] #150
         self.out_layer = args['out_layer']
-        self.sequence_len = args['sequence_len'] # 60 timesteps
+        self.sequence_len = args['sequence_len'] # 30 timesteps
         self.feature_len = args['feature_len'] # 30*5 = 150
         self.enc_dim = args['enc_dim']
         self.hidden_dim = args['hidden_dim']
