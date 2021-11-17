@@ -6,7 +6,6 @@ from dataManager import five_fold, dataSplit, get_sample_data, get_sample_data_w
 from utils import *
 from torch.utils.data import DataLoader
 from scipy.stats.mstats import pearsonr
-from modeling_transformer import TransformerEncoder
 import time, argparse
 import codecs
 from multilabelMetrics.examplebasedclassification import *
@@ -15,6 +14,8 @@ from multilabelMetrics.labelbasedclassification import *
 from multilabelMetrics.labelbasedranking import *
 import warnings
 warnings.filterwarnings('ignore')
+import os
+os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
 parser = argparse.ArgumentParser()
 
 parser.add_argument('--path1', type=str, choices=["/home/xiaobingdu/EEG_experiments/LDL-LSTM_softmax/attn_lstm/EEG_PSD_multilabel_9_addLabel_sum1/",
