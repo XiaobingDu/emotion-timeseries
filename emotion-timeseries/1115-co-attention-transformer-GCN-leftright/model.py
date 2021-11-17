@@ -108,6 +108,7 @@ class EEGEncoder(nn.Module):
         att_score = torch.softmax(att_score, dim=-1)
         print('att_score....:', att_score.shape)
 
+        # when the left and right use the channel dim as the seq_len
         # all_transformer
         # left_features = torch.reshape(left_features,[left_features.shape[0],left_features.shape[1], int(left_features.shape[2]/5), 5])
         # left_features = left_features.permute(0,2,1,3)
