@@ -163,6 +163,8 @@ class PositionalEncoder(nn.Module):
         position = torch.arange(0, max_len).unsqueeze(1).float()
         div_term = torch.exp(torch.tensor(torch.arange(0, d_model, 2) * -(np.log(10000.0) / d_model),dtype=torch.float))
         pos_enc[:, 0::2] = torch.sin(position * div_term)
+        print('position:', position)
+        print('div_term:', div_term)
         pos_enc[:, 1::2] = torch.cos(position * div_term)
         pos_enc = pos_enc.unsqueeze(0)
         self.register_buffer('pe', pos_enc)
