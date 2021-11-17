@@ -330,7 +330,7 @@ class TransformerEncoder(nn.Module):
         enc = self.encoder(src_pe)
         print('enc shape.....:', enc.shape)
 
-        return self.embedding(enc, inverse=True)
+        return enc
 
     @staticmethod
     def _init_weights(module):

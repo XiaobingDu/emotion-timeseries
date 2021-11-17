@@ -46,7 +46,9 @@ class EEGEncoder(nn.Module):
         self.attn_len = args['attn_len']
         self.dropout= args['dropout_prob']
 
-        self.enc_all = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.enc_dim, 2, nn.LeakyReLU()))
+        self.enc_all_linear = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.enc_dim, 2, nn.LeakyReLU()))
+        self.left_linear = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.featuer_dim, self.enc_dim, nn.LeakyReLU()))
+        self.right_linear = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.feature_dim, self.enc_dim, nn.LeakyReLU()))
 
         self.left_transformer_enc = TransformerEncoder(self.left_len, self.feature_dim, self.hidden_dim,  nheads=5, depth=2, p=0.1, max_len=600)
         self.right_transformer_enc = TransformerEncoder(self.right_len, self.feature_dim,self.hidden_dim, nheads=5, depth=2, p=0.1, max_len=600)
@@ -87,9 +89,13 @@ class EEGEncoder(nn.Module):
         print('left_feature shape:', left_features.shape)
         left_enc = self.left_transformer_enc(left_features)
         print('left enc shape:', left_enc.shape)
+        left_enc = self.left_linear(left_enc)
+        print('left enc shape:', left_enc.shape)
         # right transformer
         print('right_feature shape:', right_features.shape)
         right_enc = self.right_transformer_enc(right_features)
+        print('right enc shape:', right_enc.shape)
+        right_enc = self.right_linear(right_enc)
         print('right enc shape:', right_enc.shape)
 
         # Co-attention Scores
@@ -103,7 +109,7 @@ class EEGEncoder(nn.Module):
         presentation = self.all_transformer_enc(all_features)
         print('presentation shape:', presentation.shape)
 
-        presentation = self.enc_all(presentation).aqueeze(-1)
+        presentation = self.enc_all_linear(presentation).aqueeze(-1)
         presentation = torch.softmax(presentation)
         print('presentation shape:', presentation.shape)
 
