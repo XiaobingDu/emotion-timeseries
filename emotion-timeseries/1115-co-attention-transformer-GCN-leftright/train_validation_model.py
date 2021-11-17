@@ -203,8 +203,6 @@ for epoch_num in range(num_epochs):
         print("Training .... 第 {} 个Batch.....".format(i + 1))
         st_time = time.time()
         train, dis, dom_label, left, right = data  # get training date
-        print('left shape:', left.shape)
-        print('right shape:', right.shape)
 
         if args['use_cuda']: # use cuda
             train = torch.nn.Parameter(train).cuda()
