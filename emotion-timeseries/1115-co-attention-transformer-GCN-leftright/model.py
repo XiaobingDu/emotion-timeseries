@@ -1,5 +1,6 @@
 #-*-coding:utf-8-*-
-
+import os
+os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
 from __future__ import division
 import torch
 import torch.nn as nn

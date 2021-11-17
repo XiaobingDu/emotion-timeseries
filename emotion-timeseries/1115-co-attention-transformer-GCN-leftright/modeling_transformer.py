@@ -1,5 +1,6 @@
 """Implement transformer model as presented in https://arxiv.org/abs/1706.03762."""
-
+import os
+os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
 import copy
 from collections import OrderedDict
 from torch.autograd import Variable
