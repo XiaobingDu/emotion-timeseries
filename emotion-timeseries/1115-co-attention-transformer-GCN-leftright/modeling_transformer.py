@@ -117,7 +117,7 @@ class MultiHeadAttention(nn.Module):
             )
             mask = mask.reshape(-1).repeat((1, np.prod(score.shape[:2]))).reshape(score.shape)
 
-            score[mask.type(torch.long).cuda()] = -float('inf')
+            score[mask.type(torch.long)] = -float('inf')
 
         self.att = F.softmax(score / np.sqrt(score.shape[-1]), dim=-1)
         ret = torch.einsum('bhqk,bkhd->bqhd', self.att, value)
@@ -325,10 +325,9 @@ class TransformerEncoder(nn.Module):
 
         # self.src_embedding = self.embedding(src)
 
-        src_pe = self.pos_enc(src.cuda())
+        src_pe = self.pos_enc(src)
 
-        enc = self.encoder(src_pe.cuda())
-        print('enc shape.....:', enc.shape)
+        enc = self.encoder(src_pe)
 
         return enc
 
