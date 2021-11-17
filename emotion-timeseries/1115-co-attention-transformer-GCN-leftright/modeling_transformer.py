@@ -328,6 +328,8 @@ class TransformerEncoder(nn.Module):
 
         self.src_embedding = self.embedding(src)
 
+        print('!!!!!!!!!', self.src_embedding.shape)
+
         src_pe = self.pos_enc(self.src_embedding)
 
         enc = self.encoder(src_pe)
