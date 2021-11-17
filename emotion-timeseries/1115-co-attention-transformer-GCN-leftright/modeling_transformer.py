@@ -19,7 +19,7 @@ class MultiSequential(nn.Sequential):
             if type(inputs) == tuple:
                 inputs = module(*inputs)
             else:
-                inputs = module(inputs)
+                inputs = module(inputs.cuda())
         return inputs
 
 
@@ -117,7 +117,7 @@ class MultiHeadAttention(nn.Module):
             )
             mask = mask.reshape(-1).repeat((1, np.prod(score.shape[:2]))).reshape(score.shape)
 
-            score[mask.type(torch.long)] = -float('inf')
+            score[mask.type(torch.long).cuda()] = -float('inf')
 
         self.att = F.softmax(score / np.sqrt(score.shape[-1]), dim=-1)
         ret = torch.einsum('bhqk,bkhd->bqhd', self.att, value)
