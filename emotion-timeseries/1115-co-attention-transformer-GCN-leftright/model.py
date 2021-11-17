@@ -80,8 +80,8 @@ class EEGEncoder(nn.Module):
     def forward(self, x, left_features, right_features, target=None, tgt_init=0.0):
         # Get batch dim
         x = x.float()
-        left_features = left_features.float()
-        right_features = right_features.float()
+        left_features = left_features.float().cuda()
+        right_features = right_features.float().cuda()
         # batch_size, seq_len
         batch_size, seq_len = x.shape[0], x.shape[1]
 
@@ -114,7 +114,7 @@ class EEGEncoder(nn.Module):
         print('right_feature shape:', right_features.shape)
         all_features = torch.cat([left_features, right_features], dim=-1)
         print('all_feature shape:', all_features.shape)
-        presentation = self.all_transformer_enc(all_features)
+        presentation = self.all_transformer_enc(all_features.cuda())
         print('presentation shape:', presentation.shape)
 
         presentation = self.enc_all_linear(presentation).aqueeze(-1)
