@@ -130,8 +130,7 @@ class Embedding(nn.Module):
 
     def __init__(self, seq_len, model_dim):
         super(Embedding, self).__init__()
-        print('seq_len......:', seq_len)
-        print('model_dim......:', model_dim)
+
         self.seq_len = seq_len
         self.model_dim = model_dim
 
@@ -143,8 +142,7 @@ class Embedding(nn.Module):
     def forward(self, x, inverse=False):
         if inverse:
             return self.decoder(x)
-        print('...........:', self.encoder(x.to(torch.int64)))
-        print('...........:',  np.sqrt(self.model_dim))
+
         return self.encoder(x.to(torch.int64)) * np.sqrt(self.model_dim)
 
 
@@ -328,11 +326,11 @@ class TransformerEncoder(nn.Module):
 
         print('!!!!!!!!!', src.shape)
 
-        self.src_embedding = self.embedding(src)
+        # self.src_embedding = self.embedding(src)
 
-        print('!!!!!!!!!', self.src_embedding.shape)
+        # print('!!!!!!!!!', self.src_embedding.shape)
 
-        src_pe = self.pos_enc(self.src_embedding)
+        src_pe = self.pos_enc(src)
 
         enc = self.encoder(src_pe)
 
