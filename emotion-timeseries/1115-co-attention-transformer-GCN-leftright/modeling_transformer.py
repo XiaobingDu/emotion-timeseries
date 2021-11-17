@@ -155,7 +155,7 @@ class PositionalEncoder(nn.Module):
     Based on https://nlp.seas.harvard.edu/2018/04/03/attention.html.
     """
 
-    def __init__(self, d_model, max_len=600, p=0.1):
+    def __init__(self, d_model, max_len=150, p=0.1):
         super(PositionalEncoder, self).__init__()
         print('d_model:', d_model)
         # Compute the positional encodings once in log space.
@@ -310,7 +310,7 @@ class TransformerEncoder(nn.Module):
             nheads,
             depth,
             p=0.1,
-            max_len=5000,
+            max_len=150,
     ):
         super(TransformerEncoder, self).__init__()
         self.embedding = Embedding(seq_len, model_dim)
