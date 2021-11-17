@@ -47,7 +47,7 @@ class EEGEncoder(nn.Module):
         self.dropout= args['dropout_prob']
 
         self.enc_all_linear = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.enc_dim, 2, nn.LeakyReLU()))
-        self.left_linear = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.featuer_dim, self.enc_dim, nn.LeakyReLU()))
+        self.left_linear = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.feature_dim, self.enc_dim, nn.LeakyReLU()))
         self.right_linear = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.feature_dim, self.enc_dim, nn.LeakyReLU()))
 
         self.left_transformer_enc = TransformerEncoder(self.left_len, self.feature_dim, self.hidden_dim,  nheads=5, depth=2, p=0.1, max_len=600)
