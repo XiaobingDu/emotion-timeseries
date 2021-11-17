@@ -32,7 +32,7 @@ class EEGEncoder(nn.Module):
     embed_dim -- dimensions of input feature
     """
 
-    def __init__(self, args, device=torch.cuda.set_device(1)): # torch.device('cuda:0')
+    def __init__(self, args, device=torch.cuda.set_device(0)): # torch.device('cuda:0')
         super(EEGEncoder, self).__init__()
         #the feature length of five brain regions
         self.left_len = args['left_len'] # 15
