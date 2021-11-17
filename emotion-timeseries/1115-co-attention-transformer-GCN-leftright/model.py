@@ -50,7 +50,7 @@ class EEGEncoder(nn.Module):
 
         self.left_transformer_enc = TransformerEncoder(self.left_len, self.feature_dim, self.hidden_dim,  nheads=5, depth=2, p=0.1, max_len=600)
         self.right_transformer_enc = TransformerEncoder(self.right_len, self.feature_dim,self.hidden_dim, nheads=5, depth=2, p=0.1, max_len=600)
-        self.all_transformer_enc = TransformerEncoder(self.sequence_len, self.feature_len,self.hidden_dim, nheads=5, depth=2, p=0.1, max_len=150)
+        self.all_transformer_enc = TransformerEncoder(self.sequence_len, self.feature_len,self.hidden_dim, nheads=5, depth=2, p=0.1, max_len=600)
 
         # [left right]-->att_linear
         self.att_linear = nn.Sequential(nn.Dropout(self.dropout),nn.Linear(self.enc_dim * 2, 1), nn.LeakyReLU())

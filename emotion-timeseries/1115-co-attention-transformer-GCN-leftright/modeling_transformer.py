@@ -152,7 +152,7 @@ class PositionalEncoder(nn.Module):
     Based on https://nlp.seas.harvard.edu/2018/04/03/attention.html.
     """
 
-    def __init__(self, d_model, max_len=5000, p=0.1):
+    def __init__(self, d_model, max_len=600, p=0.1):
         super(PositionalEncoder, self).__init__()
         print('d_model:', d_model)
         # Compute the positional encodings once in log space.
@@ -167,8 +167,6 @@ class PositionalEncoder(nn.Module):
         self.dropout = nn.Dropout(p=p)
 
     def forward(self, x):
-        print ('xxxxx:', x.shape)
-        print ('self.pe[:, :x.size(1)] shape:', self.pe[:, :x.size(1)].shape)
         x = x + Variable(self.pe[:, :x.size(1)], requires_grad=False)
         return self.dropout(x)
 
