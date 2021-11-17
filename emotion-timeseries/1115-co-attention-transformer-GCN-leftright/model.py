@@ -116,6 +116,7 @@ class EEGEncoder(nn.Module):
         print('right_feature shape:', right_features.shape)
         all_features = torch.cat([left_features, right_features], dim=-1).cuda()
         print('all_feature shape:', all_features.shape)
+        all_features = torch.tensor(all_features, device=self.device)
         presentation = self.all_transformer_enc(all_features)
         print('presentation shape:', presentation.shape)
 
