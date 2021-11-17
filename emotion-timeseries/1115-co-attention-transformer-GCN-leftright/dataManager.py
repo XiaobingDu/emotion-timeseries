@@ -9,13 +9,13 @@ import random
 def get_dim(db_name):
 
     if db_name=='LDL_data':
-        return 30, 60, 5, 32, 9
+        return 30, 30, 5, 32, 9
 
 # return sub_num, clip_num, channels, time-steps, fea_dim
 def get_num(db_name):
 
     if db_name=='LDL_data':
-        return 194, 9, 30, 60, 5
+        return 194, 9, 30, 30, 5
 
 def data_preprocess(data, db_name):
     sub_num, clip_num, channels, fea_dim = get_num(db_name)
