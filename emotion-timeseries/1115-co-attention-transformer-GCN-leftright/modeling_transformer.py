@@ -19,7 +19,7 @@ class MultiSequential(nn.Sequential):
             if type(inputs) == tuple:
                 inputs = module(*inputs)
             else:
-                inputs = module(inputs.cuda())
+                inputs = module(inputs)
         return inputs
 
 
@@ -325,9 +325,9 @@ class TransformerEncoder(nn.Module):
 
         # self.src_embedding = self.embedding(src)
 
-        src_pe = self.pos_enc(src)
+        src_pe = self.pos_enc(src.cuda())
 
-        enc = self.encoder(src_pe)
+        enc = self.encoder(src_pe.cuda())
         print('enc shape.....:', enc.shape)
 
         return enc
