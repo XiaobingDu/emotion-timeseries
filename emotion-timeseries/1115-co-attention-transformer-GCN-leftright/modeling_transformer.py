@@ -113,7 +113,7 @@ class MultiHeadAttention(nn.Module):
 
         if self.mask == 'diag':
             mask = torch.eye(
-                n=score.shape[2], m=score.shape[3], dtype=torch.bool,
+                n=score.shape[2], m=score.shape[3], dtype=torch.float,
             )
             mask = mask.reshape(-1).repeat((1, np.prod(score.shape[:2]))).reshape(score.shape)
 
@@ -167,8 +167,7 @@ class PositionalEncoder(nn.Module):
         self.dropout = nn.Dropout(p=p)
 
     def forward(self, x):
-        print('******:', x.shape)
-        print('**********:', self.pe[:, :x.size(1)].shape)
+
         x = x + Variable(self.pe[:, :x.size(1)], requires_grad=False)
         return self.dropout(x)
 
@@ -324,11 +323,7 @@ class TransformerEncoder(nn.Module):
 
     def forward(self, src):
 
-        print('!!!!!!!!!', src.shape)
-
         # self.src_embedding = self.embedding(src)
-
-        # print('!!!!!!!!!', self.src_embedding.shape)
 
         src_pe = self.pos_enc(src)
 
