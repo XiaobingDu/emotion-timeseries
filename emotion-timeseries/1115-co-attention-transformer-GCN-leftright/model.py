@@ -148,4 +148,4 @@ class EEGEncoder(nn.Module):
         predict = torch.matmul(predicted_last, GCN_output)  # ML-GCN eq.4
 
 
-        return predict, context, predict, attn
+        return predict, context, predicted_last, attn
