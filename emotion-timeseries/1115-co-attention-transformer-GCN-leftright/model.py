@@ -121,7 +121,8 @@ class EEGEncoder(nn.Module):
         print('presentation shape:', presentation.shape)
         presentation = self.enc_all_linear1(presentation)
         print('presentation shape:', presentation.shape)
-        presentation = self.enc_all_linear2(presentation).aqueeze(-1)
+        presentation = self.enc_all_linear2(presentation)
+        print('presentation shape:', presentation.shape)
         presentation = torch.softmax(presentation)
         print('presentation shape:', presentation.shape)
 
