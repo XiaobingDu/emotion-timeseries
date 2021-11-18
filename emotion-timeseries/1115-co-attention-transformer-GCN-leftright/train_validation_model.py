@@ -274,7 +274,9 @@ for epoch_num in range(num_epochs):
         train_eb_fbeta = fbeta(dom_label, predict_sig)
         #
         # # example-based-ranking
+        print('*************************')
         train_oneError = oneError(dom_label, predict_sig)
+        print('#'*20)
         train_coverage = coverage(dom_label, predict_sig)
         train_averagePrecision = averagePrecision(dom_label, predict_sig)
         train_rankingLoss = rankingLoss(dom_label, predict_sig)
