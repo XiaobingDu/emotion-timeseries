@@ -181,10 +181,8 @@ def chebyshev_dist(size, RD, PD):
 def KL_dist(RD, PD):
     RD = RD.cpu().detach().numpy()
     PD = PD.cpu().detach().numpy()
-
     kldiv = RD * np.log(RD / PD)
     kldist = kldiv.sum(axis=1)
-    # kldist = [x for x in kldist if str(x) != 'nan' and str(x) != 'inf']  # 除去inf值
     kldist = np.nan_to_num(kldist)
     kldist = np.mean(kldist)
 
@@ -233,16 +231,8 @@ def cosine_dist(RD, PD):
     rd_temp = RD * RD
     rd_temp = rd_temp.sum(axis=1)
     res = np.sqrt(pd_temp) * np.sqrt(rd_temp)# [32,1]
-    # where_are_nan = np.isnan(res)
-    # where_are_inf = np.isinf(res)
-    # res[where_are_nan] = 0
-    # res[where_are_inf] = 0
-    # res = [x for x in res if str(x) != 'nan' and str(x) != 'inf']  # 除去inf值
     res = np.nan_to_num(res)
-    print('*******:', len(res))
-    print('&&&&&&&:', inner.shape)
     tmp = inner / res
-    # tmp = [x for x in tmp if str(x) != 'nan' and str(x) != 'inf']
     tmp = np.nan_to_num(tmp)
     distance = np.mean(tmp)
 
