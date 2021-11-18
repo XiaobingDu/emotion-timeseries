@@ -159,24 +159,15 @@ class PositionalEncoder(nn.Module):
         super(PositionalEncoder, self).__init__()
         # Compute the positional encodings once in log space.
         pos_enc = torch.zeros(max_len, d_model).float()
-        print('pos_enc shape.....:', pos_enc.shape)
         position = torch.arange(0, max_len).unsqueeze(1).float()
-        print('position shape....:', position.shape)
         div_term = torch.exp(torch.tensor(torch.arange(0, d_model, 2) * -(np.log(10000.0) / d_model),dtype=torch.float))
-        print('div_term shape.....:', div_term.shape)
-        print('position * div_term shape:', (position * div_term).shape)
         pos_enc[:, 0::2] = torch.sin(position * div_term)
-        print('pos_enc[:, 0::2]....:', pos_enc[:, 0::2].shape)
-        print('pos_enc[:, 1::2]....:', pos_enc[:, 1::2].shape)
         if d_model % 2 != 0:
             pos_enc_o = torch.cat([pos_enc[:, 1::2],torch.zeros(pos_enc[:, 1::2].shape[0],1)], dim=-1)
-            print('pos_enc_o:' , pos_enc_o)
             pos_enc_o = torch.cos(position * div_term)
-            print('pos_enc_o:', pos_enc_o)
             pos_enc[:, 1::2] = pos_enc_o[:,0:-1]
         else:
             pos_enc[:, 1::2] = torch.cos(position * div_term)
-        print('pos_enc[:, 1::2]....:', pos_enc[:, 1::2].shape)
         pos_enc = pos_enc.unsqueeze(0)
         self.register_buffer('pe', pos_enc)
 
