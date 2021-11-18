@@ -49,7 +49,7 @@ class EEGEncoder(nn.Module):
         self.dropout= args['dropout_prob']
 
         self.enc_all_linear1 = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.feature_len, self.enc_dim, nn.LeakyReLU()))
-        self.enc_all_linear2 = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.enc_dim, 1, nn.LeakyReLU()))
+        # self.enc_all_linear2 = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.enc_dim, 1, nn.LeakyReLU()))
         self.left_linear = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.feature_dim, self.enc_dim, nn.LeakyReLU()))
         self.right_linear = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.feature_dim, self.enc_dim, nn.LeakyReLU()))
 
@@ -121,19 +121,19 @@ class EEGEncoder(nn.Module):
         all_features = torch.cat([left_features, right_features], dim=-1)
         print('all_feature shape:', all_features.shape)
         presentation = self.all_transformer_enc(all_features)
-        print('presentation shape:', presentation.shape)
+        print('presentation shape:', presentation.shape) # [32, 30, 150]
         presentation = self.enc_all_linear1(presentation)
-        print('presentation shape:', presentation.shape)
-        presentation = self.enc_all_linear2(presentation)
-        print('presentation shape:', presentation.shape)
+        print('presentation shape:', presentation.shape) # [32, 30, 1024]
+        # presentation = self.enc_all_linear2(presentation)
+        # print('presentation shape:', presentation.shape) # [32, 30, 1]
         presentation = torch.softmax(presentation, dim=-1)
-        print('presentation shape:', presentation.shape)
+        print('presentation shape:', presentation.shape) # [32, 30, 1024]
 
         attn = att_score
         attn = attn.reshape(batch_size, seq_len, self.attn_len)
-        print('attention shape:', attn.shape)
+        print('attention shape:', attn.shape) # [32, 30, 1]
         context = convolve(presentation, attn)
-        print('context shape:', context.shape)
+        print('context shape:', context.shape)# [32, 30, 1]
 
         predicted = self.out(context).view(batch_size, seq_len, -1)
         print('predicted shape:', predicted.shape)
