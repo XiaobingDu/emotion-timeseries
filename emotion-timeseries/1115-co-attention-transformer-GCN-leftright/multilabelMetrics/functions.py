@@ -89,6 +89,7 @@ def rankingMatrix(probabilities):
         iteration = 1
         print('3' * 20)
         while (sum(probCopy[i, :]) != 0):
+            print(sum(probCopy[i, :]))
             print('4' * 20)
             for j in range(probabilities.shape[1]):
                 print('5' * 20)
