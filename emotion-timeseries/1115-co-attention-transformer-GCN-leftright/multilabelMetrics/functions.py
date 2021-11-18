@@ -96,5 +96,5 @@ def rankingMatrix(probabilities):
                 ranking[i, indexMost] = iteration
                 probCopy[i, indexMost] = 0
                 iteration += 1
-
+    print('5' * 20)
     return ranking
