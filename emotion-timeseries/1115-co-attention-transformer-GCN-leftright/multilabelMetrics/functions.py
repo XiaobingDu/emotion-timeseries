@@ -80,25 +80,18 @@ def rankingMatrix(probabilities):
     """
     Matrix with the rankings for each label
     """
-    print('1' * 20)
     ranking = np.zeros(shape=[probabilities.shape[0], probabilities.shape[1]])
     probCopy = np.copy(probabilities)
-    print('2' * 20)
     probCopy = np.nan_to_num(probCopy)
     for i in range(probabilities.shape[0]):
         indexMost = 0
         iteration = 1
-        print('3' * 20)
         while (sum(probCopy[i, :]) != 0):
             print(sum(probCopy[i, :]))
-            print('4' * 20)
             for j in range(probabilities.shape[1]):
-                print('5' * 20)
                 if probCopy[i, j] > probCopy[i, indexMost]:
                     indexMost = j
                 ranking[i, indexMost] = iteration
                 probCopy[i, indexMost] = 0
-                print('6' * 20)
                 iteration += 1
-    print('7' * 20)
     return ranking

@@ -18,21 +18,15 @@ def oneError(y_test, probabilities):
     """
     y_test = y_test.cpu().detach().numpy()
     probabilities = probabilities.cpu().detach().numpy()
-    print('*******:', y_test.shape)
-    print('*******:', probabilities.shape)
 
     oneerror = 0.0
     ranking = rankingMatrix(probabilities)
-    print('$' * 20)
 
     for i in range(y_test.shape[0]):
-        print('@' * 20)
         index = np.argmin(ranking[i, :])
         if y_test[i, index] == 0:
             oneerror += 1.0
-    print('!' * 20)
     oneerror = float(oneerror) / float(y_test.shape[0])
-    print('&' * 20)
 
     return oneerror
 
