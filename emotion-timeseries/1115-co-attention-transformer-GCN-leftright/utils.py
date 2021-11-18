@@ -184,7 +184,8 @@ def KL_dist(RD, PD):
 
     kldiv = RD * np.log(RD / PD)
     kldist = kldiv.sum(axis=1)
-    kldist = [x for x in kldist if str(x) != 'nan' and str(x) != 'inf']  # 除去inf值
+    # kldist = [x for x in kldist if str(x) != 'nan' and str(x) != 'inf']  # 除去inf值
+    kldist = np.nan_to_num(kldist)
     kldist = np.mean(kldist)
 
     return kldist
