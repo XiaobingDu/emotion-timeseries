@@ -91,10 +91,12 @@ def rankingMatrix(probabilities):
         while (sum(probCopy[i, :]) != 0):
             print('4' * 20)
             for j in range(probabilities.shape[1]):
+                print('5' * 20)
                 if probCopy[i, j] > probCopy[i, indexMost]:
                     indexMost = j
                 ranking[i, indexMost] = iteration
                 probCopy[i, indexMost] = 0
+                print('6' * 20)
                 iteration += 1
-    print('5' * 20)
+    print('7' * 20)
     return ranking
