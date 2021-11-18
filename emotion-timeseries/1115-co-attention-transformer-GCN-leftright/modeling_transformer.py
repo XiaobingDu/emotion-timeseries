@@ -170,7 +170,9 @@ class PositionalEncoder(nn.Module):
         print('pos_enc[:, 1::2]....:', pos_enc[:, 1::2].shape)
         if d_model % 2 != 0:
             pos_enc_o = torch.cat([pos_enc[:, 1::2],torch.zeros(pos_enc[:, 1::2].shape[0],1)], dim=-1)
+            print('pos_enc_o:' , pos_enc_o)
             pos_enc_o = torch.cos(position * div_term)
+            print('pos_enc_o:', pos_enc_o)
             pos_enc[:, 1::2] = pos_enc_o[:,0:-1]
         else:
             pos_enc[:, 1::2] = torch.cos(position * div_term)
