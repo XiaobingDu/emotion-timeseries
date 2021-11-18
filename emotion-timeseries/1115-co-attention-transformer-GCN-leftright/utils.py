@@ -1,4 +1,3 @@
-
 from __future__ import print_function, division
 from torch.utils.data import Dataset, DataLoader
 import numpy as np
@@ -7,11 +6,11 @@ import shutil
 import math
 
 
-#___________________________________________________________________________________________________________________________
+# ___________________________________________________________________________________________________________________________
 
 # New Dataloader for MovieClass
 class MediaEvalDataset(Dataset):
-    def __init__(self,feature, dis, dom_label, idx):
+    def __init__(self, feature, dis, dom_label, idx):
         self.channel = 30
         self.feature = feature
         self.dis = dis
@@ -20,9 +19,9 @@ class MediaEvalDataset(Dataset):
         self.left = []
         self.right = []
 
-        #get the brain regions
+        # get the brain regions
         # 对应左右脑区的特征
-        #idx = [[0,2,3,4,7,8,12,13,14,17,18,22,23,24,27],[1,5,6,9,10,11,15,16,19,20,21,25,26,28,29]]
+        # idx = [[0,2,3,4,7,8,12,13,14,17,18,22,23,24,27],[1,5,6,9,10,11,15,16,19,20,21,25,26,28,29]]
         left_idx = idx[0]  # [0,1,2,3,4,5,6]
         right_idx = idx[1]  # [7,11,12,16,17,21,22,26]
         sample_nums = self.feature.shape[0]
@@ -43,14 +42,14 @@ class MediaEvalDataset(Dataset):
             else:
                 left_feature = torch.cat((left_feature, data[:, :, l, :].unsqueeze_(2)), dim=2)
 
-        print('left_feature shape:', left_feature.shape) # ([991, 30, 15, 5])
+        print('left_feature shape:', left_feature.shape)  # ([991, 30, 15, 5])
         # transpose
         # left_feature = np.transpose(left_feature, (0, 2, 1, 3))
         # print('left_feature shape:', left_feature.shape) # [991, 15, 120, 5]
         # reshape
         left_feature = np.reshape(left_feature, [left_feature.shape[0], left_feature.shape[1],
-                                                         int(left_feature.shape[2] * left_feature.shape[3])])
-        print('left_feature shape:', left_feature.shape) # ([991, 30, 75])
+                                                 int(left_feature.shape[2] * left_feature.shape[3])])
+        print('left_feature shape:', left_feature.shape)  # ([991, 30, 75])
 
         cnt = 0
         # right channel
@@ -61,22 +60,20 @@ class MediaEvalDataset(Dataset):
                 right_feature.unsqueeze_(2)
                 cnt = 1
             else:
-                print('*'*20, right_feature.shape)
+                print('*' * 20, right_feature.shape)
                 right_feature = torch.cat((right_feature, data[:, :, r, :].unsqueeze_(2)), dim=2)
 
-        print('right_feature shape:', right_feature.shape) # ([991, 30, 15, 5])
+        print('right_feature shape:', right_feature.shape)  # ([991, 30, 15, 5])
         # transpose
         # right_feature = np.transpose(right_feature, (0, 2, 1, 3))
         # print('right_feature shape:', right_feature.shape) # ([991, 15, 120, 5])
         # reshape
         right_feature = np.reshape(right_feature, [right_feature.shape[0], right_feature.shape[1],
-                                                       int(right_feature.shape[2] * right_feature.shape[3])])
-        print('right_feature shape:', right_feature.shape) # ([991, 30, 75])
+                                                   int(right_feature.shape[2] * right_feature.shape[3])])
+        print('right_feature shape:', right_feature.shape)  # ([991, 30, 75])
 
         self.left = left_feature
         self.right = right_feature
-
-
 
     def __len__(self):
         num_samples = self.feature.shape[0]
@@ -88,23 +85,23 @@ class MediaEvalDataset(Dataset):
         y = self.dis[index]
         target_gt = self.dom_label[index]
         # 左右脑区的数据hstack
-        combined = torch.cat((left, right), dim=-1) #[10,150]
+        combined = torch.cat((left, right), dim=-1)  # [10,150]
 
         return combined, y, target_gt, left, right
 
 
-
-#______________________________________________________________________________________________________________________________________
+# ______________________________________________________________________________________________________________________________________
 def adjust_learning_rate(optimizer, epoch, lr):
     """Sets the learning rate to the initial LR decayed by 10 every 30 epochs
     lr_decay = 10 equals to lr = lr * 0.1
     """
-    if epoch == 5: #100
+    if epoch == 5:  # 100
         lr = lr * 0.1
         for param_group in optimizer.param_groups:
             param_group['lr'] = lr
 
-#calculate CCC for SEND dataset
+
+# calculate CCC for SEND dataset
 def prsn(emot_score, labels):
     """Computes concordance correlation coefficient."""
 
@@ -116,6 +113,7 @@ def prsn(emot_score, labels):
     prsn_corr = torch.sum(vx * vy) / (torch.sqrt(torch.sum(vx ** 2)) * torch.sqrt(torch.sum(vy ** 2)))
 
     return prsn_corr
+
 
 def save_ckp(state, is_best, checkpoint_path, best_model_path):
     """
@@ -132,6 +130,7 @@ def save_ckp(state, is_best, checkpoint_path, best_model_path):
         best_fpath = best_model_path
         # copy that checkpoint file to best path given, best_model_path
         shutil.copyfile(f_path, best_fpath)
+
 
 def load_ckp(checkpoint_fpath, model, optimizer):
     """
@@ -153,7 +152,7 @@ def load_ckp(checkpoint_fpath, model, optimizer):
 
 # metrics for emotion distribution learning
 # euclidean distance
-def euclidean_dist (size, RD, PD):
+def euclidean_dist(size, RD, PD):
     RD = RD.cpu().detach().numpy()
     PD = PD.cpu().detach().numpy()
     _size = size
@@ -161,19 +160,19 @@ def euclidean_dist (size, RD, PD):
     for i in range(_size):
         d1 = np.sqrt(np.sum(np.square(RD[i] - PD[i])))
         dist[i] = d1
-    euclidean_dist = sum(dist)/_size
+    euclidean_dist = sum(dist) / _size
 
     return euclidean_dist
 
 
 # chebyshev distance
-def chebyshev_dist (size, RD, PD):
+def chebyshev_dist(size, RD, PD):
     RD = RD.cpu().detach().numpy()
     PD = PD.cpu().detach().numpy()
     _size = size
     chebyshev_distances = np.empty(_size)
     for i in range(_size):
-        chebyshev_distances[i] = np.max(np.abs(RD[i]-PD[i]))
+        chebyshev_distances[i] = np.max(np.abs(RD[i] - PD[i]))
 
     return sum(chebyshev_distances) / _size
 
@@ -208,7 +207,7 @@ def clark_dist(RD, PD):
     return distance
 
 
-#canberra metric
+# canberra metric
 def canberra_dist(RD, PD):
     RD = RD.cpu().detach().numpy()
     PD = PD.cpu().detach().numpy()
@@ -222,43 +221,48 @@ def canberra_dist(RD, PD):
     return distance
 
 
-#cosine coefficient
+# cosine coefficient
 def cosine_dist(RD, PD):
     RD = RD.cpu().detach().numpy()
     PD = PD.cpu().detach().numpy()
-
+    print('******:', RD.shape)
+    print('******:', PD.shape)
     temp = PD * RD
+    print('******:', temp.shape)
     inner = temp.sum(axis=1)
+    print('******:', inner.shape)
     pd_temp = PD * PD
     pd_temp = pd_temp.sum(axis=1)
     rd_temp = RD * RD
     rd_temp = rd_temp.sum(axis=1)
-    len = np.sqrt(pd_temp) * np.sqrt(rd_temp)
-    len = [x for x in len if str(x) != 'nan' and str(x) != 'inf']  # 除去inf值
-    print('*******:',len(len))
-    print('&&&&&&&:',inner.shape)
-    tmp = inner/len
+    res = np.sqrt(pd_temp) * np.sqrt(rd_temp)
+    print('******:', res.shape)
+    res = [x for x in res if str(x) != 'nan' and str(x) != 'inf']  # 除去inf值
+    print('*******:', len(res))
+    print('&&&&&&&:', inner.shape)
+    tmp = inner / res
     tmp = [x for x in tmp if str(x) != 'nan' and str(x) != 'inf']
     distance = np.mean(tmp)
 
     return distance
 
 
-#intersection similarity
+# intersection similarity
 def intersection_dist(RD, PD):
     RD = RD.cpu().detach().numpy()
     PD = PD.cpu().detach().numpy()
 
-    temp = np.minimum(PD,RD)
+    temp = np.minimum(PD, RD)
     temp = temp.sum(axis=1)
     similarity = np.mean(temp)
 
     return similarity
 
-#generate adj
+
+# generate adj
 def gen_A(num_classes, t, adj_file):
     import pickle
-    result = pickle.load(open(adj_file,'rb'), encoding='iso-8859-1')
+    result = pickle.load(open(adj_file, 'rb'), encoding='iso-8859-1')
     _adj = result['adj']
     # _nums = result['nums']
     # _nums = _nums[:, np.newaxis]
@@ -268,6 +272,7 @@ def gen_A(num_classes, t, adj_file):
     # _adj = _adj * 0.25 / (_adj.sum(0, keepdims=True) + 1e-6) #p=0.25
     # _adj = _adj + np.identity(num_classes, np.int)
     return _adj
+
 
 def gen_adj(A):
     D = torch.pow(A.sum(1).float(), -0.5)
@@ -318,13 +323,14 @@ class AveragePrecisionMeter(object):
                 each example (each weight > 0)
         """
         if not torch.is_tensor(output):
-            output = torch.from_numpy(output) # torch.from_numpy: transfer the 'numpy' to 'tensor'; same as torch.Tensor()
+            output = torch.from_numpy(
+                output)  # torch.from_numpy: transfer the 'numpy' to 'tensor'; same as torch.Tensor()
         if not torch.is_tensor(target):
             target = torch.from_numpy(target)
 
         # the dim of output & target
         if output.dim() == 1:
-            output = output.view(-1, 1) #add one dim
+            output = output.view(-1, 1)  # add one dim
         else:
             assert output.dim() == 2, \
                 'wrong output size (should be 1D or 2D with one column \
@@ -335,7 +341,7 @@ class AveragePrecisionMeter(object):
             assert target.dim() == 2, \
                 'wrong target size (should be 1D or 2D with one column \
                 per class)'
-        if self.scores.numel() > 0: # numel: the number of tensor
+        if self.scores.numel() > 0:  # numel: the number of tensor
             assert target.size(1) == self.targets.size(1), \
                 'dimensions for output should match previously added examples.'
 
@@ -368,14 +374,15 @@ class AveragePrecisionMeter(object):
             scores = self.scores[:, k]
             targets = self.targets[:, k]
             # compute average precision
-            ap[k] = AveragePrecisionMeter.average_precision(scores, targets, self.difficult_examples) # get cp
+            ap[k] = AveragePrecisionMeter.average_precision(scores, targets, self.difficult_examples)  # get cp
         return ap
 
     @staticmethod
-    def average_precision(output, target, difficult_examples=True): # for one class
+    def average_precision(output, target, difficult_examples=True):  # for one class
 
         # sort examples
-        sorted, indices = torch.sort(output, dim=0, descending=True) #sorted by column; indices: the index for the elements rank
+        sorted, indices = torch.sort(output, dim=0,
+                                     descending=True)  # sorted by column; indices: the index for the elements rank
 
         # Computes prec@i
         pos_count = 0.
@@ -432,4 +439,3 @@ class AveragePrecisionMeter(object):
         CR = np.sum(Nc / Ng) / n_class
         CF1 = (2 * CP * CR) / (CP + CR)
         return OP, OR, OF1, CP, CR, CF1
-
