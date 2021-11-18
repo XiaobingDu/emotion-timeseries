@@ -168,7 +168,12 @@ class PositionalEncoder(nn.Module):
         pos_enc[:, 0::2] = torch.sin(position * div_term)
         print('pos_enc[:, 0::2]....:', pos_enc[:, 0::2].shape)
         print('pos_enc[:, 1::2]....:', pos_enc[:, 1::2].shape)
-        pos_enc[:, 1::2] = torch.cos(position * div_term)
+        if d_model % 2 != 0:
+            pos_enc_o = torch.cat([pos_enc[:, 1::2],torch.zeros(pos_enc[:, 1::2].shape[0],1)], dim=-1)
+            pos_enc_o = torch.cos(position * div_term)
+            pos_enc[:, 1::2] = pos_enc_o[:,0:-1]
+        else:
+            pos_enc[:, 1::2] = torch.cos(position * div_term)
         print('pos_enc[:, 1::2]....:', pos_enc[:, 1::2].shape)
         pos_enc = pos_enc.unsqueeze(0)
         self.register_buffer('pe', pos_enc)
