@@ -167,6 +167,7 @@ class PositionalEncoder(nn.Module):
         print('position * div_term shape:', (position * div_term).shape)
         pos_enc[:, 0::2] = torch.sin(position * div_term)
         print('pos_enc[:, 0::2]....:', pos_enc[:, 0::2].shape)
+        print('pos_enc[:, 1::2]....:', pos_enc[:, 1::2].shape)
         pos_enc[:, 1::2] = torch.cos(position * div_term)
         print('pos_enc[:, 1::2]....:', pos_enc[:, 1::2].shape)
         pos_enc = pos_enc.unsqueeze(0)
