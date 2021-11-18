@@ -168,7 +168,7 @@ def euclidean_dist (size, RD, PD):
 
 # chebyshev distance
 def chebyshev_dist (size, RD, PD):
-    RD = RD.pu().detach().numpy()
+    RD = RD.cpu().detach().numpy()
     PD = PD.cpu().detach().numpy()
     _size = size
     chebyshev_distances = np.empty(_size)
