@@ -18,6 +18,8 @@ def oneError(y_test, probabilities):
     """
     y_test = y_test.cpu().detach().numpy()
     probabilities = probabilities.cpu().detach().numpy()
+    print('*******:', y_test.shape)
+    print('*******:', probabilities.shape)
 
     oneerror = 0.0
     ranking = rankingMatrix(probabilities)
