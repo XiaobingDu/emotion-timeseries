@@ -89,54 +89,53 @@ class EEGEncoder(nn.Module):
         batch_size, seq_len = x.shape[0], x.shape[1]
 
         # left transformer
-        print('left_feature shape:', left_features.shape)
+        # print('left_feature shape:', left_features.shape)
         left_enc = self.left_transformer_enc(left_features)
-        print('left enc shape:', left_enc.shape)
+        # print('left enc shape:', left_enc.shape)
         left_enc = self.left_linear(left_enc)
-        print('left enc shape:', left_enc.shape)
+        # print('left enc shape:', left_enc.shape)
         # right transformer
-        print('right_feature shape:', right_features.shape)
+        # print('right_feature shape:', right_features.shape)
         right_enc = self.right_transformer_enc(right_features)
-        print('right enc shape:', right_enc.shape)
+        # print('right enc shape:', right_enc.shape)
         right_enc = self.right_linear(right_enc)
-        print('right enc shape:', right_enc.shape)
+        # print('right enc shape:', right_enc.shape)
 
         # Co-attention Scores
         concat_features = torch.cat([left_enc, right_enc], dim=-1)
         att_score = self.att_linear(concat_features).squeeze(-1)
-        print('att_score....:', att_score.shape)
+        # print('att_score....:', att_score.shape)
         att_score = torch.softmax(att_score, dim=-1)
-        print('att_score....:', att_score.shape)
+        # print('att_score....:', att_score.shape)
 
         # when the left and right use the channel dim as the seq_len
         # all_transformer
         # left_features = torch.reshape(left_features,[left_features.shape[0],left_features.shape[1], int(left_features.shape[2]/5), 5])
         # left_features = left_features.permute(0,2,1,3)
         # left_features = torch.reshape(left_features,[left_features.shape[0],left_features.shape[1],left_features.shape[2]*left_features.shape[3]])
-        print('left_feature shape:', left_features.shape)
+        # print('left_feature shape:', left_features.shape)
         # right_features = torch.reshape(right_features, [right_features.shape[0], right_features.shape[1], int(right_features.shape[2]/5), 5])
         # right_features = right_features.permute(0, 2, 1, 3)
         # right_features = torch.reshape(right_features, [right_features.shape[0], right_features.shape[1], right_features.shape[2]*right_features.shape[3]])
-        print('right_feature shape:', right_features.shape)
+        # print('right_feature shape:', right_features.shape)
         all_features = torch.cat([left_features, right_features], dim=-1)
-        print('all_feature shape:', all_features.shape)
+        # print('all_feature shape:', all_features.shape)
         presentation = self.all_transformer_enc(all_features)
-        print('presentation shape:', presentation.shape) # [32, 30, 150]
+        # print('presentation shape:', presentation.shape) # [32, 30, 150]
         presentation = self.enc_all_linear1(presentation)
-        print('presentation shape:', presentation.shape) # [32, 30, 1024]
+        # print('presentation shape:', presentation.shape) # [32, 30, 1024]
         # presentation = self.enc_all_linear2(presentation)
         # print('presentation shape:', presentation.shape) # [32, 30, 1]
         presentation = torch.softmax(presentation, dim=-1)
-        print('presentation shape:', presentation.shape) # [32, 30, 1024]
+        # print('presentation shape:', presentation.shape) # [32, 30, 1024]
 
         attn = att_score
         attn = attn.reshape(batch_size, seq_len, self.attn_len)
-        print('attention shape:', attn.shape) # [32, 30, 1]
+        # print('attention shape:', attn.shape) # [32, 30, 1]
         context = convolve(presentation, attn)
-        print('context shape:', context.shape)# [32, 30, 1]
-
+        # print('context shape:', context.shape)# [32, 30, 1]
         predicted = self.out(context).view(batch_size, seq_len, -1)
-        print('predicted shape:', predicted.shape)
+        # print('predicted shape:', predicted.shape)
         predicted_last = predicted[:, -1, :]
 
         # GCN module
@@ -145,7 +144,6 @@ class EEGEncoder(nn.Module):
         GCN_output = GCN_module(inp='embedding/positiveEmotion_glove_word2vec.pkl')  # [9,256]
         GCN_output = self.GCN_out(GCN_output.cuda()) #[9,64]
         GCN_output = GCN_output.transpose(0, 1).cuda()  # [64,9]
-
         # GCN output * LSTM lastTimestep
         ## [32,9]
         predict = torch.matmul(predicted_last, GCN_output)  # ML-GCN eq.4
