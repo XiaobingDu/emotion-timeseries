@@ -235,7 +235,7 @@ def cosine_dist(RD, PD):
     rd_temp = rd_temp.sum(axis=1)
     len = np.sqrt(pd_temp) * np.sqrt(rd_temp)
     len = [x for x in len if str(x) != 'nan' and str(x) != 'inf']  # 除去inf值
-    print('*******:',len)
+    print('*******:',len(len))
     print('&&&&&&&:',inner.shape)
     tmp = inner/len
     tmp = [x for x in tmp if str(x) != 'nan' and str(x) != 'inf']
