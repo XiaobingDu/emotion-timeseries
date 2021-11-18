@@ -164,6 +164,7 @@ class PositionalEncoder(nn.Module):
         print('position shape....:', position.shape)
         div_term = torch.exp(torch.tensor(torch.arange(0, d_model, 2) * -(np.log(10000.0) / d_model),dtype=torch.float))
         print('div_term shape.....:', div_term.shape)
+        print('position * div_term shape:', position * div_term.shape)
         pos_enc[:, 0::2] = torch.sin(position * div_term)
         print('pos_enc[:, 0::2]....:', pos_enc[:, 0::2].shape)
         pos_enc[:, 1::2] = torch.cos(position * div_term)
