@@ -241,7 +241,8 @@ def cosine_dist(RD, PD):
     print('*******:', len(res))
     print('&&&&&&&:', inner.shape)
     tmp = inner / res
-    tmp = [x for x in tmp if str(x) != 'nan' and str(x) != 'inf']
+    # tmp = [x for x in tmp if str(x) != 'nan' and str(x) != 'inf']
+    tmp = np.nan_to_num(tmp)
     distance = np.mean(tmp)
 
     return distance
