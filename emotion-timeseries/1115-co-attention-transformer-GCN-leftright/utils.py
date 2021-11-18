@@ -223,21 +223,21 @@ def canberra_dist(RD, PD):
 
 # cosine coefficient
 def cosine_dist(RD, PD):
-    RD = RD.cpu().detach().numpy()
-    PD = PD.cpu().detach().numpy()
-    print('******:', RD.shape)
-    print('******:', PD.shape)
-    temp = PD * RD
-    print('******:', temp.shape)
-    inner = temp.sum(axis=1)
-    print('******:', inner.shape)
+    RD = RD.cpu().detach().numpy() # [32,9]
+    PD = PD.cpu().detach().numpy() # [32,9]
+    temp = PD * RD # [32,9]
+    inner = temp.sum(axis=1) # [32,1]
     pd_temp = PD * PD
     pd_temp = pd_temp.sum(axis=1)
     rd_temp = RD * RD
     rd_temp = rd_temp.sum(axis=1)
-    res = np.sqrt(pd_temp) * np.sqrt(rd_temp)
-    print('******:', res.shape)
-    res = [x for x in res if str(x) != 'nan' and str(x) != 'inf']  # 除去inf值
+    res = np.sqrt(pd_temp) * np.sqrt(rd_temp)# [32,1]
+    # where_are_nan = np.isnan(res)
+    # where_are_inf = np.isinf(res)
+    # res[where_are_nan] = 0
+    # res[where_are_inf] = 0
+    # res = [x for x in res if str(x) != 'nan' and str(x) != 'inf']  # 除去inf值
+    res = np.nan_to_num(res)
     print('*******:', len(res))
     print('&&&&&&&:', inner.shape)
     tmp = inner / res
