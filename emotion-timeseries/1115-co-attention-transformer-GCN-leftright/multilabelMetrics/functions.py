@@ -84,6 +84,7 @@ def rankingMatrix(probabilities):
     ranking = np.zeros(shape=[probabilities.shape[0], probabilities.shape[1]])
     probCopy = np.copy(probabilities)
     print('2' * 20)
+    probCopy = np.nan_to_num(probCopy)
     for i in range(probabilities.shape[0]):
         indexMost = 0
         iteration = 1
