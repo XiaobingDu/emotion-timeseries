@@ -146,6 +146,8 @@ class EEGEncoder(nn.Module):
         GCN_output = GCN_output.transpose(0, 1).cuda()  # [32,9]
         # GCN output * LSTM lastTimestep
         ## [32,9]
+        print('********:', GCN_output)
+        print('********:', predicted_last)
         predict = torch.matmul(predicted_last, GCN_output)  # ML-GCN eq.4
 
 
