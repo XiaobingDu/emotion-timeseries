@@ -13,17 +13,21 @@ from multilabelMetrics.examplebasedranking import *
 from multilabelMetrics.labelbasedclassification import *
 from multilabelMetrics.labelbasedranking import *
 import warnings
+
 warnings.filterwarnings('ignore')
 import os
+
 os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
 parser = argparse.ArgumentParser()
 
-parser.add_argument('--path1', type=str, choices=["/home/xiaobingdu/EEG_experiments/LDL-LSTM_softmax/attn_lstm/EEG_PSD_multilabel_9_addLabel_sum1/",
-                                                  '/home/xiaobingdu/EEG_experiments/LDL-LSTM_softmax/attn_lstm/EEG_PSD_9_DOM/',
-                                                  '../EEG_PSD_9_DOM/'])
-parser.add_argument('--path2', type=str, choices=["/home/xiaobingdu/EEG_experiments/LDL-LSTM_softmax/attn_lstm/EEG_PSD_multilabel_9_win/featureAll.mat",
-                                                  '/home/xiaobingdu/EEG_experiments/LDL-LSTM_softmax/attn_lstm/EEG_PSD_multilabel_9_win/DOM_featureAll.mat',
-                                                  '../DOM_feature_all/DOM_featureAll.mat'])
+parser.add_argument('--path1', type=str, choices=[
+    "/home/xiaobingdu/EEG_experiments/LDL-LSTM_softmax/attn_lstm/EEG_PSD_multilabel_9_addLabel_sum1/",
+    '/home/xiaobingdu/EEG_experiments/LDL-LSTM_softmax/attn_lstm/EEG_PSD_9_DOM/',
+    '../EEG_PSD_9_DOM/'])
+parser.add_argument('--path2', type=str, choices=[
+    "/home/xiaobingdu/EEG_experiments/LDL-LSTM_softmax/attn_lstm/EEG_PSD_multilabel_9_win/featureAll.mat",
+    '/home/xiaobingdu/EEG_experiments/LDL-LSTM_softmax/attn_lstm/EEG_PSD_multilabel_9_win/DOM_featureAll.mat',
+    '../DOM_feature_all/DOM_featureAll.mat'])
 parser.add_argument('--no-cuda', action='store_true', default=False,
                     help='Disables CUDA training.')
 parser.add_argument('--learning_rate', type=float, default=0.001,
@@ -32,25 +36,25 @@ parser.add_argument('--iter_num', type=int,
                     help='Number of iterate to train.')
 parser.add_argument('--lamda', type=float, default=0.6,
                     help='The lamda is the weight to control the trade-off between two type losses.')
-parser.add_argument('--overlap', type=str, default='with', choices=['with','without'],
+parser.add_argument('--overlap', type=str, default='with', choices=['with', 'without'],
                     help='Get the samples with/without time overlap.')
 parser.add_argument('--sub_id', type=int, default=0,
                     help='The subject ID for Test.')
-parser.add_argument('--fold_id', type=int, default= 1,
+parser.add_argument('--fold_id', type=int, default=1,
                     help='The fold id  for Test.')
-parser.add_argument('--epochs', type=int, default = 20,
+parser.add_argument('--epochs', type=int, default=20,
                     help='Number of epochs to train.')
 parser.add_argument('--batch_size', type=int, default=64)
 parser.add_argument('--label_num', type=int, default=9)
 parser.add_argument('--db_name', type=str, default='LDL_data')
-parser.add_argument('--strategy', type=str, default='five_fold', choices=['split','five_fold','ldl_loso'])
-parser.add_argument('--save_file', type=str, default= 'co_attn_GC')
+parser.add_argument('--strategy', type=str, default='five_fold', choices=['split', 'five_fold', 'ldl_loso'])
+parser.add_argument('--save_file', type=str, default='co_attn_GC')
 parser.add_argument('--log_dir', type=str)
 parser.add_argument('--dropout', type=float, default=0.5,
                     help='Dropout rate (1 - keep probability).')
 parser.add_argument('--weight_decay', type=float, default=0.001,
                     help='Weight decay (L2 loss on parameters).')
-parser.add_argument('--bidirectional', type=bool, default=True )
+parser.add_argument('--bidirectional', type=bool, default=True)
 parser.add_argument('--GCN_hidden', type=int, default=16,
                     help='Number of hidden units.')
 parser.add_argument('--LSTM_layers', type=int, default=2,
@@ -67,16 +71,16 @@ args = {}
 path1 = FLAGS.path1
 path2 = FLAGS.path2
 db_name = 'LDL_data'
-best_model_path ="./best_model"
-checkpoint_path ="./checkpoints"
-valid_loss_min =np.Inf
+best_model_path = "./best_model"
+checkpoint_path = "./checkpoints"
+valid_loss_min = np.Inf
 epoch_cosine_min = np.NINF
 epoch_accuracy_min = np.NINF
 
 # Network Arguments
-args['left_len'] = 30 # timesteps
-args['right_len'] = 30 # timesteps
-args['feature_dim'] = 75 # 15channels * 5
+args['left_len'] = 30  # timesteps
+args['right_len'] = 30  # timesteps
+args['feature_dim'] = 75  # 15channels * 5
 args['out_layer'] = FLAGS.out_layer
 args['sequence_len'] = 30  # 120 timesteps
 args['feature_len'] = 150  # 30*5 = 150
@@ -95,15 +99,14 @@ lamda = FLAGS.lamda
 overlap = FLAGS.overlap
 strategy = FLAGS.strategy
 fold_id = FLAGS.fold_id
-GC_est =None
+GC_est = None
 # 对应左右脑区的电极idx：left, right
-idx = [[0,2,3,4,7,8,12,13,14,17,18,22,23,24,27],[1,5,6,9,10,11,15,16,19,20,21,25,26,28,29]]
-
+idx = [[0, 2, 3, 4, 7, 8, 12, 13, 14, 17, 18, 22, 23, 24, 27], [1, 5, 6, 9, 10, 11, 15, 16, 19, 20, 21, 25, 26, 28, 29]]
 
 # load train, val, test data
 if overlap == 'with':
     print('------overlap: True------')
-    data_set = get_sample_data(path1,path2)
+    data_set = get_sample_data(path1, path2)
 elif overlap == 'without':
     print('------overlap: False------')
     data_set = get_sample_data_withoutOverlap(path1, path2)
@@ -116,7 +119,8 @@ if strategy == 'five_fold':
     test_dom_label = val_dom_label
 elif strategy == 'split':
     print('------strategy: split------')
-    train_data, val_data, test_data, train_dis, val_dis, test_dis, train_dom_label, val_dom_label, test_dom_label = dataSplit(path1, data_set, db_name)
+    train_data, val_data, test_data, train_dis, val_dis, test_dis, train_dom_label, val_dom_label, test_dom_label = dataSplit(
+        path1, data_set, db_name)
 
 train_data = train_data.astype(np.float32)
 val_data = val_data.astype(np.float32)
@@ -130,15 +134,15 @@ train_dom_label = train_dom_label.astype(np.float32)
 val_dom_label = val_dom_label.astype(np.float32)
 test_dom_label = test_dom_label.astype(np.float32)
 
-#通过 MediaEvalDataset 将数据进行加载，返回Dataset对象，包含data和labels
+# 通过 MediaEvalDataset 将数据进行加载，返回Dataset对象，包含data和labels
 trSet = MediaEvalDataset(train_data, train_dis, train_dom_label, idx)
 valSet = MediaEvalDataset(val_data, val_dis, val_dom_label, idx)
 testSet = MediaEvalDataset(test_data, test_dis, test_dom_label, idx)
 
-#读取数据
-trDataloader = DataLoader(trSet,batch_size=batch_size ,shuffle=True ,num_workers=0) # len = 5079 (batches)
-valDataloader = DataLoader(valSet,batch_size=batch_size ,shuffle=True ,num_workers=0) #len = 3172
-testDataloader = DataLoader(testSet,batch_size=batch_size ,shuffle=True ,num_workers=0) #len = 2151
+# 读取数据
+trDataloader = DataLoader(trSet, batch_size=batch_size, shuffle=True, num_workers=0)  # len = 5079 (batches)
+valDataloader = DataLoader(valSet, batch_size=batch_size, shuffle=True, num_workers=0)  # len = 3172
+testDataloader = DataLoader(testSet, batch_size=batch_size, shuffle=True, num_workers=0)  # len = 2151
 
 # Initialize network
 net = EEGEncoder(args)
@@ -146,26 +150,25 @@ if args['use_cuda']:
     net = net.cuda()
 
 ## Initialize optimizer
-optimizer = torch.optim.RMSprop(net.parameters(), lr=lr) if args['optimizer' ]== 'rmsprop' else torch.optim.Adam \
-    (net.parameters() ,lr=lr, weight_decay=1e-8)
-kl_div = torch.nn.KLDivLoss(size_average = True, reduce = True)
+optimizer = torch.optim.RMSprop(net.parameters(), lr=lr) if args['optimizer'] == 'rmsprop' else torch.optim.Adam \
+    (net.parameters(), lr=lr, weight_decay=1e-8)
+kl_div = torch.nn.KLDivLoss(size_average=True, reduce=True)
 BCE = torch.nn.BCEWithLogitsLoss()
 
 # write in file and save
 result = codecs.open(FLAGS.save_file, 'a', 'utf-8')
-if FLAGS.strategy=="ldl_loso":
-        result.write('========\nsubject %s\n========\n' % str(FLAGS.sub_id))
-elif FLAGS.strategy=="five_fold":
-        result.write('\n========\nfold %s\n========\n' % str(FLAGS.fold_id))
-        result.write('\n========\nlamda %s\n========\n' % str(FLAGS.lamda))
+if FLAGS.strategy == "ldl_loso":
+    result.write('========\nsubject %s\n========\n' % str(FLAGS.sub_id))
+elif FLAGS.strategy == "five_fold":
+    result.write('\n========\nfold %s\n========\n' % str(FLAGS.fold_id))
+    result.write('\n========\nlamda %s\n========\n' % str(FLAGS.lamda))
 elif FLAGS.strategy == "split":
     result.write('\n========\nsplit %s\n========\n' % '5:3:2')
     result.write('\n========\nlamda %s\n========\n' % str(FLAGS.lamda))
 result.write('model parameters: %s' % str(FLAGS))
 result.close()
 
-
-#traning&val&test
+# traning&val&test
 epoch_euclidean = 0
 epoch_chebyshev = 0
 epoch_kldist = 0
@@ -195,7 +198,6 @@ for epoch_num in range(num_epochs):
     #    """Sets the learning rate to the initial LR decayed by 10 every 30 epochs"""
     adjust_learning_rate(optimizer, epoch_num, lr)
 
-
     ## Train:_________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
     net.train()  # the state of model
     # Variables to track training performance:
@@ -205,7 +207,7 @@ for epoch_num in range(num_epochs):
         st_time = time.time()
         train, dis, dom_label, left, right = data  # get training date
 
-        if args['use_cuda']: # use cuda
+        if args['use_cuda']:  # use cuda
             train = torch.nn.Parameter(train).cuda()
             dis = torch.nn.Parameter(dis).cuda()
             dom_label = torch.nn.Parameter(dom_label.float()).cuda()
@@ -289,8 +291,7 @@ for epoch_num in range(num_epochs):
         train_fbetaMacro = fbetaMacro(dom_label, predict_sig)
         train_fbetaMicro = fbetaMicro(dom_label, predict_sig)
 
-
-        #results
+        # results
         if i % 10 == 0:
             print('euclidean_dist: {euclidean_dist:.4f}\t'
                   'chebyshev_dist: {chebyshev_dist:.4f}\t'
@@ -332,7 +333,6 @@ for epoch_num in range(num_epochs):
                   "f-1Macro= {:.4f}".format(train_fbetaMacro),
                   "f-1Micro= {:.4f}".format(train_fbetaMicro))
 
-
             result = codecs.open(FLAGS.save_file, 'a', 'utf-8')
             result.write("\n------------------------------------------------------------------\n")
             result.write("Training GC_est:\n")
@@ -344,32 +344,32 @@ for epoch_num in range(num_epochs):
             result.write('\n Epoch: [{0}]: Training....\n'.format(epoch_num + 1))
             result.write("\n========================================\n")
             result.write('euclidean_dist: {euclidean_dist:.4f}\t'
-                  'chebyshev_dist: {chebyshev_dist:.4f}\t'
-                  'kldist: {kldist:.4f}\t'
-                  'clark_dist: {clark_dist:.4f}\t'
-                  'canberra_dist: {canberra_dist:.4f}\t'
-                  'cosine_dist: {cosine_dist:.4f}\t'
-                  'intersection_dist: {intersection_dist:.4f}\t'.format(euclidean_dist=euclidean,
-                                                                        chebyshev_dist=chebyshev, kldist=kldist,
-                                                                        clark_dist=clark, canberra_dist=canberra,
-                                                                        cosine_dist=cosine,
-                                                                        intersection_dist=intersection))
+                         'chebyshev_dist: {chebyshev_dist:.4f}\t'
+                         'kldist: {kldist:.4f}\t'
+                         'clark_dist: {clark_dist:.4f}\t'
+                         'canberra_dist: {canberra_dist:.4f}\t'
+                         'cosine_dist: {cosine_dist:.4f}\t'
+                         'intersection_dist: {intersection_dist:.4f}\t'.format(euclidean_dist=euclidean,
+                                                                               chebyshev_dist=chebyshev, kldist=kldist,
+                                                                               clark_dist=clark, canberra_dist=canberra,
+                                                                               cosine_dist=cosine,
+                                                                               intersection_dist=intersection))
             result.write("\n------------------------------------------------------------------\n")
             result.write("Training set results:\n")
             result.write('Multilabel metrics: example-based-classification:\n')
             result.write(
-                         'subsetAccuracy: {subsetAccuracy:.4f}\t'
-                         'hammingLoss: {hammingLoss:.4f}\t'
-                         'accuracy: {accuracy:.4f}\t'
-                         'precision: {precision:.4f}\t'
-                         'recall: {recall:.4f}\t'
-                         'fbeta: {fbeta:.4f}\t'.format(
-                                                       subsetAccuracy=train_subsetAccuracy,
-                                                       hammingLoss=train_hammingLoss,
-                                                       accuracy=train_eb_accuracy,
-                                                        precision=train_eb_precision,
-                                                       recall=train_eb_recall, fbeta=train_eb_fbeta)
-                                                         )
+                'subsetAccuracy: {subsetAccuracy:.4f}\t'
+                'hammingLoss: {hammingLoss:.4f}\t'
+                'accuracy: {accuracy:.4f}\t'
+                'precision: {precision:.4f}\t'
+                'recall: {recall:.4f}\t'
+                'fbeta: {fbeta:.4f}\t'.format(
+                    subsetAccuracy=train_subsetAccuracy,
+                    hammingLoss=train_hammingLoss,
+                    accuracy=train_eb_accuracy,
+                    precision=train_eb_precision,
+                    recall=train_eb_recall, fbeta=train_eb_fbeta)
+            )
 
             result.write("\n")
             result.write('Multilabel metrics: example-based-ranking:\n')
@@ -384,7 +384,6 @@ for epoch_num in range(num_epochs):
             result.write('accuracyMacro: {accuracyMacro:.4f}\t'
                          'fbetaMicro: {fbetaMicro:.4f}\t'.format(accuracyMacro=train_accuracyMacro,
                                                                  fbetaMicro=train_fbetaMicro))
-
 
     print("Epoch no:", epoch_num + 1, "| Avg_train_loss:".format(avg_tr_loss / len(trSet), '0.4f'))
     result.write("\n------------------------------------------------------------------\n")
@@ -445,7 +444,7 @@ for epoch_num in range(num_epochs):
         dis_prediction = dis_prediction.squeeze(dim=0)  # [32,9]
         dis = torch.squeeze(dis, dim=1)
         loss1 = kl_div(dis_prediction.log(), dis)
-        #for loss2
+        # for loss2
         predict_sig = torch.sigmoid(predict)
         # loss2: BCELoss
         dom_label = dom_label.detach()
@@ -521,7 +520,6 @@ for epoch_num in range(num_epochs):
         val_fbetaMicro = fbetaMicro(dom_label, predict_sig)
         sum_fbetaMicro += val_fbetaMicro
 
-
         if i % 10 == 0:
             print('euclidean_dist: {euclidean_dist:.4f}\t'
                   'chebyshev_dist: {chebyshev_dist:.4f}\t'
@@ -560,7 +558,6 @@ for epoch_num in range(num_epochs):
                   "recallMicro= {:.4f}".format(val_recallMicro),
                   "f-1Macro= {:.4f}".format(val_fbetaMacro),
                   "f-1Micro= {:.4f}".format(val_fbetaMicro))
-
 
             result.write("\n------------------------------------------------------------------\n")
             result.write('Val co-attention:\n ')
@@ -863,324 +860,324 @@ result.write('Epoch: {epoch:.1f}\t'
                                                                      final_fbetaMacro=final_fbetaMacro,
                                                                      final_fbetaMicro=final_fbetaMicro))
 
-# testing
-net = EEGEncoder(args)
-net, optimizer, start_epoch, valid_loss_min_kl = load_ckp(
-    best_model_path + "/train_co_attn_multi_dis_best_model.pt", net, optimizer)
-net.eval()
-test_kl = 0
-emopcc = 0
-sum_euclidean = 0
-sum_chebyshev = 0
-sum_kldist = 0
-sum_clark = 0
-sum_canberra = 0
-sum_cosine = 0
-sum_intersection = 0
-sum_hammingLoss = 0
-sum_eb_accuracy = 0
-sum_eb_precision = 0
-sum_eb_recall = 0
-sum_eb_fbeta = 0
-sum_oneError = 0
-sum_averagePrecision = 0
-sum_rankingLoss = 0
-sum_accuracyMacro = 0
-sum_fbetaMicro = 0
-sum_converage = 0
-sum_accuracyMicro = 0
-sum_precisionMacro = 0
-sum_precisionMicro = 0
-sum_recallMacro = 0
-sum_recallMicro = 0
-sum_fbetaMacro = 0
-count = 0
-for i, data in enumerate(testDataloader):
-    count = count + 1
-    st_time = time.time()
-    test, dis, dom_label, left, right = data
-    dis = dis
-
-    if args['use_cuda']:
-        test = torch.nn.Parameter(test).cuda()
-        dis = torch.nn.Parameter(dis).cuda()
-        dom_label = torch.nn.Parameter(dom_label.float()).cuda()
-        left = torch.nn.Parameter(left).cuda()
-        right = torch.nn.Parameter(right).cuda()
-
-    # Forward pass
-    predict, att_1 = net(test, left, right, dis)
-
-    #for loss1
-    softmax = torch.nn.Softmax(dim=1)
-    dis_prediction = softmax(predict)
-    dis_prediction = dis_prediction.squeeze(dim=0)# [32,9]
-    dis = torch.squeeze(dis, dim=1)
-    loss1 = kl_div(dis_prediction.log(), dis)
-    #for loss2
-    predict_sig = torch.sigmoid(predict)
-    #loss2: BCELoss
-    dom_label = dom_label.detach()
-    loss2 = BCE(predict, dom_label)
-    #loss2: MLSML
-    # loss2 = MLSML(predict.cuda(), target_gt.cuda())
-    loss = lamda * loss1 + (1 - lamda) * loss2
-    test_loss = loss.item()
-    test_loss += test_loss / dis.shape[0]
-
-    # emotion distribution metrics
-    # euclidean
-    euclidean = euclidean_dist(dis.shape[0], dis, dis_prediction)
-    sum_euclidean += euclidean
-    # chebyshev
-    chebyshev = chebyshev_dist(dis.shape[0], dis, dis_prediction)
-    sum_chebyshev += chebyshev
-    # Kullback-Leibler divergence
-    kldist = KL_dist(dis, dis_prediction)
-    sum_kldist += kldist
-    # clark
-    clark = clark_dist(dis, dis_prediction)
-    sum_clark += clark
-    # canberra
-    canberra = canberra_dist(dis, dis_prediction)
-    sum_canberra += canberra
-    # cosine
-    cosine = cosine_dist(dis, dis_prediction)
-    sum_cosine += cosine
-    # intersection
-    intersection = intersection_dist(dis, dis_prediction)
-    sum_intersection += intersection
-
-    # for multilabel prediction
-    # example-based-classification
-    test_hammingLoss = hammingLoss(dom_label, predict_sig)
-    sum_hammingLoss += test_hammingLoss
-    test_eb_accuracy = accuracy(dom_label, predict_sig)
-    sum_eb_accuracy += test_eb_accuracy
-    test_eb_precision = precision(dom_label, predict_sig)
-    sum_eb_precision += test_eb_precision
-    test_eb_recall = recall(dom_label, predict_sig)
-    sum_eb_recall += test_eb_recall
-    test_eb_fbeta = fbeta(dom_label, predict_sig)
-    sum_eb_fbeta += test_eb_fbeta
-
-    # example-based-ranking
-    test_oneError = oneError(dom_label, predict_sig)
-    sum_oneError += test_oneError
-    test_coverage = coverage(dom_label, predict_sig)
-    sum_coverage += test_coverage
-    test_averagePrecision = averagePrecision(dom_label, predict_sig)
-    sum_averagePrecision += test_averagePrecision
-    test_rankingLoss = rankingLoss(dom_label, predict_sig)
-    sum_rankingLoss += test_rankingLoss
-
-    # label-based-classification
-    test_accuracyMacro = accuracyMacro(dom_label, predict_sig)
-    sum_accuracyMacro += test_accuracyMacro
-    test_accuracyMicro = accuracyMicro(dom_label, predict_sig)
-    sum_accuracyMicro += test_accuracyMicro
-    test_precisionMacro = precisionMacro(dom_label, predict_sig)
-    sum_precisionMacro += test_precisionMacro
-    test_precisionMicro = precisionMicro(dom_label, predict_sig)
-    sum_precisionMicro += test_precisionMicro
-    test_recallMacro = recallMacro(dom_label, predict_sig)
-    sum_recallMacro += test_recallMacro
-    test_recallMicro = recallMicro(dom_label, predict_sig)
-    sum_precisionMicro += test_precisionMicro
-    test_fbetaMacro = fbetaMacro(dom_label, predict_sig)
-    sum_fbetaMacro += test_fbetaMacro
-    test_fbetaMicro = fbetaMicro(dom_label, predict_sig)
-    sum_fbetaMicro += test_fbetaMicro
-
-
-    if i % 10 == 0:
-        print('euclidean_dist: {euclidean_dist:.4f}\t'
-                  'chebyshev_dist: {chebyshev_dist:.4f}\t'
-                  'kldist: {kldist:.4f}\t'
-                  'clark_dist: {clark_dist:.4f}\t'
-                  'canberra_dist: {canberra_dist:.4f}\t'
-                  'cosine_dist: {cosine_dist:.4f}\t'
-                  'intersection_dist: {intersection_dist:.4f}\n'.format(euclidean_dist=euclidean,
-                                                                        chebyshev_dist=chebyshev, kldist=kldist,
-                                                                        clark_dist=clark, canberra_dist=canberra,
-                                                                        cosine_dist=cosine,
-                                                                        intersection_dist=intersection))
-
-        print("Test set results:\n",
-              'Multilabel metrics: example-based-classification:\n',
-              "hammingLoss= {:.4f}".format(test_hammingLoss),
-              "accuracy= {:.4f}".format(test_eb_accuracy),
-              "precision= {:.4f}".format(test_eb_precision),
-              "recall= {:.4f}".format(test_eb_recall),
-              "fbeta= {:.4f}".format(test_eb_fbeta))
-
-        print("Test set results:\n",
-              'Multilabel metrics: example-based-ranking:\n',
-              "oneError= {:.4f}".format(test_oneError),
-              "coverage= {:.4f}".format(test_coverage),
-              "averagePrecision= {:.4f}".format(test_averagePrecision),
-              "rankingLoss= {:.4f}".format(test_rankingLoss))
-
-        print("Test set results:\n",
-              'Multilabel metrics: label-based-classification:\n',
-              "accuracyMacro= {:.4f}".format(test_accuracyMacro),
-              "accuracyMicro= {:.4f}".format(test_accuracyMicro),
-              "precisionMacro= {:.4f}".format(test_precisionMacro),
-              "precisionMicro= {:.4f}".format(test_precisionMicro),
-              "recallMacro= {:.4f}".format(test_recallMacro),
-              "recallMicro= {:.4f}".format(test_recallMicro),
-              "fbetaMacro= {:.4f}".format(test_fbetaMacro),
-              "fbetaMicro= {:.4f}".format(test_fbetaMicro))
-
-
-        result.write("\n------------------------------------------------------------------\n")
-        result.write('Test co-attention:\n ')
-        result.write('att_1: \t')
-        result.write('%s\n' % att_1.cpu().detach().numpy().mean(axis=0))
-
-        result.write('\n Epoch: [{0}]: Test....\n'.format(epoch_num+1))
-        result.write("\n========================================\n")
-        result.write('euclidean_dist: {euclidean_dist:.4f}\t'
-                  'chebyshev_dist: {chebyshev_dist:.4f}\t'
-                  'kldist: {kldist:.4f}\t'
-                  'clark_dist: {clark_dist:.4f}\t'
-                  'canberra_dist: {canberra_dist:.4f}\t'
-                  'cosine_dist: {cosine_dist:.4f}\t'
-                  'intersection_dist: {intersection_dist:.4f}\t'.format(euclidean_dist=euclidean,
-                                                                        chebyshev_dist=chebyshev, kldist=kldist,
-                                                                        clark_dist=clark, canberra_dist=canberra,
-                                                                        cosine_dist=cosine,
-                                                                        intersection_dist=intersection))
-        result.write("\n------------------------------------------------------------------\n")
-        result.write("Test set results:\n")
-        result.write('Multilabel metrics: example-based-classification:\n')
-        result.write(
-                     'hammingLoss: {hammingLoss:.4f}\t'
-                     'accuracy: {accuracy:.4f}\t'
-                     'precision: {precision:.4f}\t'
-                     'recall: {recall:.4f}\t'
-                     'fbeta: {fbeta:.4f}\t'.format(
-                                                   hammingLoss=test_hammingLoss,
-                                                   accuracy=test_eb_accuracy, precision=test_eb_precision,
-                                                   recall=test_eb_recall, fbeta=test_eb_fbeta))
-        result.write("\n")
-        result.write('Multilabel metrics: example-based-ranking:\n')
-        result.write('oneError: {oneError:.4f}\t'
-                     'coverage: {coverage:.4f}\t'
-                     'averagePrecision: {averagePrecision:.4f}\t'
-                     'rankingLoss: {rankingLoss:.4f}\t'.format(oneError=test_oneError,
-                                                               coverage=test_coverage,
-                                                               averagePrecision=test_averagePrecision,
-                                                               rankingLoss=test_rankingLoss))
-        result.write("\n")
-        result.write('Multilabel metrics: label-based-classification:\n')
-        result.write('accuracyMacro: {accuracyMacro:.4f}\t'
-                     'accuracyMicro: {accuracyMicro:.4f}\t'
-                     'precisionMacro: {precisionMacro:.4f}\t'
-                     'precisionMicro: {precisionMicro:.4f}\t'
-                     'recallMacro: {recallMacro:.4f}\t'
-                     'recallMicro: {recallMicro:.4f}\t'
-                     'fbetaMacro: {fbetaMacro:.4f}\t'
-                     'fbetaMicro: {fbetaMicro:.4f}\t'.format(accuracyMacro=test_accuracyMacro,
-                                                             accuracyMicro=test_accuracyMicro,
-                                                             precisionMacro=test_precisionMacro,
-                                                             precisionMicro=test_precisionMicro,
-                                                             recallMacro=test_recallMacro,
-                                                             recallMicro=test_recallMicro,
-                                                             fbetaMacro=test_fbetaMacro,
-                                                             fbetaMicro=test_fbetaMicro))
-    # pearson correlation
-    emopcc += pearsonr(dis_prediction.cpu().detach().numpy(), dis.cpu().detach().numpy())[0]
-# average loss
-test_testkl = test_loss / len(testSet)
-# average pcc
-test_emopcc = emopcc / len(testSet)
-ave_euclidean = sum_euclidean/count
-ave_chebyshev = sum_chebyshev/count
-ave_kldist = sum_kldist/count
-ave_clark = sum_clark/count
-ave_canberra = sum_canberra/count
-ave_cosine = sum_cosine/count
-ave_intersection = sum_intersection/count
-ave_hammingLoss = sum_hammingLoss/count
-ave_eb_accuracy = sum_eb_accuracy/count
-ave_eb_precision = sum_eb_precision/count
-ave_eb_recall = sum_eb_recall/count
-ave_eb_fbeta = sum_eb_fbeta/count
-ave_oneError = sum_oneError/count
-ave_averagePrecision = sum_averagePrecision/count
-ave_rankingLoss = sum_rankingLoss/count
-ave_accuracyMacro = sum_accuracyMacro/count
-ave_fbetaMicro = sum_fbetaMicro/count
-ave_coverage = sum_coverage / count
-ave_accuracyMicro = sum_accuracyMicro / count
-ave_precisionMacro = sum_precisionMacro / count
-ave_precisionMicro = sum_precisionMicro / count
-ave_recallMacro = sum_recallMacro / count
-ave_recallMicro = sum_recallMicro / count
-
-print("\n================================================================================\n")
-print("Test Emotion distribution test_loss:", test_testkl, "\Test Emotion distribution PCC:", test_emopcc.item())
-result.write("\n------------------------------------------------------------------\n")
-result.write('Epoch: [{0}]\t' "Test Emotion distribution test_loss:{test_loss: .4f}\n"
-             "Test Emotion distribution PCC:{PCC: .4f}\t".format(epoch_num+1, test_loss=test_testkl,PCC=test_emopcc))
-
-result.write("\n================================================================================\n")
-result.write('Epoch: {epoch:.1f}\t'
-                     'Test epoch_euclidean: {epoch_euclidean:.4f}\t'
-                     'Test epoch_chebyshev: {epoch_chebyshev:.4f}\t'
-                     'Test epoch_kldist: {epoch_kldist:.4f}\t'
-                     'Test epoch_clark_dist: {epoch_clark_dist:.4f}\t'
-                     'Test epoch_canberra_dist: {epoch_canberra_dist:.4f}\t'
-                     'Test epoch_cosine_similarity: {epoch_cosine_similarity:.4f}\t'
-                     'Test epoch_intersection_similarity: {epoch_intersection_similarity:.4f}\t'.format(epoch=epoch_num+1,
-                                                                                                        epoch_euclidean=ave_euclidean,
-                                                                                                        epoch_chebyshev=ave_chebyshev,
-                                                                                                        epoch_kldist=ave_kldist,
-                                                                                                        epoch_clark_dist=ave_clark,
-                                                                                                        epoch_canberra_dist=ave_canberra,
-                                                                                                        epoch_cosine_similarity=ave_cosine,
-                                                                                                        epoch_intersection_similarity=ave_intersection))
-
-#multi-label classification
-result.write("\n================================================================================\n")
-result.write('Epoch: {epoch:.1f}\t'
-                     'Test epoch_accuracy: {epoch_accuracy:.4f}\t'
-                     'Test epoch_eb_accuracy: {epoch_eb_accuracy:.4f}\t'
-                     'Test epoch_eb_precision: {epoch_eb_precision:.4f}\t'
-                     'Test epoch_eb_recall: {epoch_eb_recall:.4f}\t'
-                     'Test epoch_eb_fbeta: {epoch_eb_fbeta:.4f}\t'
-                     'Test epoch_hammingloss: {epoch_hammingloss:.4f}\t'
-                     'Test epoch_oneError: {epoch_oneError:.4f}\t'
-                     'Test epoch_coverage: {epoch_coverage:.4f}\t'
-                     'Test epoch_Averageprecision: {epoch_Averageprecision:.4f}\t'
-                     'Test epoch_rankingloss: {epoch_rankingloss:.4f}\t'
-                     'Test epoch_accuracyMacro: {epoch_accuracyMacro:.4f}\t'
-                     'Test epoch_accuracyMicro: {epoch_accuracyMicro:.4f}\t'
-                     'Test epoch_precisionMacro: {epoch_precisionMacro:4f}\t'
-                     'Test epoch_precisionMicro: {epoch_precisionMicro:.4f}\t'
-                     'Test epoch_recallMacro: {epoch_recallMacro:.4f}\t'
-                     'Test epoch_recallMicro: {epoch_recallMicro:.4f}\t'
-                     'Test epoch_fbetaMacro: {epoch_fbetaMacro:.4f}\t'
-                     'Test epoch_fbetaMicro: {epoch_fbetaMicro:.4f}\t'.format(epoch=epoch_num+1,
-                                                                            epoch_accuracy=epoch_accuracy,
-                                                                            epoch_eb_accuracy=ave_eb_accuracy,
-                                                                            epoch_eb_precision=ave_eb_precision,
-                                                                            epoch_eb_recall=ave_eb_recall,
-                                                                            epoch_eb_fbeta=ave_eb_fbeta,
-                                                                            epoch_hammingloss=ave_hammingLoss,
-                                                                            epoch_oneError=ave_oneError,
-                                                                            epoch_coverage=ave_coverage,
-                                                                            epoch_Averageprecision=ave_averagePrecision,
-                                                                            epoch_rankingloss=ave_rankingLoss,
-                                                                            epoch_accuracyMacro=ave_accuracyMacro,
-                                                                            epoch_accuracyMicro=ave_accuracyMicro,
-                                                                            epoch_precisionMacro=ave_precisionMacro,
-                                                                            epoch_precisionMicro=ave_precisionMicro,
-                                                                            epoch_recallMacro=ave_recallMacro,
-                                                                            epoch_recallMicro=ave_recallMicro,
-                                                                            epoch_fbetaMacro=ave_fbetaMacro,
-                                                                            epoch_fbetaMicro=ave_fbetaMicro))
+# # testing
+# net = EEGEncoder(args)
+# net, optimizer, start_epoch, valid_loss_min_kl = load_ckp(
+#     best_model_path + "/train_co_attn_multi_dis_best_model.pt", net, optimizer)
+# net.eval()
+# test_kl = 0
+# emopcc = 0
+# sum_euclidean = 0
+# sum_chebyshev = 0
+# sum_kldist = 0
+# sum_clark = 0
+# sum_canberra = 0
+# sum_cosine = 0
+# sum_intersection = 0
+# sum_hammingLoss = 0
+# sum_eb_accuracy = 0
+# sum_eb_precision = 0
+# sum_eb_recall = 0
+# sum_eb_fbeta = 0
+# sum_oneError = 0
+# sum_averagePrecision = 0
+# sum_rankingLoss = 0
+# sum_accuracyMacro = 0
+# sum_fbetaMicro = 0
+# sum_converage = 0
+# sum_accuracyMicro = 0
+# sum_precisionMacro = 0
+# sum_precisionMicro = 0
+# sum_recallMacro = 0
+# sum_recallMicro = 0
+# sum_fbetaMacro = 0
+# count = 0
+# for i, data in enumerate(testDataloader):
+#     count = count + 1
+#     st_time = time.time()
+#     test, dis, dom_label, left, right = data
+#     dis = dis
+#
+#     if args['use_cuda']:
+#         test = torch.nn.Parameter(test).cuda()
+#         dis = torch.nn.Parameter(dis).cuda()
+#         dom_label = torch.nn.Parameter(dom_label.float()).cuda()
+#         left = torch.nn.Parameter(left).cuda()
+#         right = torch.nn.Parameter(right).cuda()
+#
+#     # Forward pass
+#     predict, att_1 = net(test, left, right, dis)
+#
+#     #for loss1
+#     softmax = torch.nn.Softmax(dim=1)
+#     dis_prediction = softmax(predict)
+#     dis_prediction = dis_prediction.squeeze(dim=0)# [32,9]
+#     dis = torch.squeeze(dis, dim=1)
+#     loss1 = kl_div(dis_prediction.log(), dis)
+#     #for loss2
+#     predict_sig = torch.sigmoid(predict)
+#     #loss2: BCELoss
+#     dom_label = dom_label.detach()
+#     loss2 = BCE(predict, dom_label)
+#     #loss2: MLSML
+#     # loss2 = MLSML(predict.cuda(), target_gt.cuda())
+#     loss = lamda * loss1 + (1 - lamda) * loss2
+#     test_loss = loss.item()
+#     test_loss += test_loss / dis.shape[0]
+#
+#     # emotion distribution metrics
+#     # euclidean
+#     euclidean = euclidean_dist(dis.shape[0], dis, dis_prediction)
+#     sum_euclidean += euclidean
+#     # chebyshev
+#     chebyshev = chebyshev_dist(dis.shape[0], dis, dis_prediction)
+#     sum_chebyshev += chebyshev
+#     # Kullback-Leibler divergence
+#     kldist = KL_dist(dis, dis_prediction)
+#     sum_kldist += kldist
+#     # clark
+#     clark = clark_dist(dis, dis_prediction)
+#     sum_clark += clark
+#     # canberra
+#     canberra = canberra_dist(dis, dis_prediction)
+#     sum_canberra += canberra
+#     # cosine
+#     cosine = cosine_dist(dis, dis_prediction)
+#     sum_cosine += cosine
+#     # intersection
+#     intersection = intersection_dist(dis, dis_prediction)
+#     sum_intersection += intersection
+#
+#     # for multilabel prediction
+#     # example-based-classification
+#     test_hammingLoss = hammingLoss(dom_label, predict_sig)
+#     sum_hammingLoss += test_hammingLoss
+#     test_eb_accuracy = accuracy(dom_label, predict_sig)
+#     sum_eb_accuracy += test_eb_accuracy
+#     test_eb_precision = precision(dom_label, predict_sig)
+#     sum_eb_precision += test_eb_precision
+#     test_eb_recall = recall(dom_label, predict_sig)
+#     sum_eb_recall += test_eb_recall
+#     test_eb_fbeta = fbeta(dom_label, predict_sig)
+#     sum_eb_fbeta += test_eb_fbeta
+#
+#     # example-based-ranking
+#     test_oneError = oneError(dom_label, predict_sig)
+#     sum_oneError += test_oneError
+#     test_coverage = coverage(dom_label, predict_sig)
+#     sum_coverage += test_coverage
+#     test_averagePrecision = averagePrecision(dom_label, predict_sig)
+#     sum_averagePrecision += test_averagePrecision
+#     test_rankingLoss = rankingLoss(dom_label, predict_sig)
+#     sum_rankingLoss += test_rankingLoss
+#
+#     # label-based-classification
+#     test_accuracyMacro = accuracyMacro(dom_label, predict_sig)
+#     sum_accuracyMacro += test_accuracyMacro
+#     test_accuracyMicro = accuracyMicro(dom_label, predict_sig)
+#     sum_accuracyMicro += test_accuracyMicro
+#     test_precisionMacro = precisionMacro(dom_label, predict_sig)
+#     sum_precisionMacro += test_precisionMacro
+#     test_precisionMicro = precisionMicro(dom_label, predict_sig)
+#     sum_precisionMicro += test_precisionMicro
+#     test_recallMacro = recallMacro(dom_label, predict_sig)
+#     sum_recallMacro += test_recallMacro
+#     test_recallMicro = recallMicro(dom_label, predict_sig)
+#     sum_precisionMicro += test_precisionMicro
+#     test_fbetaMacro = fbetaMacro(dom_label, predict_sig)
+#     sum_fbetaMacro += test_fbetaMacro
+#     test_fbetaMicro = fbetaMicro(dom_label, predict_sig)
+#     sum_fbetaMicro += test_fbetaMicro
+#
+#
+#     if i % 10 == 0:
+#         print('euclidean_dist: {euclidean_dist:.4f}\t'
+#                   'chebyshev_dist: {chebyshev_dist:.4f}\t'
+#                   'kldist: {kldist:.4f}\t'
+#                   'clark_dist: {clark_dist:.4f}\t'
+#                   'canberra_dist: {canberra_dist:.4f}\t'
+#                   'cosine_dist: {cosine_dist:.4f}\t'
+#                   'intersection_dist: {intersection_dist:.4f}\n'.format(euclidean_dist=euclidean,
+#                                                                         chebyshev_dist=chebyshev, kldist=kldist,
+#                                                                         clark_dist=clark, canberra_dist=canberra,
+#                                                                         cosine_dist=cosine,
+#                                                                         intersection_dist=intersection))
+#
+#         print("Test set results:\n",
+#               'Multilabel metrics: example-based-classification:\n',
+#               "hammingLoss= {:.4f}".format(test_hammingLoss),
+#               "accuracy= {:.4f}".format(test_eb_accuracy),
+#               "precision= {:.4f}".format(test_eb_precision),
+#               "recall= {:.4f}".format(test_eb_recall),
+#               "fbeta= {:.4f}".format(test_eb_fbeta))
+#
+#         print("Test set results:\n",
+#               'Multilabel metrics: example-based-ranking:\n',
+#               "oneError= {:.4f}".format(test_oneError),
+#               "coverage= {:.4f}".format(test_coverage),
+#               "averagePrecision= {:.4f}".format(test_averagePrecision),
+#               "rankingLoss= {:.4f}".format(test_rankingLoss))
+#
+#         print("Test set results:\n",
+#               'Multilabel metrics: label-based-classification:\n',
+#               "accuracyMacro= {:.4f}".format(test_accuracyMacro),
+#               "accuracyMicro= {:.4f}".format(test_accuracyMicro),
+#               "precisionMacro= {:.4f}".format(test_precisionMacro),
+#               "precisionMicro= {:.4f}".format(test_precisionMicro),
+#               "recallMacro= {:.4f}".format(test_recallMacro),
+#               "recallMicro= {:.4f}".format(test_recallMicro),
+#               "fbetaMacro= {:.4f}".format(test_fbetaMacro),
+#               "fbetaMicro= {:.4f}".format(test_fbetaMicro))
+#
+#
+#         result.write("\n------------------------------------------------------------------\n")
+#         result.write('Test co-attention:\n ')
+#         result.write('att_1: \t')
+#         result.write('%s\n' % att_1.cpu().detach().numpy().mean(axis=0))
+#
+#         result.write('\n Epoch: [{0}]: Test....\n'.format(epoch_num+1))
+#         result.write("\n========================================\n")
+#         result.write('euclidean_dist: {euclidean_dist:.4f}\t'
+#                   'chebyshev_dist: {chebyshev_dist:.4f}\t'
+#                   'kldist: {kldist:.4f}\t'
+#                   'clark_dist: {clark_dist:.4f}\t'
+#                   'canberra_dist: {canberra_dist:.4f}\t'
+#                   'cosine_dist: {cosine_dist:.4f}\t'
+#                   'intersection_dist: {intersection_dist:.4f}\t'.format(euclidean_dist=euclidean,
+#                                                                         chebyshev_dist=chebyshev, kldist=kldist,
+#                                                                         clark_dist=clark, canberra_dist=canberra,
+#                                                                         cosine_dist=cosine,
+#                                                                         intersection_dist=intersection))
+#         result.write("\n------------------------------------------------------------------\n")
+#         result.write("Test set results:\n")
+#         result.write('Multilabel metrics: example-based-classification:\n')
+#         result.write(
+#                      'hammingLoss: {hammingLoss:.4f}\t'
+#                      'accuracy: {accuracy:.4f}\t'
+#                      'precision: {precision:.4f}\t'
+#                      'recall: {recall:.4f}\t'
+#                      'fbeta: {fbeta:.4f}\t'.format(
+#                                                    hammingLoss=test_hammingLoss,
+#                                                    accuracy=test_eb_accuracy, precision=test_eb_precision,
+#                                                    recall=test_eb_recall, fbeta=test_eb_fbeta))
+#         result.write("\n")
+#         result.write('Multilabel metrics: example-based-ranking:\n')
+#         result.write('oneError: {oneError:.4f}\t'
+#                      'coverage: {coverage:.4f}\t'
+#                      'averagePrecision: {averagePrecision:.4f}\t'
+#                      'rankingLoss: {rankingLoss:.4f}\t'.format(oneError=test_oneError,
+#                                                                coverage=test_coverage,
+#                                                                averagePrecision=test_averagePrecision,
+#                                                                rankingLoss=test_rankingLoss))
+#         result.write("\n")
+#         result.write('Multilabel metrics: label-based-classification:\n')
+#         result.write('accuracyMacro: {accuracyMacro:.4f}\t'
+#                      'accuracyMicro: {accuracyMicro:.4f}\t'
+#                      'precisionMacro: {precisionMacro:.4f}\t'
+#                      'precisionMicro: {precisionMicro:.4f}\t'
+#                      'recallMacro: {recallMacro:.4f}\t'
+#                      'recallMicro: {recallMicro:.4f}\t'
+#                      'fbetaMacro: {fbetaMacro:.4f}\t'
+#                      'fbetaMicro: {fbetaMicro:.4f}\t'.format(accuracyMacro=test_accuracyMacro,
+#                                                              accuracyMicro=test_accuracyMicro,
+#                                                              precisionMacro=test_precisionMacro,
+#                                                              precisionMicro=test_precisionMicro,
+#                                                              recallMacro=test_recallMacro,
+#                                                              recallMicro=test_recallMicro,
+#                                                              fbetaMacro=test_fbetaMacro,
+#                                                              fbetaMicro=test_fbetaMicro))
+#     # pearson correlation
+#     emopcc += pearsonr(dis_prediction.cpu().detach().numpy(), dis.cpu().detach().numpy())[0]
+# # average loss
+# test_testkl = test_loss / len(testSet)
+# # average pcc
+# test_emopcc = emopcc / len(testSet)
+# ave_euclidean = sum_euclidean/count
+# ave_chebyshev = sum_chebyshev/count
+# ave_kldist = sum_kldist/count
+# ave_clark = sum_clark/count
+# ave_canberra = sum_canberra/count
+# ave_cosine = sum_cosine/count
+# ave_intersection = sum_intersection/count
+# ave_hammingLoss = sum_hammingLoss/count
+# ave_eb_accuracy = sum_eb_accuracy/count
+# ave_eb_precision = sum_eb_precision/count
+# ave_eb_recall = sum_eb_recall/count
+# ave_eb_fbeta = sum_eb_fbeta/count
+# ave_oneError = sum_oneError/count
+# ave_averagePrecision = sum_averagePrecision/count
+# ave_rankingLoss = sum_rankingLoss/count
+# ave_accuracyMacro = sum_accuracyMacro/count
+# ave_fbetaMicro = sum_fbetaMicro/count
+# ave_coverage = sum_coverage / count
+# ave_accuracyMicro = sum_accuracyMicro / count
+# ave_precisionMacro = sum_precisionMacro / count
+# ave_precisionMicro = sum_precisionMicro / count
+# ave_recallMacro = sum_recallMacro / count
+# ave_recallMicro = sum_recallMicro / count
+#
+# print("\n================================================================================\n")
+# print("Test Emotion distribution test_loss:", test_testkl, "\Test Emotion distribution PCC:", test_emopcc.item())
+# result.write("\n------------------------------------------------------------------\n")
+# result.write('Epoch: [{0}]\t' "Test Emotion distribution test_loss:{test_loss: .4f}\n"
+#              "Test Emotion distribution PCC:{PCC: .4f}\t".format(epoch_num+1, test_loss=test_testkl,PCC=test_emopcc))
+#
+# result.write("\n================================================================================\n")
+# result.write('Epoch: {epoch:.1f}\t'
+#                      'Test epoch_euclidean: {epoch_euclidean:.4f}\t'
+#                      'Test epoch_chebyshev: {epoch_chebyshev:.4f}\t'
+#                      'Test epoch_kldist: {epoch_kldist:.4f}\t'
+#                      'Test epoch_clark_dist: {epoch_clark_dist:.4f}\t'
+#                      'Test epoch_canberra_dist: {epoch_canberra_dist:.4f}\t'
+#                      'Test epoch_cosine_similarity: {epoch_cosine_similarity:.4f}\t'
+#                      'Test epoch_intersection_similarity: {epoch_intersection_similarity:.4f}\t'.format(epoch=epoch_num+1,
+#                                                                                                         epoch_euclidean=ave_euclidean,
+#                                                                                                         epoch_chebyshev=ave_chebyshev,
+#                                                                                                         epoch_kldist=ave_kldist,
+#                                                                                                         epoch_clark_dist=ave_clark,
+#                                                                                                         epoch_canberra_dist=ave_canberra,
+#                                                                                                         epoch_cosine_similarity=ave_cosine,
+#                                                                                                         epoch_intersection_similarity=ave_intersection))
+#
+# #multi-label classification
+# result.write("\n================================================================================\n")
+# result.write('Epoch: {epoch:.1f}\t'
+#                      'Test epoch_accuracy: {epoch_accuracy:.4f}\t'
+#                      'Test epoch_eb_accuracy: {epoch_eb_accuracy:.4f}\t'
+#                      'Test epoch_eb_precision: {epoch_eb_precision:.4f}\t'
+#                      'Test epoch_eb_recall: {epoch_eb_recall:.4f}\t'
+#                      'Test epoch_eb_fbeta: {epoch_eb_fbeta:.4f}\t'
+#                      'Test epoch_hammingloss: {epoch_hammingloss:.4f}\t'
+#                      'Test epoch_oneError: {epoch_oneError:.4f}\t'
+#                      'Test epoch_coverage: {epoch_coverage:.4f}\t'
+#                      'Test epoch_Averageprecision: {epoch_Averageprecision:.4f}\t'
+#                      'Test epoch_rankingloss: {epoch_rankingloss:.4f}\t'
+#                      'Test epoch_accuracyMacro: {epoch_accuracyMacro:.4f}\t'
+#                      'Test epoch_accuracyMicro: {epoch_accuracyMicro:.4f}\t'
+#                      'Test epoch_precisionMacro: {epoch_precisionMacro:4f}\t'
+#                      'Test epoch_precisionMicro: {epoch_precisionMicro:.4f}\t'
+#                      'Test epoch_recallMacro: {epoch_recallMacro:.4f}\t'
+#                      'Test epoch_recallMicro: {epoch_recallMicro:.4f}\t'
+#                      'Test epoch_fbetaMacro: {epoch_fbetaMacro:.4f}\t'
+#                      'Test epoch_fbetaMicro: {epoch_fbetaMicro:.4f}\t'.format(epoch=epoch_num+1,
+#                                                                             epoch_accuracy=epoch_accuracy,
+#                                                                             epoch_eb_accuracy=ave_eb_accuracy,
+#                                                                             epoch_eb_precision=ave_eb_precision,
+#                                                                             epoch_eb_recall=ave_eb_recall,
+#                                                                             epoch_eb_fbeta=ave_eb_fbeta,
+#                                                                             epoch_hammingloss=ave_hammingLoss,
+#                                                                             epoch_oneError=ave_oneError,
+#                                                                             epoch_coverage=ave_coverage,
+#                                                                             epoch_Averageprecision=ave_averagePrecision,
+#                                                                             epoch_rankingloss=ave_rankingLoss,
+#                                                                             epoch_accuracyMacro=ave_accuracyMacro,
+#                                                                             epoch_accuracyMicro=ave_accuracyMicro,
+#                                                                             epoch_precisionMacro=ave_precisionMacro,
+#                                                                             epoch_precisionMicro=ave_precisionMicro,
+#                                                                             epoch_recallMacro=ave_recallMacro,
+#                                                                             epoch_recallMicro=ave_recallMicro,
+#                                                                             epoch_fbetaMacro=ave_fbetaMacro,
+#                                                                             epoch_fbetaMicro=ave_fbetaMicro))
 
 
 print(att_1.cpu().detach().numpy().mean(axis=0))
@@ -1190,4 +1187,3 @@ import csv
 with open("GC_POSITIVE.csv", "w") as f:
     writer = csv.writer(f)
     writer.writerows(GC_est)
-
