@@ -84,8 +84,8 @@ args['feature_dim'] = 75  # 15channels * 5
 args['out_layer'] = FLAGS.out_layer
 args['sequence_len'] = 30  # 120 timesteps
 args['feature_len'] = 150  # 30*5 = 150
-args['enc_dim'] = 1024
-args['hidden_dim'] = 1024
+args['enc_dim'] = 256
+args['hidden_dim'] = 256
 args['attn_len'] = FLAGS.attn_len
 args['dropout_prob'] = FLAGS.dropout
 args['use_cuda'] = True
