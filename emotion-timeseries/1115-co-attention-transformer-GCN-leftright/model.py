@@ -43,8 +43,8 @@ class EEGEncoder(nn.Module):
         self.out_layer = args['out_layer']
         self.sequence_len = args['sequence_len'] # 30 timesteps
         self.feature_len = args['feature_len'] # 150 = 30channels * 5
-        self.enc_dim = args['enc_dim'] # 1024
-        self.hidden_dim = args['hidden_dim'] # 1024
+        self.enc_dim = args['enc_dim'] # 256
+        self.hidden_dim = args['hidden_dim'] # 256
         self.attn_len = args['attn_len']
         self.dropout= args['dropout_prob']
 
@@ -61,19 +61,19 @@ class EEGEncoder(nn.Module):
         self.att_linear = nn.Sequential(nn.Dropout(self.dropout),nn.Linear(self.enc_dim * 2, 1), nn.LeakyReLU())
 
         # all_transformer --> out
-        self.out = nn.Sequential(nn.Linear(1024, 256),
+        self.out = nn.Sequential(nn.Linear(256, 128),
                                   nn.LeakyReLU(),
-                                  nn.Linear(256, 128),
+                                  nn.Linear(128, 64),
                                  nn.LeakyReLU(),
-                                 nn.Linear(128, 64),
+                                 nn.Linear(64, 32),
                                  # nn.LeakyReLU(),
                                  # nn.Linear(128, self.out_layer) #withoutGCN
                                  )
         self.GCN_out = nn.Sequential(nn.Linear(256, 128),
                                   nn.LeakyReLU(),
-                                  nn.Linear(128, 64))
-                                  # nn.LeakyReLU(),
-                                  # nn.Linear(256, 128))
+                                  nn.Linear(128, 64),
+                                  nn.LeakyReLU(),
+                                  nn.Linear(64, 32))
 
         # Store module in specified device (CUDA/CPU)
         self.device = (device if torch.cuda.is_available() else
@@ -142,8 +142,8 @@ class EEGEncoder(nn.Module):
         # num_class = 9
         GCN_module = GCN(num_classes=9, in_channel=300, t=0.4, adj_file='embedding/positiveEmotion_adj.pkl') #t-0.4
         GCN_output = GCN_module(inp='embedding/positiveEmotion_glove_word2vec.pkl')  # [9,256]
-        GCN_output = self.GCN_out(GCN_output.cuda()) #[9,64]
-        GCN_output = GCN_output.transpose(0, 1).cuda()  # [64,9]
+        GCN_output = self.GCN_out(GCN_output.cuda()) #[9,32]
+        GCN_output = GCN_output.transpose(0, 1).cuda()  # [32,9]
         # GCN output * LSTM lastTimestep
         ## [32,9]
         predict = torch.matmul(predicted_last, GCN_output)  # ML-GCN eq.4

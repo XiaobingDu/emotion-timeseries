@@ -222,6 +222,7 @@ for epoch_num in range(num_epochs):
 
         # Forward pass
         predict, att_1 = net(train, left, right, dis)
+        print('training predict.....:', predict)
 
         # for loss1
         # softmax layer
@@ -233,6 +234,7 @@ for epoch_num in range(num_epochs):
         loss1 = kl_div(dis_prediction.log(), dis)
         # for loss2
         predict_sig = torch.sigmoid(predict)
+        print('training predict_sig.....:', predict_sig)
         # loss2: BCELoss
         target_gt = dom_label
         target_gt = target_gt.detach()
