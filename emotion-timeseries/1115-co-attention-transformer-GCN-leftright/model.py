@@ -133,7 +133,7 @@ class EEGEncoder(nn.Module):
         attn = attn.reshape(batch_size, seq_len, self.attn_len)
         # print('attention shape:', attn.shape) # [32, 30, 1]
         context = convolve(presentation, attn)
-        print('context shape:', context.shape)# [32, 30, 1]
+        # print('context shape:', context.shape)# [32, 30, 256]
         predicted = self.out(context).view(batch_size, seq_len, -1)
         # print('predicted shape:', predicted.shape)
         predicted_last = predicted[:, -1, :]
