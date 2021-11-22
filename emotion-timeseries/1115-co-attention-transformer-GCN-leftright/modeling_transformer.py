@@ -196,8 +196,13 @@ class EncoderLayer(nn.Module):
         self.layer_norms = clones(nn.LayerNorm(model_dim), 2)
 
     def forward(self, src):
+        print('src......:', src)
         src_att = self.layer_norms[0](self.mhatt(src, src, src) + src)
+        print('mhatt.......:', self.mhatt(src, src, src))
+        print ('after norm src_att.......:', src_att)
         src_out = self.layer_norms[1](self.ffn(src_att) + src_att)
+        print('ffn.......:', self.ffn(src_att))
+        print('after norm src_out........:', src_out)
 
         return src_out
 
