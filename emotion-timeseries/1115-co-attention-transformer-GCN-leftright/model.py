@@ -124,6 +124,10 @@ class EEGEncoder(nn.Module):
         # print('right_feature shape:', right_features.shape)
         all_features = torch.cat([left_features, right_features], dim=-1)
         # print('all_feature shape:', all_features.shape)
+        # reshape the data to use the channel as the input sequence
+        all_features = torch.reshape(all_features, [all_features.shape[0],all_features.shape[1],int(all_features.shape[2]/5), 5])
+        all_features = torch.transpose(all_features,(0,2,1,3))
+        all_features = torch.reshape(all_features,[all_features.shape[0], all_features.shape[1], all_features.shape[2]*all_features.shape[3]])
         presentation = self.all_transformer_enc(all_features)
         # print('presentation shape:', presentation.shape) # [32, 30, 150]
         # print('*********all present:', presentation)
