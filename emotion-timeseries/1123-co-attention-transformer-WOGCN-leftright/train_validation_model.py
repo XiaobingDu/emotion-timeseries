@@ -30,7 +30,7 @@ parser.add_argument('--path2', type=str, choices=[
     '../DOM_feature_all/DOM_featureAll.mat'])
 parser.add_argument('--no-cuda', action='store_true', default=False,
                     help='Disables CUDA training.')
-parser.add_argument('--learning_rate', type=float, default= 2e-4, # 0.001
+parser.add_argument('--learning_rate', type=float, default= 2e-3, # 0.001
                     help='Initial learning rate.')
 parser.add_argument('--iter_num', type=int,
                     help='Number of iterate to train.')
