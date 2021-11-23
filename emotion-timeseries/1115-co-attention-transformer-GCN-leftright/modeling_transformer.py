@@ -198,8 +198,12 @@ class EncoderLayer(nn.Module):
 
     def __init__(self, model_dim, hidden_dim, nheads, p=0.1):
         super(EncoderLayer, self).__init__()
+        # self.mhatt = MultiHeadAttention(
+        #     model_dim, nheads, p, mask='diag',
+        # )
+        # for EEG channel, the mask is not need
         self.mhatt = MultiHeadAttention(
-            model_dim, nheads, p, mask='diag',
+            model_dim, nheads, p, mask=None,
         )
         self.ffn = nn.Sequential(
             nn.Linear(model_dim, hidden_dim),
