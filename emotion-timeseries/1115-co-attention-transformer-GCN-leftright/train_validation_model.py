@@ -455,9 +455,6 @@ for epoch_num in range(num_epochs):
         # loss2: MLSML
         # loss2 = MLSML(predict.cuda(), target_gt.cuda())
         loss = lamda * loss1 + (1 - lamda) * loss2
-        print('loss1.....:', loss1)
-        print('loss2......:', loss2)
-        print('loss.......:', loss)
         val_loss = loss.item()
         val_loss += val_loss / dis.shape[0]
 
