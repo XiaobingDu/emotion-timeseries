@@ -106,7 +106,12 @@ class MultiHeadAttention(nn.Module):
             tensor with shape (batch_size, sentence_len1, nheads, key_dim).
         """
 
+        print('attention query........:', query)
+        print('attention key..........:', key)
+        print('attention value........:', value)
         score = torch.einsum('bqhd,bkhd->bhqk', query, key)
+        print('correlation score.........:', score)
+        print('correlation score shape........:', score.shape)
         if self.mask == 'triu':
             mask = torch.triu(
                 torch.ones(score.shape, dtype=torch.bool), diagonal=1
@@ -117,11 +122,21 @@ class MultiHeadAttention(nn.Module):
             mask = torch.eye(
                 n=score.shape[2], m=score.shape[3], dtype=torch.float,
             )
+            print('mask........:', mask)
+            print('mask shape.......:', mask.shape)
             mask = mask.reshape(-1).repeat((1, np.prod(score.shape[:2]))).reshape(score.shape)
+            print('mask........:', mask)
+            print('mask shape.......:', mask.shape)
             score[mask.type(torch.long)] = -float('inf')
+            print('mask score.......:', score)
+            print('mask score shape........:', score.shape)
 
         self.att = F.softmax(score / np.sqrt(score.shape[-1]), dim=-1)
+        print('query dim..........:', score.shape[-1])
+        print('attention score.......:', self.att)
         ret = torch.einsum('bhqk,bkhd->bqhd', self.att, value)
+        print('ret.........:', ret)
+        print('ret shape..........:', ret.shape)
 
         return ret
 
