@@ -355,6 +355,7 @@ for epoch_num in range(num_epochs):
             result.write('%s\n' % att_1.cpu().detach().numpy().mean(axis=0))
 
             result.write('\n Epoch: [{0}]: Training....\n'.format(epoch_num + 1))
+            result.write('\n Learning Rate.......\n'.format(optimizer.param_groups[0]['lr']))
             result.write("\n========================================\n")
             result.write('euclidean_dist: {euclidean_dist:.4f}\t'
                          'chebyshev_dist: {chebyshev_dist:.4f}\t'
