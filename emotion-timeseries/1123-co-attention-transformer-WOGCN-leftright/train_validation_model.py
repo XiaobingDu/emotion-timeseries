@@ -30,7 +30,7 @@ parser.add_argument('--path2', type=str, choices=[
     '../DOM_feature_all/DOM_featureAll.mat'])
 parser.add_argument('--no-cuda', action='store_true', default=False,
                     help='Disables CUDA training.')
-parser.add_argument('--learning_rate', type=float, default= 2e-3, # 0.001
+parser.add_argument('--learning_rate', type=float, default= 1e-2, # 0.001
                     help='Initial learning rate.')
 parser.add_argument('--iter_num', type=int,
                     help='Number of iterate to train.')
@@ -90,7 +90,7 @@ args['attn_len'] = FLAGS.attn_len
 args['dropout_prob'] = FLAGS.dropout
 args['use_cuda'] = True
 args['train_flag'] = True
-args['optimizer'] = 'adam'
+args['optimizer'] = 'rmsprop'# 'adam'
 
 num_epochs = FLAGS.epochs
 batch_size = FLAGS.batch_size
@@ -150,8 +150,15 @@ if args['use_cuda']:
     net = net.cuda()
 
 ## Initialize optimizer
-optimizer = torch.optim.RMSprop(net.parameters(), lr=lr) if args['optimizer'] == 'rmsprop' else torch.optim.Adam \
-    (net.parameters(), lr=lr, weight_decay=1e-8)
+if args['optimizer'] == 'rmsprop':
+    optimizer = torch.optim.RMSprop(net.parameters(), lr=lr, weight_decay=1e-4)
+elif args['optimizer'] == 'adam':
+    optimizer = torch.optim.Adam(net.parameters(), lr=lr, weight_decay=1e-4) # 1e-8
+elif args['optimizer'] == 'sgd':
+    optimizer = torch.optim.SGD(net.parameters(), lr=lr, momentum=0.9, weight_decay=1e-4)
+
+scheduler = torch.optim.lr_scheduler.StepLR(optimizer,step_size=5,gamma = 0.8)
+
 kl_div = torch.nn.KLDivLoss(size_average=True, reduce=True)
 BCE = torch.nn.BCEWithLogitsLoss()
 
@@ -196,7 +203,7 @@ epoch_fbetaMacro = 0
 
 for epoch_num in range(num_epochs):
     #    """Sets the learning rate to the initial LR decayed by 10 every 30 epochs"""
-    adjust_learning_rate(optimizer, epoch_num, lr)
+    # adjust_learning_rate(optimizer, epoch_num, lr)
 
     ## Train:_________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
     net.train()  # the state of model
@@ -248,6 +255,8 @@ for epoch_num in range(num_epochs):
         loss.backward()
         a = torch.nn.utils.clip_grad_norm_(net.parameters(), 10)
         optimizer.step()
+        scheduler.step()
+        print("第%d个epoch的学习率：%f" % (epoch_num, optimizer.param_groups[0]['lr']))
 
         avg_tr_loss = loss.item()
         avg_tr_loss += avg_tr_loss / dis.shape[0]
