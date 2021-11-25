@@ -204,6 +204,7 @@ epoch_fbetaMacro = 0
 for epoch_num in range(num_epochs):
     #    """Sets the learning rate to the initial LR decayed by 10 every 30 epochs"""
     # adjust_learning_rate(optimizer, epoch_num, lr)
+    print("第%d个epoch的学习率：%f" % (epoch_num, optimizer.param_groups[0]['lr']))
 
     ## Train:_________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
     net.train()  # the state of model
@@ -256,7 +257,6 @@ for epoch_num in range(num_epochs):
         a = torch.nn.utils.clip_grad_norm_(net.parameters(), 10)
         optimizer.step()
         scheduler.step()
-        print("第%d个epoch的学习率：%f" % (epoch_num, optimizer.param_groups[0]['lr']))
 
         avg_tr_loss = loss.item()
         avg_tr_loss += avg_tr_loss / dis.shape[0]
