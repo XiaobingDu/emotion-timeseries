@@ -1194,8 +1194,8 @@ result.write('Epoch: {epoch:.1f}\t'
 
 print(att_1.cpu().detach().numpy().mean(axis=0))
 
-import csv
-
-with open("GC_POSITIVE.csv", "w") as f:
-    writer = csv.writer(f)
-    writer.writerows(GC_est)
+# import csv
+#
+# with open("GC_POSITIVE.csv", "w") as f:
+#     writer = csv.writer(f)
+#     writer.writerows(GC_est)
