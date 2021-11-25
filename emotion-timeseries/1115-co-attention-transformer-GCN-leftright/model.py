@@ -91,18 +91,18 @@ class EEGEncoder(nn.Module):
         # left transformer
         # print('left_feature shape:', left_features.shape)
         left_enc = self.left_transformer_enc(left_features)
-        print('*********left encoding:', left_enc)
+        # print('*********left encoding:', left_enc)
         # print('left enc shape:', left_enc.shape)
         left_enc = self.left_linear(left_enc)
-        print('*********right encoding FC:', left_enc)
+        # print('*********right encoding FC:', left_enc)
         # print('left enc shape:', left_enc.shape)
         # right transformer
         # print('right_feature shape:', right_features.shape)
         right_enc = self.right_transformer_enc(right_features)
-        print('*********right encoding:', right_enc)
+        # print('*********right encoding:', right_enc)
         # print('right enc shape:', right_enc.shape)
         right_enc = self.right_linear(right_enc)
-        print('*********right encoding FC:', right_enc)
+        # print('*********right encoding FC:', right_enc)
         # print('right enc shape:', right_enc.shape)
 
         # Co-attention Scores
@@ -130,9 +130,9 @@ class EEGEncoder(nn.Module):
         all_features = torch.reshape(all_features,[all_features.shape[0], all_features.shape[1], all_features.shape[2]*all_features.shape[3]])
         presentation = self.all_transformer_enc(all_features)
         # print('presentation shape:', presentation.shape) # [32, 30, 150]
-        print('*********all present:', presentation)
+        # print('*********all present:', presentation)
         presentation = self.enc_all_linear1(presentation)
-        print('*********all present FC:', presentation)
+        # print('*********all present FC:', presentation)
         # print('presentation shape:', presentation.shape) # [32, 30, 1024]
         # presentation = self.enc_all_linear2(presentation)
         # print('presentation shape:', presentation.shape) # [32, 30, 1]
@@ -158,7 +158,7 @@ class EEGEncoder(nn.Module):
         GCN_output = GCN_output.transpose(0, 1).cuda()  # [32,9]
         # GCN output * LSTM lastTimestep
         ## [32,9]
-        print('********GCN_output:', GCN_output)
+        # print('********GCN_output:', GCN_output)
         # print('********predicted_last:', predicted_last)
         predict = torch.matmul(predicted_last, GCN_output)  # ML-GCN eq.4
 
