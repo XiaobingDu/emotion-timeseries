@@ -90,7 +90,7 @@ args['attn_len'] = FLAGS.attn_len
 args['dropout_prob'] = FLAGS.dropout
 args['use_cuda'] = True
 args['train_flag'] = True
-args['optimizer'] = 'rmsprop' #'adam'
+args['optimizer'] = 'adam'
 
 num_epochs = FLAGS.epochs
 batch_size = FLAGS.batch_size
