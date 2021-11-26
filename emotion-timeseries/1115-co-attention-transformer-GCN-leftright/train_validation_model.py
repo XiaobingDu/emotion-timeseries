@@ -248,9 +248,9 @@ for epoch_num in range(num_epochs):
         loss2 = BCE(predict, target_gt)
         # loss2:
         loss = lamda * loss1 + (1 - lamda) * loss2
-        # print('loss1.....:', loss1.item())
-        # print('loss2......:', loss2.item())
-        # print('loss.......:', loss.item())
+        print('loss1.....:', loss1.item())
+        print('loss2......:', loss2.item())
+        print('loss.......:', loss.item())
 
         # Backprop and update weights
         optimizer.zero_grad()
