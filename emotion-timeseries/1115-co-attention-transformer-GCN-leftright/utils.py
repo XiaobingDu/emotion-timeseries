@@ -265,8 +265,8 @@ def gen_A(num_classes, t, p, adj_file):
     _adj[_adj >= t] = 1
     _adj = _adj * p / (_adj.sum(0, keepdims=True) + 1e-6) #p=0.25
     _adj = _adj + np.identity(num_classes, np.int)*(1-p)
-    print(_adj.sum(0, keepdims=True))
-    print('^^^^^^', _adj)
+    # print(_adj.sum(0, keepdims=True))
+    # print('^^^^^^', _adj)
     return _adj
 
 
