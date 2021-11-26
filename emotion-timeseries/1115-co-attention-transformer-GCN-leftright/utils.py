@@ -274,7 +274,6 @@ def gen_adj(A):
     D = torch.pow(A.sum(1).float(), -0.5)
     D = torch.diag(D)
     adj = torch.matmul(torch.matmul(A, D).t(), D)
-    print('!!!!!!!!',adj)
     return adj
 
 
