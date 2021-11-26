@@ -94,7 +94,7 @@ class EEGEncoder(nn.Module):
         # print('*********left encoding:', left_enc)
         # print('left enc shape:', left_enc.shape)
         left_enc = self.left_linear(left_enc)
-        # print('*********right encoding FC:', left_enc)
+        print('*********right encoding FC:', left_enc)
         # print('left enc shape:', left_enc.shape)
         # right transformer
         # print('right_feature shape:', right_features.shape)
@@ -102,7 +102,7 @@ class EEGEncoder(nn.Module):
         # print('*********right encoding:', right_enc)
         # print('right enc shape:', right_enc.shape)
         right_enc = self.right_linear(right_enc)
-        # print('*********right encoding FC:', right_enc)
+        print('*********right encoding FC:', right_enc)
         # print('right enc shape:', right_enc.shape)
 
         # Co-attention Scores
@@ -147,7 +147,7 @@ class EEGEncoder(nn.Module):
         # print('context shape:', context.shape)# [32, 30, 256]
         # print('********context:', context)
         predicted = self.out(context).view(batch_size, seq_len, -1)
-        # print('predicted shape:', predicted.shape)
+        print('predicted shape:', predicted.shape)
         predicted_last = predicted[:, -1, :]
 
         # GCN module
@@ -158,7 +158,7 @@ class EEGEncoder(nn.Module):
         GCN_output = GCN_output.transpose(0, 1).cuda()  # [32,9]
         # GCN output * LSTM lastTimestep
         ## [32,9]
-        # print('********GCN_output:', GCN_output)
+        print('********GCN_output:', GCN_output)
         # print('********predicted_last:', predicted_last)
         predict = torch.matmul(predicted_last, GCN_output)  # ML-GCN eq.4
 
