@@ -52,7 +52,7 @@ parser.add_argument('--save_file', type=str, default='co_attn_GC')
 parser.add_argument('--log_dir', type=str)
 parser.add_argument('--dropout', type=float, default=0.5,
                     help='Dropout rate (1 - keep probability).')
-parser.add_argument('--weight_decay', type=float, default=0.001,
+parser.add_argument('--weight_decay', type=float, default=1e-4,
                     help='Weight decay (L2 loss on parameters).')
 parser.add_argument('--bidirectional', type=bool, default=True)
 parser.add_argument('--GCN_hidden', type=int, default=16,
@@ -346,63 +346,64 @@ for epoch_num in range(num_epochs):
                   "f-1Macro= {:.4f}".format(train_fbetaMacro),
                   "f-1Micro= {:.4f}".format(train_fbetaMicro))
 
-            result = codecs.open(FLAGS.save_file, 'a', 'utf-8')
-            result.write("\n------------------------------------------------------------------\n")
-            result.write("Training GC_est:\n")
-            result.write('%s\n' % GC_est)
-            result.write('Training co-attention:\n ')
-            result.write('att_1: \t')
-            result.write('%s\n' % att_1.cpu().detach().numpy().mean(axis=0))
-
-            result.write('\n Epoch: [{0}]: Training....\n'.format(epoch_num + 1))
-            result.write('\n Learning Rate.......\n'.format(optimizer.param_groups[0]['lr']))
-            result.write("\n========================================\n")
-            result.write('euclidean_dist: {euclidean_dist:.4f}\t'
-                         'chebyshev_dist: {chebyshev_dist:.4f}\t'
-                         'kldist: {kldist:.4f}\t'
-                         'clark_dist: {clark_dist:.4f}\t'
-                         'canberra_dist: {canberra_dist:.4f}\t'
-                         'cosine_dist: {cosine_dist:.4f}\t'
-                         'intersection_dist: {intersection_dist:.4f}\t'.format(euclidean_dist=euclidean,
-                                                                               chebyshev_dist=chebyshev, kldist=kldist,
-                                                                               clark_dist=clark, canberra_dist=canberra,
-                                                                               cosine_dist=cosine,
-                                                                               intersection_dist=intersection))
-            result.write("\n------------------------------------------------------------------\n")
-            result.write("Training set results:\n")
-            result.write('Multilabel metrics: example-based-classification:\n')
-            result.write(
-                'subsetAccuracy: {subsetAccuracy:.4f}\t'
-                'hammingLoss: {hammingLoss:.4f}\t'
-                'accuracy: {accuracy:.4f}\t'
-                'precision: {precision:.4f}\t'
-                'recall: {recall:.4f}\t'
-                'fbeta: {fbeta:.4f}\t'.format(
-                    subsetAccuracy=train_subsetAccuracy,
-                    hammingLoss=train_hammingLoss,
-                    accuracy=train_eb_accuracy,
-                    precision=train_eb_precision,
-                    recall=train_eb_recall, fbeta=train_eb_fbeta)
-            )
-
-            result.write("\n")
-            result.write('Multilabel metrics: example-based-ranking:\n')
-            result.write('oneError: {oneError:.4f}\t'
-                         'averagePrecision: {averagePrecision:.4f}\t'
-                         'rankingLoss: {rankingLoss:.4f}\t'.format(oneError=train_oneError,
-                                                                   averagePrecision=train_averagePrecision,
-                                                                   rankingLoss=train_rankingLoss))
-
-            result.write("\n")
-            result.write('Multilabel metrics: label-based-classification:\n')
-            result.write('accuracyMacro: {accuracyMacro:.4f}\t'
-                         'fbetaMicro: {fbetaMicro:.4f}\t'.format(accuracyMacro=train_accuracyMacro,
-                                                                 fbetaMicro=train_fbetaMicro))
-
-    print("Epoch no:", epoch_num + 1, "| Avg_train_loss:".format(avg_tr_loss / len(trSet), '0.4f'))
-    result.write("\n------------------------------------------------------------------\n")
-    result.write("Epoch no: {epoch: .4f}\t"
-                 "| Avg_train_loss: {loss:.4f}\t".format(epoch=epoch_num + 1, loss=avg_tr_loss / len(trSet)))
+    #         result = codecs.open(FLAGS.save_file, 'a', 'utf-8')
+    #         result.write("\n------------------------------------------------------------------\n")
+    #         result.write("Training GC_est:\n")
+    #         result.write('%s\n' % GC_est)
+    #         result.write('Training co-attention:\n ')
+    #         result.write('att_1: \t')
+    #         result.write('%s\n' % att_1.cpu().detach().numpy().mean(axis=0))
+    #
+    #         result.write('\n Epoch: [{0}]: Training....\n'.format(epoch_num + 1))
+    #         result.write('epoch_num: {epoch_num:.1f}\t'
+    #                      'learning_rate: {learning_rate:.6f}\t'.format(epoch_num=epoch_num, learning_rate=optimizer.param_groups[0]['lr']))
+    #         result.write("\n========================================\n")
+    #         result.write('euclidean_dist: {euclidean_dist:.4f}\t'
+    #                      'chebyshev_dist: {chebyshev_dist:.4f}\t'
+    #                      'kldist: {kldist:.4f}\t'
+    #                      'clark_dist: {clark_dist:.4f}\t'
+    #                      'canberra_dist: {canberra_dist:.4f}\t'
+    #                      'cosine_dist: {cosine_dist:.4f}\t'
+    #                      'intersection_dist: {intersection_dist:.4f}\t'.format(euclidean_dist=euclidean,
+    #                                                                            chebyshev_dist=chebyshev, kldist=kldist,
+    #                                                                            clark_dist=clark, canberra_dist=canberra,
+    #                                                                            cosine_dist=cosine,
+    #                                                                            intersection_dist=intersection))
+    #         result.write("\n------------------------------------------------------------------\n")
+    #         result.write("Training set results:\n")
+    #         result.write('Multilabel metrics: example-based-classification:\n')
+    #         result.write(
+    #             'subsetAccuracy: {subsetAccuracy:.4f}\t'
+    #             'hammingLoss: {hammingLoss:.4f}\t'
+    #             'accuracy: {accuracy:.4f}\t'
+    #             'precision: {precision:.4f}\t'
+    #             'recall: {recall:.4f}\t'
+    #             'fbeta: {fbeta:.4f}\t'.format(
+    #                 subsetAccuracy=train_subsetAccuracy,
+    #                 hammingLoss=train_hammingLoss,
+    #                 accuracy=train_eb_accuracy,
+    #                 precision=train_eb_precision,
+    #                 recall=train_eb_recall, fbeta=train_eb_fbeta)
+    #         )
+    #
+    #         result.write("\n")
+    #         result.write('Multilabel metrics: example-based-ranking:\n')
+    #         result.write('oneError: {oneError:.4f}\t'
+    #                      'averagePrecision: {averagePrecision:.4f}\t'
+    #                      'rankingLoss: {rankingLoss:.4f}\t'.format(oneError=train_oneError,
+    #                                                                averagePrecision=train_averagePrecision,
+    #                                                                rankingLoss=train_rankingLoss))
+    #
+    #         result.write("\n")
+    #         result.write('Multilabel metrics: label-based-classification:\n')
+    #         result.write('accuracyMacro: {accuracyMacro:.4f}\t'
+    #                      'fbetaMicro: {fbetaMicro:.4f}\t'.format(accuracyMacro=train_accuracyMacro,
+    #                                                              fbetaMicro=train_fbetaMicro))
+    #
+    # print("Epoch no:", epoch_num + 1, "| Avg_train_loss:".format(avg_tr_loss / len(trSet), '0.4f'))
+    # result.write("\n------------------------------------------------------------------\n")
+    # result.write("Epoch no: {epoch: .4f}\t"
+    #              "| Avg_train_loss: {loss:.4f}\t".format(epoch=epoch_num + 1, loss=avg_tr_loss / len(trSet)))
 
     ## Validate:
     net.eval()
@@ -573,70 +574,70 @@ for epoch_num in range(num_epochs):
                   "f-1Macro= {:.4f}".format(val_fbetaMacro),
                   "f-1Micro= {:.4f}".format(val_fbetaMicro))
 
-            result.write("\n------------------------------------------------------------------\n")
-            result.write('Val co-attention:\n ')
-            result.write('att_1: \t')
-            result.write('%s\n' % att_1.cpu().detach().numpy().mean(axis=0))
-
-            result.write('\n Epoch: [{0}]: Test....\n'.format(epoch_num + 1))
-            result.write("\n========================================\n")
-            result.write('euclidean_dist: {euclidean_dist:.4f}\t'
-                         'chebyshev_dist: {chebyshev_dist:.4f}\t'
-                         'kldist: {kldist:.4f}\t'
-                         'clark_dist: {clark_dist:.4f}\t'
-                         'canberra_dist: {canberra_dist:.4f}\t'
-                         'cosine_dist: {cosine_dist:.4f}\t'
-                         'intersection_dist: {intersection_dist:.4f}\t'.format(euclidean_dist=euclidean,
-                                                                               chebyshev_dist=chebyshev, kldist=kldist,
-                                                                               clark_dist=clark, canberra_dist=canberra,
-                                                                               cosine_dist=cosine,
-                                                                               intersection_dist=intersection))
-            result.write("\n------------------------------------------------------------------\n")
-            result.write("Val set results:\n")
-            result.write('Multilabel metrics: example-based-classification:\n')
-            result.write(
-                'hammingLoss: {hammingLoss:.4f}\t'
-                'accuracy: {accuracy:.4f}\t'
-                'precision: {precision:.4f}\t'
-                'recall: {recall:.4f}\t'
-                'fbeta: {fbeta:.4f}\t'.format(
-                    hammingLoss=val_hammingLoss,
-                    accuracy=val_eb_accuracy, precision=val_eb_precision,
-                    recall=val_eb_recall, fbeta=val_eb_fbeta))
-            result.write("\n")
-            result.write('Multilabel metrics: example-based-ranking:\n')
-            result.write('oneError: {oneError:.4f}\t'
-                         'coverage: {coverage:.4f}\t'
-                         'averagePrecision: {averagePrecision:.4f}\t'
-                         'rankingLoss: {rankingLoss:.4f}\t'.format(oneError=val_oneError,
-                                                                   coverage=val_coverage,
-                                                                   averagePrecision=val_averagePrecision,
-                                                                   rankingLoss=val_rankingLoss))
-            result.write("\n")
-            result.write('Multilabel metrics: label-based-classification:\n')
-            result.write('accuracyMacro: {accuracyMacro:.4f}\t'
-                         'accuracyMicro: {accuracyMicro:.4f}\t'
-                         'precisionMacro: {precisionMacro:.4f}\t'
-                         'precisionMicro: {precisionMicro:.4f}\t'
-                         'recallMacro: {recallMacro:.4f}\t'
-                         'recallMicro: {recallMicro:.4f}\t'
-                         'fbetaMacro: {fbetaMacro:.4f}\t'
-                         'fbetaMicro: {fbetaMicro:.4f}\t'.format(accuracyMacro=val_accuracyMacro,
-                                                                 accuracyMicro=val_accuracyMicro,
-                                                                 precisionMacro=val_precisionMacro,
-                                                                 precisionMicro=val_precisionMicro,
-                                                                 recallMacro=val_precisionMacro,
-                                                                 recallMicro=val_precisionMicro,
-                                                                 fbetaMacro=val_fbetaMacro,
-                                                                 fbetaMicro=val_fbetaMicro))
-
-        # pearson correlation
-        emopcc += pearsonr(dis_prediction.cpu().detach().numpy(), dis.cpu().detach().numpy())[0]
-
-        result.write("\n------------------------------------------------------------------\n")
-        result.write('Validation co-attention:\n ')
-        result.write('att_1: \t')
-        result.write('%s\n' % att_1.cpu().detach().numpy().mean(axis=0))
+            # result.write("\n------------------------------------------------------------------\n")
+            # result.write('Val co-attention:\n ')
+            # result.write('att_1: \t')
+            # result.write('%s\n' % att_1.cpu().detach().numpy().mean(axis=0))
+            #
+            # result.write('\n Epoch: [{0}]: Test....\n'.format(epoch_num + 1))
+            # result.write("\n========================================\n")
+            # result.write('euclidean_dist: {euclidean_dist:.4f}\t'
+            #              'chebyshev_dist: {chebyshev_dist:.4f}\t'
+            #              'kldist: {kldist:.4f}\t'
+            #              'clark_dist: {clark_dist:.4f}\t'
+            #              'canberra_dist: {canberra_dist:.4f}\t'
+            #              'cosine_dist: {cosine_dist:.4f}\t'
+            #              'intersection_dist: {intersection_dist:.4f}\t'.format(euclidean_dist=euclidean,
+            #                                                                    chebyshev_dist=chebyshev, kldist=kldist,
+            #                                                                    clark_dist=clark, canberra_dist=canberra,
+            #                                                                    cosine_dist=cosine,
+            #                                                                    intersection_dist=intersection))
+            # result.write("\n------------------------------------------------------------------\n")
+            # result.write("Val set results:\n")
+            # result.write('Multilabel metrics: example-based-classification:\n')
+            # result.write(
+            #     'hammingLoss: {hammingLoss:.4f}\t'
+            #     'accuracy: {accuracy:.4f}\t'
+            #     'precision: {precision:.4f}\t'
+            #     'recall: {recall:.4f}\t'
+            #     'fbeta: {fbeta:.4f}\t'.format(
+            #         hammingLoss=val_hammingLoss,
+            #         accuracy=val_eb_accuracy, precision=val_eb_precision,
+            #         recall=val_eb_recall, fbeta=val_eb_fbeta))
+            # result.write("\n")
+            # result.write('Multilabel metrics: example-based-ranking:\n')
+            # result.write('oneError: {oneError:.4f}\t'
+            #              'coverage: {coverage:.4f}\t'
+            #              'averagePrecision: {averagePrecision:.4f}\t'
+            #              'rankingLoss: {rankingLoss:.4f}\t'.format(oneError=val_oneError,
+            #                                                        coverage=val_coverage,
+            #                                                        averagePrecision=val_averagePrecision,
+            #                                                        rankingLoss=val_rankingLoss))
+            # result.write("\n")
+            # result.write('Multilabel metrics: label-based-classification:\n')
+            # result.write('accuracyMacro: {accuracyMacro:.4f}\t'
+            #              'accuracyMicro: {accuracyMicro:.4f}\t'
+            #              'precisionMacro: {precisionMacro:.4f}\t'
+            #              'precisionMicro: {precisionMicro:.4f}\t'
+            #              'recallMacro: {recallMacro:.4f}\t'
+            #              'recallMicro: {recallMicro:.4f}\t'
+            #              'fbetaMacro: {fbetaMacro:.4f}\t'
+            #              'fbetaMicro: {fbetaMicro:.4f}\t'.format(accuracyMacro=val_accuracyMacro,
+            #                                                      accuracyMicro=val_accuracyMicro,
+            #                                                      precisionMacro=val_precisionMacro,
+            #                                                      precisionMicro=val_precisionMicro,
+            #                                                      recallMacro=val_precisionMacro,
+            #                                                      recallMicro=val_precisionMicro,
+            #                                                      fbetaMacro=val_fbetaMacro,
+            #                                                      fbetaMicro=val_fbetaMicro))
+            #
+            # # pearson correlation
+            # emopcc += pearsonr(dis_prediction.cpu().detach().numpy(), dis.cpu().detach().numpy())[0]
+            #
+            # result.write("\n------------------------------------------------------------------\n")
+            # result.write('Validation co-attention:\n ')
+            # result.write('att_1: \t')
+            # result.write('%s\n' % att_1.cpu().detach().numpy().mean(axis=0))
 
     # average loss
     val_testkl = val_loss / len(testSet)

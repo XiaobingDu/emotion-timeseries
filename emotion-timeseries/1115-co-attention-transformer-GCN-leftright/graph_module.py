@@ -43,19 +43,20 @@ class GraphConvolution(nn.Module):
 
 
 class GCN(nn.Module):
-    def __init__(self, num_classes, in_channel=300, t=0, adj_file=None): #t=0.4
+    def __init__(self, num_classes, in_channel=300, t=0, p=0, adj_file=None):
         super(GCN, self).__init__()
         self.num_classes = num_classes
         #定义 GCN 2-layers
-        self.hidden_size = 128 #1024
-        self.output_size = 256 #2048
+        self.hidden_size = 128 # 1024
+        self.output_size = 256 # 2048
         #GCN 1-layer
         self.gc1 = GraphConvolution(in_channel, self.output_size)
         #GCN 2-layer
         # self.gc1 = GraphConvolution(in_channel, self.hidden_size)
         # self.gc2 = GraphConvolution(self.hidden_size, self.output_size)
         self.relu = nn.LeakyReLU(0.2)
-        _adj = gen_A(num_classes, t, adj_file)
+        self.dropout = nn.Dropout(0.5)
+        _adj = gen_A(num_classes, t, p, adj_file)
         self.A = Parameter(torch.from_numpy(_adj).float())
 
     def forward(self, inp):
@@ -69,6 +70,8 @@ class GCN(nn.Module):
         #GCN 1-layer
         x = self.gc1(inp, adj)
         x = self.relu(x)
+        x = self.dropout(x)
+
         #GCN 2-layer
         # x = self.gc1(inp, adj)
         # x = self.relu(x)
