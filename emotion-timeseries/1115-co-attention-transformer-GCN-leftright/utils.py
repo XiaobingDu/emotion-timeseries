@@ -258,13 +258,13 @@ def gen_A(num_classes, t, p, adj_file):
     import pickle
     result = pickle.load(open(adj_file, 'rb'), encoding='iso-8859-1')
     _adj = result['adj']
-    _nums = result['nums']
-    _nums = _nums[:, np.newaxis]
-    _adj = _adj / _nums
+    # _nums = result['nums']
+    # _nums = _nums[:, np.newaxis]
+    # _adj = _adj / _nums
     # _adj[_adj < t] = 0
     # _adj[_adj >= t] = 1
     # _adj = _adj * p / (_adj.sum(0, keepdims=True) + 1e-6) #p=0.25
-    _adj = _adj + np.identity(num_classes, np.int)
+    # _adj = _adj + np.identity(num_classes, np.int)
     return _adj
 
 
