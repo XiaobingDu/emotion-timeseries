@@ -57,7 +57,10 @@ class EEGEncoder(nn.Module):
         self.all_transformer_enc = TransformerEncoder(self.sequence_len, self.feature_len,self.hidden_dim, nheads=3, depth=2, p=0.5, max_len=150)
 
         # [left right]-->att_linear
-        self.att_linear = nn.Sequential(nn.Dropout(self.dropout),nn.Linear(self.enc_dim * 2, 1), nn.LeakyReLU())
+        # self.att_linear = nn.Sequential(nn.Dropout(self.dropout),nn.Linear(self.enc_dim * 2, 1), nn.LeakyReLU())
+
+        # lefr --> att_linear
+        self.att_linear = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.enc_dim, 1), nn.LeakyReLU())
 
         # all_transformer --> out
         self.out = nn.Sequential(nn.Linear(256, 128),
@@ -99,8 +102,12 @@ class EEGEncoder(nn.Module):
         # print('*********right encoding FC:', right_enc)
         # print('right enc shape:', right_enc.shape)
 
+        # 只使用left brain feature，因为left brain对于积极情绪的贡献更大
+        concat_features = left_enc
+
         # Co-attention Scores
-        concat_features = torch.cat([left_enc, right_enc], dim=-1)
+        # concat_features = torch.cat([left_enc, right_enc], dim=-1)
+
         att_score = self.att_linear(concat_features).squeeze(-1)
         # print('att_score....:', att_score.shape)
         att_score = torch.softmax(att_score, dim=-1)
@@ -108,14 +115,14 @@ class EEGEncoder(nn.Module):
 
         # when the left and right use the channel dim as the seq_len
         # all_transformer
-        # left_features = torch.reshape(left_features,[left_features.shape[0],left_features.shape[1], int(left_features.shape[2]/5), 5])
-        # left_features = left_features.permute(0,2,1,3)
-        # left_features = torch.reshape(left_features,[left_features.shape[0],left_features.shape[1],left_features.shape[2]*left_features.shape[3]])
-        # print('left_feature shape:', left_features.shape)
-        # right_features = torch.reshape(right_features, [right_features.shape[0], right_features.shape[1], int(right_features.shape[2]/5), 5])
-        # right_features = right_features.permute(0, 2, 1, 3)
-        # right_features = torch.reshape(right_features, [right_features.shape[0], right_features.shape[1], right_features.shape[2]*right_features.shape[3]])
-        # print('right_feature shape:', right_features.shape)
+        left_features = torch.reshape(left_features,[left_features.shape[0],left_features.shape[1], int(left_features.shape[2]/5), 5])
+        left_features = left_features.permute(0,2,1,3)
+        left_features = torch.reshape(left_features,[left_features.shape[0],left_features.shape[1],left_features.shape[2]*left_features.shape[3]])
+        print('left_feature shape:', left_features.shape)
+        right_features = torch.reshape(right_features, [right_features.shape[0], right_features.shape[1], int(right_features.shape[2]/5), 5])
+        right_features = right_features.permute(0, 2, 1, 3)
+        right_features = torch.reshape(right_features, [right_features.shape[0], right_features.shape[1], right_features.shape[2]*right_features.shape[3]])
+        print('right_feature shape:', right_features.shape)
         all_features = torch.cat([left_features, right_features], dim=-1)
         # print('all_feature shape:', all_features.shape)
         # reshape the data to use the channel as the input sequence
