@@ -86,7 +86,7 @@ class EEGEncoder(nn.Module):
         batch_size, seq_len = x.shape[0], x.shape[1]
 
         # left transformer
-        # print('left_feature shape:', left_features.shape)
+        print('left_feature shape:', left_features.shape)
         left_enc = self.left_transformer_enc(left_features)
         # print('*********left encoding:', left_enc)
         # print('left enc shape:', left_enc.shape)
@@ -94,7 +94,7 @@ class EEGEncoder(nn.Module):
         # print('*********right encoding FC:', left_enc)
         # print('left enc shape:', left_enc.shape)
         # right transformer
-        # print('right_feature shape:', right_features.shape)
+        print('right_feature shape:', right_features.shape)
         right_enc = self.right_transformer_enc(right_features)
         # print('*********right encoding:', right_enc)
         # print('right enc shape:', right_enc.shape)
