@@ -57,10 +57,7 @@ class EEGEncoder(nn.Module):
         self.all_transformer_enc = TransformerEncoder(self.sequence_len, self.feature_len,self.hidden_dim, nheads=3, depth=2, p=0.5, max_len=150)
 
         # [left right]-->att_linear
-        # self.att_linear = nn.Sequential(nn.Dropout(self.dropout),nn.Linear(self.enc_dim * 2, 1), nn.LeakyReLU())
-
-        # lefr --> att_linear
-        self.att_linear = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.enc_dim, 1), nn.LeakyReLU())
+        self.att_linear = nn.Sequential(nn.Dropout(self.dropout),nn.Linear(self.enc_dim * 2, 1), nn.LeakyReLU())
 
         # all_transformer --> out
         self.out = nn.Sequential(nn.Linear(256, 128),
@@ -103,13 +100,9 @@ class EEGEncoder(nn.Module):
         # print('*********right encoding FC:', right_enc)
         # print('right enc shape:', right_enc.shape)
 
-        # 尝试只使用left brain feature，因为left brain对于积极情绪的贡献更大
-        concat_features = left_enc
-
         # concat left and right
         # Co-attention Scores
-        # concat_features = torch.cat([left_enc, right_enc], dim=-1)
-
+        concat_features = torch.cat([left_enc, right_enc], dim=-1)
         att_score = self.att_linear(concat_features).squeeze(-1)
         # print('att_score....:', att_score.shape)
         att_score = torch.softmax(att_score, dim=-1)
