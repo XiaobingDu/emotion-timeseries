@@ -108,7 +108,7 @@ class EEGEncoder(nn.Module):
         self.time_steps = args['time_steps'] # 30
         self.feature_dim = args['feature_dim'] # 150 = 30channels *5 # 150 300 600
         self.out_layer = args['out_layer']
-        self.channels = args['channel'] # 30
+        self.channels = args['channels'] # 30
         self.feature_len = args['feature_len'] # 150 = 30time_steps * 5
         self.enc_dim = args['enc_dim'] # 256
         self.hidden_dim = args['hidden_dim'] # 256
