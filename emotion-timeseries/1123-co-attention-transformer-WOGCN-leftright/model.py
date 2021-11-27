@@ -115,14 +115,16 @@ class EEGEncoder(nn.Module):
 
         # when the left and right use the channel dim as the seq_len
         # all_transformer
-        left_features = torch.reshape(left_features,[left_features.shape[0],left_features.shape[1], int(left_features.shape[2]/5), 5])
-        left_features = left_features.permute(0,2,1,3)
-        left_features = torch.reshape(left_features,[left_features.shape[0],left_features.shape[1],left_features.shape[2]*left_features.shape[3]])
-        print('left_feature shape:', left_features.shape)
-        right_features = torch.reshape(right_features, [right_features.shape[0], right_features.shape[1], int(right_features.shape[2]/5), 5])
-        right_features = right_features.permute(0, 2, 1, 3)
-        right_features = torch.reshape(right_features, [right_features.shape[0], right_features.shape[1], right_features.shape[2]*right_features.shape[3]])
-        print('right_feature shape:', right_features.shape)
+        # left_features = torch.reshape(left_features,[left_features.shape[0],left_features.shape[1], int(left_features.shape[2]/5), 5])
+        # left_features = left_features.permute(0,2,1,3)
+        # left_features = torch.reshape(left_features,[left_features.shape[0],left_features.shape[1],left_features.shape[2]*left_features.shape[3]])
+        # print('left_feature shape:', left_features.shape)
+        # right_features = torch.reshape(right_features, [right_features.shape[0], right_features.shape[1], int(right_features.shape[2]/5), 5])
+        # right_features = right_features.permute(0, 2, 1, 3)
+        # right_features = torch.reshape(right_features, [right_features.shape[0], right_features.shape[1], right_features.shape[2]*right_features.shape[3]])
+        # print('right_feature shape:', right_features.shape)
+
+        # when the left and right use the time dim as the seq_len
         all_features = torch.cat([left_features, right_features], dim=-1)
         print('all_feature shape:', all_features.shape)
         # reshape the data to use the channel as the input sequence
