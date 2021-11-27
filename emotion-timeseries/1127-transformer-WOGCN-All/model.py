@@ -105,7 +105,7 @@ class EEGEncoder(nn.Module):
     def __init__(self, args, device=torch.cuda.set_device(0)): # torch.device('cuda:0')
         super(EEGEncoder, self).__init__()
         #the feature length of five brain regions
-        self.time_steps = args['time_step'] # 30
+        self.time_steps = args['time_steps'] # 30
         self.feature_dim = args['feature_dim'] # 150 = 30channels *5 # 150 300 600
         self.out_layer = args['out_layer']
         self.channels = args['channel'] # 30
