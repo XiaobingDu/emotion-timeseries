@@ -346,7 +346,7 @@ for epoch_num in range(num_epochs):
                   "f-1Macro= {:.4f}".format(train_fbetaMacro),
                   "f-1Micro= {:.4f}".format(train_fbetaMicro))
 
-    #         result = codecs.open(FLAGS.save_file, 'a', 'utf-8')
+            result = codecs.open(FLAGS.save_file, 'a', 'utf-8')
     #         result.write("\n------------------------------------------------------------------\n")
     #         result.write("Training GC_est:\n")
     #         result.write('%s\n' % GC_est)
