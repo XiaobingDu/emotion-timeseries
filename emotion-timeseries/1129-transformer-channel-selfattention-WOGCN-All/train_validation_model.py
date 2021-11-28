@@ -1193,7 +1193,10 @@ result.write('Epoch: {epoch:.1f}\t'
 #                                                                             epoch_fbetaMacro=ave_fbetaMacro,
 #                                                                             epoch_fbetaMicro=ave_fbetaMicro))
 
-
+result.write("\n------------------------------------------------------------------\n")
+result.write('Validation channel self-attention:\n ')
+result.write('channel_attention: \t')
+result.write('%s\n' % channel_att.cpu().detach().numpy().mean(axis=0))
 print(time_att.cpu().detach().numpy().mean(axis=0))
 print(channel_att.cpu().detach().numpy().mean(axis=0))
 
