@@ -151,29 +151,27 @@ class EEGEncoder(nn.Module):
 
         # time_step as the input sequence
         all_features = torch.cat([left_features, right_features], dim=-1)
-        print('all_feature shape:', all_features.shape)
+        # print('all_feature shape:', all_features.shape)  # [64, 30, 150]
         time_enc = self.time_transformer_enc(all_features)
         time_enc = self.time_linear(time_enc)
-        print('time_enc shape:', time_enc.shape)
+        # print('time_enc shape:', time_enc.shape) # [64, 30, 256]
         time_enc_att, time_att = self.time_attention(time_enc, time_enc, time_enc)
-        print('time_enc_att shape', time_enc_att.shape)
+        # print('time_enc_att shape', time_enc_att.shape) # [64, 30, 256]
 
         # reshape the data to use the channel as the input sequence
         all_features = torch.reshape(all_features, [all_features.shape[0],all_features.shape[1],int(all_features.shape[2]/5), 5])
         all_features = all_features.permute(0,2,1,3)
         all_features = torch.reshape(all_features,[all_features.shape[0], all_features.shape[1], all_features.shape[2]*all_features.shape[3]])
-        print('all_feature shape:', all_features.shape)
+        # print('all_feature shape:', all_features.shape) # [64, 30, 150]
         channel_enc = self.channel_transformer_enc(all_features)
-        print('channel_enc shape:', channel_enc.shape) # [32, 30, 150]
-        # print('*********all present:', presentation)
+        # print('channel_enc shape:', channel_enc.shape) # [64, 30, 150]
         channel_enc = self.channel_linear(channel_enc)
-        # print('*********all present FC:', presentation)
-        print('channel_enc shape:', channel_enc.shape) # [32, 30, 1024]
+        # print('channel_enc shape:', channel_enc.shape) # [64, 30, 256]
         channel_enc_att, channel_att = self.channel_attention(channel_enc, channel_enc, channel_enc)
-        print('channel_enc_att shape', channel_enc_att.shape)
+        # print('channel_enc_att shape', channel_enc_att.shape) # [64, 30, 256]
 
         context_feature = torch.cat([time_enc_att, channel_enc_att], dim=-1)
-        print('********', context_feature.shape)
+        # print('********', context_feature.shape) # [64, 30, 512]
 
         predicted = self.out(context_feature).view(batch_size, seq_len, -1)
         # print('predicted shape:', predicted.shape)
