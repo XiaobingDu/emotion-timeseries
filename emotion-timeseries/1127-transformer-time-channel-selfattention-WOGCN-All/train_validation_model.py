@@ -1,6 +1,7 @@
 # -*-coding:utf-8-*-
 
 from __future__ import print_function
+from focalLoss import FocalLoss
 from model import EEGEncoder
 from dataManager import five_fold, dataSplit, get_sample_data, get_sample_data_withoutOverlap
 from utils import *
