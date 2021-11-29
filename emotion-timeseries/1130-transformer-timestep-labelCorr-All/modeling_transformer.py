@@ -128,8 +128,9 @@ class MultiHeadAttention(nn.Module):
             score = torch.mul(score, mask)
 
         self.att = F.softmax(score / np.sqrt(score.shape[-1]), dim=-1)
+        print ('att........', self.att)
         ret = torch.einsum('bhqk,bkhd->bqhd', self.att.float(), value)
-
+        print('ret.........', ret)
         return ret
 
     def colabelMask(self, t, adj_file):
