@@ -1,72 +1,71 @@
 # -*-coding:utf-8-*-
 
+from torch import nn
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
-from torch.autograd import Variable
-
-class FocalLoss(nn.Module):
-    r"""
-        This criterion is a implemenation of Focal Loss, which is proposed in
-        Focal Loss for Dense Object Detection.
-
-            Loss(x, class) = - \alpha (1-softmax(x)[class])^gamma \log(softmax(x)[class])
-
-        The losses are averaged across observations for each minibatch.
-
-        Args:
-            alpha(1D Tensor, Variable) : the scalar factor for this criterion
-            gamma(float, double) : gamma > 0; reduces the relative loss for well-classiﬁed examples (p > .5),
-                                   putting more focus on hard, misclassiﬁed examples
-            size_average(bool): By default, the losses are averaged over observations for each minibatch.
-                                However, if the field size_average is set to False, the losses are
-                                instead summed for each minibatch.
+from torch.nn import functional as F
 
 
-    """
-    def __init__(self, class_num, alpha=None, gamma=2, size_average=True):
-        super(FocalLoss, self).__init__()
-        alpha = torch.tensor(alpha)
-        if alpha is None:
-            self.alpha = Variable(torch.ones(class_num, 1))
-        else:
-            if isinstance(alpha, Variable):
-                self.alpha = alpha
-            else:
-                self.alpha = Variable(alpha)
-        self.gamma = gamma
-        self.class_num = class_num
+class focal_loss(nn.Module):
+    def __init__(self, num_classes=9,  alpha=0.25, gamma=2, size_average=True):
+        """
+        focal_loss损失函数, -α(1-yi)**γ *ce_loss(xi,yi)
+        步骤详细的实现了 focal_loss损失函数.
+        :param alpha:   阿尔法α,类别权重. 当α是列表时,为各类别权重,当α为常数时,类别权重为[α, 1-α, 1-α, ....],常用于 目标检测算法中抑制背景类 , retainnet中设置为0.255
+        :param gamma:   伽马γ,难易样本调节参数. retainnet中设置为2
+        :param num_classes:     类别数量
+        :param size_average:    损失计算方式,默认取均值
+        """
+        super(focal_loss, self).__init__()
         self.size_average = size_average
+        if isinstance(alpha, list):
+            assert len(alpha) == num_classes  # α可以以list方式输入,size:[num_classes] 用于对不同类别精细地赋予权重
+            print(" --- Focal_loss alpha = {}, 将对每一类权重进行精细化赋值 --- ".format(alpha))
+            self.alpha = torch.Tensor(alpha)
+        else:
+            assert alpha < 1  # 如果α为一个常数,则降低第一类的影响,在目标检测中为第一类
+            print(" --- Focal_loss alpha = {} ,将对背景类进行衰减,请在目标检测任务中使用 --- ".format(alpha))
+            self.alpha = torch.zeros(num_classes)
+            self.alpha[0] += alpha
+            self.alpha[1:] += (1 - alpha)  # α 最终为 [ α, 1-α, 1-α, 1-α, 1-α, ...] size:[num_classes]
 
-    def forward(self, inputs, targets):
-        N = inputs.size(0)
-        C = inputs.size(1)
-        P = F.softmax(inputs)
+        self.gamma = gamma
 
-        class_mask = inputs.data.new(N, C).fill_(0)
-        class_mask = Variable(class_mask)
-        ids = targets.view(-1, 1)
-        class_mask.scatter_(1, ids.data.long(), 1)
-        #print(class_mask)
+    def forward(self, preds, labels):
+        """
+        focal_loss损失计算
+        :param preds:   预测类别. size:[B,N,C] or [B,C]    分别对应与检测与分类任务, B批次, N检测框数, C类别数
+        :param labels:  实际类别. size:[B,N] or [B]        [B*N个标签(假设框中有目标)]，[B个标签]
+        :return:
+        """
 
+        # 固定类别维度，其余合并(总检测框数或总批次数)，preds.size(-1)是最后一个维度
+        preds = preds.view(-1, preds.size(-1))
+        self.alpha = self.alpha.to(preds.device)
 
-        if inputs.is_cuda and not self.alpha.is_cuda:
-            self.alpha = self.alpha.cuda()
-        alpha = self.alpha[ids.data.view(-1)]
+        # 使用log_softmax解决溢出问题，方便交叉熵计算而不用考虑值域
+        preds_logsoft = F.log_softmax(preds, dim=1)
 
-        probs = (P*class_mask).sum(1).view(-1,1)
+        # log_softmax是softmax+log运算，那再exp就算回去了变成softmax
+        preds_softmax = torch.exp(preds_logsoft)
 
-        log_p = probs.log()
-        #print('probs size= {}'.format(probs.size()))
-        #print(probs)
+        # 这部分实现nll_loss ( crossentropy = log_softmax + nll)
+        preds_softmax = preds_softmax.gather(1, labels.view(-1, 1))
+        preds_logsoft = preds_logsoft.gather(1, labels.view(-1, 1))
 
-        batch_loss = -alpha*(torch.pow((1-probs), self.gamma))*log_p
-        #print('-----bacth_loss------')
-        #print(batch_loss)
+        self.alpha = self.alpha.gather(0, labels.view(-1))
 
+        # torch.pow((1-preds_softmax), self.gamma) 为focal loss中 (1-pt)**γ
+
+        # torch.mul 矩阵对应位置相乘，大小一致
+        loss = -torch.mul(torch.pow((1 - preds_softmax), self.gamma), preds_logsoft)
+
+        # torch.t()求转置
+        loss = torch.mul(self.alpha, loss.t())
+        # print(loss.size()) [1,5]
 
         if self.size_average:
-            loss = batch_loss.mean()
+            loss = loss.mean()
         else:
-            loss = batch_loss.sum()
+            loss = loss.sum()
+
         return loss
