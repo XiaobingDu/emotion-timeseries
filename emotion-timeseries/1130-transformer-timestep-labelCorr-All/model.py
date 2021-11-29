@@ -120,7 +120,7 @@ class EEGEncoder(nn.Module):
         self.time_transformer_enc = TransformerEncoder(self.time_steps, self.feature_dim, self.hidden_dim,  nheads=3, depth=2, p=0.5, max_len=150)
         self.time_linear = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.feature_dim, self.enc_dim, nn.LeakyReLU()))
 
-        self.label_transformer = TransformerEncoder(self.labelNum, self.labelEmbedding, self.hidden_dim, nheads=3, depth=2, p=0.5,max_len=300, mask='co-label')
+        self.label_transformer = TransformerEncoder(self.labelNum, self.labelEmbedding, self.hidden_dim, nheads=3, depth=2, p=0.5,max_len=300, mask=None)
         self.label_linear = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.labelEmbedding, self.enc_dim, nn.LeakyReLU()))
 
         # all_transformer --> out
@@ -170,7 +170,6 @@ class EEGEncoder(nn.Module):
         attn = torch.nn.functional.tanh(torch.nn.functional.softmax(self.G, dim=-1)) # [64, 30, 9]
         attn, _ = attn.max(2) # [64, 30]
         attn = torch.reshape(attn,[attn.shape[0],attn.shape[1],-1]) # [64, 30, 1]
-        print(attn)
 
         # print(attn.shape)
         # print('time_enc shape:', time_enc.shape) # [64, 30, 256]
