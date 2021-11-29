@@ -169,15 +169,17 @@ class EEGEncoder(nn.Module):
         # print(self.G)
         attn = torch.nn.functional.tanh(torch.nn.functional.softmax(self.G, dim=-1)) # [64, 30, 9]
         attn, _ = attn.max(2) # [64, 30]
-        attn = torch.reshape(attn,[attn.shape[0],attn.shape[1],-1])
-        print(attn.shape)
+        attn = torch.reshape(attn,[attn.shape[0],attn.shape[1],-1]) # [64, 30, 1]
+        # print(attn.shape)
         # print('time_enc shape:', time_enc.shape) # [64, 30, 256]
-        context_feature = time_enc * attn
-        print(context_feature.shape)
+        context_feature = time_enc * attn # [64, 30, 256]
+        # print(context_feature.shape)
 
         predicted = self.out(context_feature).view(batch_size, seq_len, -1)
-        print('predicted shape:', predicted.shape)
-        predicted_last = predicted[:, -1, :]
+        # print('predicted shape:', predicted.shape) # [64, 30, 9]
+        # predicted_last = predicted[:, -1, :]
+        predicted_last = predicted.mean(1)
+        print(predicted_last)
         predict = predicted_last
 
         return predict
