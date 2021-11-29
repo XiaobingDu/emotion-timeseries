@@ -158,7 +158,7 @@ class EEGEncoder(nn.Module):
         print('******* label emb shape:', labelEmb.shape)
         print(labelEmb)
         labelEmb_e = labelEmb.unsqueeze(dim=0)
-        for i in batch_size:
+        for i in range(batch_size):
             if i == 0:
                 labelEmb = labelEmb_e
             else:
