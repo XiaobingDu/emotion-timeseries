@@ -167,7 +167,8 @@ class EEGEncoder(nn.Module):
         self.G = torch.matmul(time_enc, label_enc)
         # print('*******', self.G.shape) # [64, 30, 9]
         # print(self.G)
-        attn = torch.nn.functional.softmax(self.G, dim=-1)
+        attn = torch.nn.functional.tanh(torch.nn.functional.softmax(self.G, dim=-1))
+        print(attn)
         print(attn.shape)
         print('time_enc shape:', time_enc.shape) # [64, 30, 256]
         context_feature = torch.mul(time_enc, attn) # [64, 30, 256]
