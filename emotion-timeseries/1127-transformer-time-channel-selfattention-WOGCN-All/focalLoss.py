@@ -49,7 +49,7 @@ class FocalLoss(nn.Module):
         preds_softmax = torch.exp(preds_logsoft)
 
         # 这部分实现nll_loss ( crossentropy = log_softmax + nll)
-        preds_softmax = preds_softmax.gather(1, labels.view(-1, 1))
+        preds_softmax = preds_softmax.gather(1, labels.view(-1, 1).long())
         preds_logsoft = preds_logsoft.gather(1, labels.view(-1, 1))
 
         self.alpha = self.alpha.gather(0, labels.view(-1))
