@@ -174,12 +174,12 @@ class EEGEncoder(nn.Module):
         # print('time_enc shape:', time_enc.shape) # [64, 30, 256]
         context_feature = time_enc * attn # [64, 30, 256]
         # print(context_feature.shape)
-
+        print(context_feature)
         predicted = self.out(context_feature).view(batch_size, seq_len, -1)
         # print('predicted shape:', predicted.shape) # [64, 30, 9]
         # predicted_last = predicted[:, -1, :]
         predicted_last = predicted.mean(1)
-        print(predicted_last)
+        print(predicted_last.shape)
         predict = predicted_last
 
         return predict
