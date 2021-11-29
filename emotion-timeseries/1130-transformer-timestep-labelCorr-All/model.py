@@ -164,15 +164,12 @@ class EEGEncoder(nn.Module):
         print('*******', self.G.shape)
         print(self.G)
 
+        predict = self.G
 
-
-
-
-
-        predicted = self.out(context_feature).view(batch_size, seq_len, -1)
-        # print('predicted shape:', predicted.shape)
-        predicted_last = predicted[:, -1, :]
-        predict = predicted_last
+        # predicted = self.out(context_feature).view(batch_size, seq_len, -1)
+        # # print('predicted shape:', predicted.shape)
+        # predicted_last = predicted[:, -1, :]
+        # predict = predicted_last
 
 
         return predict
