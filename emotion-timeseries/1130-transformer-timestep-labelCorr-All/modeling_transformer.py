@@ -128,6 +128,7 @@ class MultiHeadAttention(nn.Module):
             score = torch.mul(score, mask)
             score[score == float('inf')] = float('-inf')
             score = score.double()
+
         self.att = F.softmax(score / np.sqrt(score.shape[-1]), dim=-1)
         ret = torch.einsum('bhqk,bkhd->bqhd', self.att.float(), value)
 
