@@ -135,6 +135,7 @@ class MultiHeadAttention(nn.Module):
         self.att = F.softmax(score / np.sqrt(score.shape[-1]), dim=-1)
         print('self.att.....', self.att)
         ret = torch.einsum('bhqk,bkhd->bqhd', self.att.float(), value)
+        print('ret.....', ret)
 
         return ret
 
