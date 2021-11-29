@@ -123,12 +123,8 @@ class EEGEncoder(nn.Module):
         self.label_transformer = TransformerEncoder(self.labelNum, self.labelEmbedding, self.hidden_dim, nheads=3, depth=2, p=0.5,max_len=300, mask='co-label')
         self.label_linear = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.labelEmbedding, self.enc_dim, nn.LeakyReLU()))
 
-        #self.G
-
         # all_transformer --> out
-        self.out = nn.Sequential(nn.Linear(256, 128),
-                                  nn.LeakyReLU(),
-                                  nn.Linear(128, 64),
+        self.out = nn.Sequential(nn.Linear(256, 64),
                                  nn.LeakyReLU(),
                                  nn.Linear(64, 32),
                                  nn.LeakyReLU(),
@@ -168,22 +164,15 @@ class EEGEncoder(nn.Module):
         label_enc = self.label_linear(label_corr)
         label_enc = label_enc.permute(0, 2, 1)
 
-        print(time_enc)
-        print(label_enc)
-        print(time_enc.shape)
-        print(label_enc.shape)
-
         self.G = torch.matmul(time_enc, label_enc)
+        # print('*******', self.G.shape) # [64, 30, 9]
+        # print(self.G)
+        attn = torch.nn.functional.softmax(self.G, dim=-1)
+        context_feature = torch.mul(time_enc, attn) # [64, 30, 256]
 
-        print('*******', self.G.shape)
-        print(self.G)
-
-        predict = self.G
-
-        # predicted = self.out(context_feature).view(batch_size, seq_len, -1)
-        # # print('predicted shape:', predicted.shape)
-        # predicted_last = predicted[:, -1, :]
-        # predict = predicted_last
-
+        predicted = self.out(context_feature).view(batch_size, seq_len, -1)
+        # print('predicted shape:', predicted.shape)
+        predicted_last = predicted[:, -1, :]
+        predict = predicted_last
 
         return predict
