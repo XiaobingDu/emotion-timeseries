@@ -168,10 +168,12 @@ class EEGEncoder(nn.Module):
         # print('*******', self.G.shape) # [64, 30, 9]
         # print(self.G)
         attn = torch.nn.functional.softmax(self.G, dim=-1)
+        print(attn.shape)
+        print('time_enc shape:', time_enc.shape) # [64, 30, 256]
         context_feature = torch.mul(time_enc, attn) # [64, 30, 256]
 
         predicted = self.out(context_feature).view(batch_size, seq_len, -1)
-        # print('predicted shape:', predicted.shape)
+        print('predicted shape:', predicted.shape)
         predicted_last = predicted[:, -1, :]
         predict = predicted_last
 
