@@ -8,6 +8,7 @@ from torch.utils.data import DataLoader
 from scipy.stats.mstats import pearsonr
 import time, argparse
 import codecs
+import pickle
 from multilabelMetrics.examplebasedclassification import *
 from multilabelMetrics.examplebasedranking import *
 from multilabelMetrics.labelbasedclassification import *
@@ -30,7 +31,7 @@ parser.add_argument('--path2', type=str, choices=[
     '../DOM_feature_all/DOM_featureAll.mat'])
 parser.add_argument('--no-cuda', action='store_true', default=False,
                     help='Disables CUDA training.')
-parser.add_argument('--learning_rate', type=float, default= 1e-3, # 0.001
+parser.add_argument('--learning_rate', type=float, default=1e-3,  # 0.001
                     help='Initial learning rate.')
 parser.add_argument('--iter_num', type=int,
                     help='Number of iterate to train.')
@@ -83,15 +84,15 @@ args['feature_dim'] = 150  # 30channels * 5
 args['out_layer'] = FLAGS.out_layer
 args['channels'] = 30  # channel
 args['feature_len'] = 150  # 30time_steps * 5 = 150
-args['label_num'] = 9 # 9
-args['label_em'] = 300 # 300, Glove embedding
+args['label_num'] = 9  # 9
+args['label_em'] = 300  # 300, Glove embedding
 args['enc_dim'] = 256
 args['hidden_dim'] = 256
 args['attn_len'] = FLAGS.attn_len
 args['dropout_prob'] = FLAGS.dropout
 args['use_cuda'] = True
 args['train_flag'] = True
-args['optimizer'] = 'rmsprop'# 'adam'
+args['optimizer'] = 'rmsprop'  # 'adam'
 
 num_epochs = FLAGS.epochs
 batch_size = FLAGS.batch_size
@@ -145,6 +146,12 @@ trDataloader = DataLoader(trSet, batch_size=batch_size, shuffle=True, num_worker
 valDataloader = DataLoader(valSet, batch_size=batch_size, shuffle=True, num_workers=0)  # len = 3172
 testDataloader = DataLoader(testSet, batch_size=batch_size, shuffle=True, num_workers=0)  # len = 2151
 
+# label embedding
+
+inp = 'embedding/positiveEmotion_glove_word2vec.pkl'
+labelEmbedding = pickle.load(open(inp, 'rb'), encoding='iso-8859-1')
+labelEmbedding = torch.Tensor(labelEmbedding)
+
 # Initialize network
 net = EEGEncoder(args)
 if args['use_cuda']:
@@ -154,11 +161,11 @@ if args['use_cuda']:
 if args['optimizer'] == 'rmsprop':
     optimizer = torch.optim.RMSprop(net.parameters(), lr=lr, weight_decay=1e-4)
 elif args['optimizer'] == 'adam':
-    optimizer = torch.optim.Adam(net.parameters(), lr=lr, weight_decay=1e-4) # 1e-8
+    optimizer = torch.optim.Adam(net.parameters(), lr=lr, weight_decay=1e-4)  # 1e-8
 elif args['optimizer'] == 'sgd':
     optimizer = torch.optim.SGD(net.parameters(), lr=lr, momentum=0.9, weight_decay=1e-4)
 
-scheduler = torch.optim.lr_scheduler.StepLR(optimizer,step_size=5,gamma = 0.8)
+scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.8)
 
 kl_div = torch.nn.KLDivLoss(size_average=True, reduce=True)
 BCE = torch.nn.BCEWithLogitsLoss()
@@ -231,7 +238,7 @@ for epoch_num in range(num_epochs):
         right.requires_grad_()
 
         # Forward pass
-        predict = net(train, left, right, dom_label)
+        predict = net(train, left, right, labelEmbedding)
 
         # for loss1
         # softmax layer
@@ -258,7 +265,6 @@ for epoch_num in range(num_epochs):
         loss.backward()
         a = torch.nn.utils.clip_grad_norm_(net.parameters(), 10)
         optimizer.step()
-
 
         avg_tr_loss = loss.item()
         avg_tr_loss += avg_tr_loss / dis.shape[0]
@@ -452,7 +458,7 @@ for epoch_num in range(num_epochs):
             right = torch.nn.Parameter(right).cuda()
 
         # Forward pass
-        predict = net(val, left, right, dom_label)
+        predict = net(val, left, right, labelEmbedding)
 
         # for loss1
         softmax = torch.nn.Softmax(dim=1)

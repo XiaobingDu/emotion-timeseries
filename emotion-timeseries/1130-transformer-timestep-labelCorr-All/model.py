@@ -140,7 +140,7 @@ class EEGEncoder(nn.Module):
                        torch.device('cpu'))
         self.to(self.device)
 
-    def forward(self, x, left_features, right_features, target=None):
+    def forward(self, x, left_features, right_features, labelEmb=None):
         # Get batch dim
         x = x.float()
         left_features = left_features.float().cuda()
@@ -155,7 +155,7 @@ class EEGEncoder(nn.Module):
         time_enc = self.time_linear(time_enc)
         # print('time_enc shape:', time_enc.shape) # [64, 30, 256]
 
-        label_corr = self.label_transformer(target)
+        label_corr = self.label_transformer(labelEmb)
         label_enc = self.label_linear(label_corr)
         label_enc = label_enc.permute(0, 2, 1)
 
