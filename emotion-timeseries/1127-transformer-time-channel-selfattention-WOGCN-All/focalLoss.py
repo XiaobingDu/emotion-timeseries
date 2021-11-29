@@ -18,6 +18,7 @@ class FocalLoss(nn.Module):
         logits: batch_size * labels_length * seq_length
         labels: batch_size * seq_length
         """
+        print('*****',labels.dim())
         if labels.dim() > 2:
             labels = labels.contiguous().view(labels.size(0), labels.size(1), -1)
             labels = labels.transpose(1, 2)
