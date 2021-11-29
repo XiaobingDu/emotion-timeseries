@@ -124,7 +124,9 @@ class MultiHeadAttention(nn.Module):
             adj_file = 'embedding/positiveEmotion_adj.pkl'
             mask = self.colabelMask(t=0.4, adj_file=adj_file)
             print('before masking......', score)
-            score = torch.mul(score, torch.tensor(mask).double())
+            mask = torch.as_tensor(mask, dtype=torch.double, device=torch.tensor.device)
+            score = torch.mul(score, mask)
+
             print('after masking......', score)
 
         self.att = F.softmax(score / np.sqrt(score.shape[-1]), dim=-1)
