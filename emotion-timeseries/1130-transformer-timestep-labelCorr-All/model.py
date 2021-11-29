@@ -168,6 +168,11 @@ class EEGEncoder(nn.Module):
         label_enc = self.label_linear(label_corr)
         label_enc = label_enc.permute(0, 2, 1)
 
+        print(time_enc)
+        print(label_enc)
+        print(time_enc.shape)
+        print(label_enc.shape)
+
         self.G = torch.matmul(time_enc, label_enc)
 
         print('*******', self.G.shape)
