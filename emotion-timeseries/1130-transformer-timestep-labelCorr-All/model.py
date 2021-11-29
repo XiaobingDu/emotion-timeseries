@@ -150,7 +150,6 @@ class EEGEncoder(nn.Module):
         # print('all_feature shape:', all_features.shape)  # [64, 30, 150]
         time_enc = self.time_transformer_enc(all_features)
         time_enc = self.time_linear(time_enc)
-        print('time enc.....', time_enc)
         # print('time_enc shape:', time_enc.shape) # [64, 30, 256]
 
         # print('******* label emb shape:', labelEmb.shape) # [9, 300]
@@ -164,10 +163,8 @@ class EEGEncoder(nn.Module):
         label_corr = self.label_transformer(labelEmb)
         label_enc = self.label_linear(label_corr)
         label_enc = label_enc.permute(0, 2, 1)
-        print('label enc.....', label_enc)
 
         self.G = torch.matmul(time_enc, label_enc)
-        print('G......', self.G)
         # print('*******', self.G.shape) # [64, 30, 9]
         # print(self.G)
         attn = torch.nn.functional.tanh(torch.nn.functional.softmax(self.G, dim=-1)) # [64, 30, 9]
