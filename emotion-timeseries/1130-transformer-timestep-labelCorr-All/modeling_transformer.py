@@ -140,7 +140,7 @@ class MultiHeadAttention(nn.Module):
             nums = result['nums']
             nums = nums[:, np.newaxis]
             adj = adj / nums
-            adj[adj < t] = 0 # -float('inf')
+            adj[adj < t] = -float('inf')
             adj[adj >= t] = 1
             print('^^^^^^', adj)
             return adj
