@@ -128,7 +128,7 @@ class MultiHeadAttention(nn.Module):
             mask = torch.as_tensor(mask, dtype=torch.double).cuda()
             score = torch.mul(score, mask)
             print('score.......', score)
-            score[score == 'inf'] = float('-inf')
+            score[score == float('inf')] = float('-inf')
             score = score.double()
             print('score.......', score)
         self.att = F.softmax(score / np.sqrt(score.shape[-1]), dim=-1)
