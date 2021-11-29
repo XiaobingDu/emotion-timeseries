@@ -150,14 +150,6 @@ net = EEGEncoder(args)
 if args['use_cuda']:
     net = net.cuda()
 
-# def focal_loss(y_pred, y_true, weight=None, alpha=0.25, gamma=2):
-#     sigmoid_p = torch.nn.Sigmoid(y_pred)
-#     zeros = torch.zeros_like(sigmoid_p)
-#     pos_p_sub = torch.where(y_true > zeros,y_true - sigmoid_p,zeros)
-#     neg_p_sub = torch.where(y_true > zeros,zeros,sigmoid_p)
-#     per_entry_cross_ent = -alpha * (pos_p_sub ** gamma) * torch.log(torch.clamp(sigmoid_p,1e-8,1.0))-(1-alpha)*(neg_p_sub ** gamma)*torch.log(torch.clamp(1.0-sigmoid_p,1e-8,1.0))
-#     return per_entry_cross_ent.sum()
-
 ## Initialize optimizer
 if args['optimizer'] == 'rmsprop':
     optimizer = torch.optim.RMSprop(net.parameters(), lr=lr, weight_decay=1e-4)
