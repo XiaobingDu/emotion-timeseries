@@ -125,6 +125,7 @@ class MultiHeadAttention(nn.Module):
             mask = self.colabelMask(t=0.4, adj_file=adj_file)
             print('mask....', mask)
             score = score.double()
+            print('score.....', score)
             mask = torch.as_tensor(mask, dtype=torch.double).cuda()
             score = torch.mul(score, mask)
             print('score.....', score)
