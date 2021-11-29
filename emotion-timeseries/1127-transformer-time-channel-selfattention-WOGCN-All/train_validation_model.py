@@ -161,7 +161,7 @@ scheduler = torch.optim.lr_scheduler.StepLR(optimizer,step_size=5,gamma = 0.8)
 
 kl_div = torch.nn.KLDivLoss(size_average=True, reduce=True)
 BCE = torch.nn.BCEWithLogitsLoss()
-focal_loss = FocalLoss(class_num=9, alpha=0.25, gamma=2, size_average=True)
+focal_loss = FocalLoss(num_classes=9, alpha=0.25, gamma=2, size_average=True)
 
 # write in file and save
 result = codecs.open(FLAGS.save_file, 'a', 'utf-8')
