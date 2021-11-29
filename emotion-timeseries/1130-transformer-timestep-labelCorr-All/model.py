@@ -171,7 +171,8 @@ class EEGEncoder(nn.Module):
         attn, _ = attn.max(2) # [64, 30]
         attn = attn.unsqueeze(dim=1) # [64, 1, 30]
         # print('time_enc shape:', time_enc.shape) # [64, 30, 256]
-        context_feature = torch.mul(attn, time_enc) # [64, 30, 256]
+        context_feature = torch.bmm(attn, time_enc)
+        print(context_feature.shape)
 
         predicted = self.out(context_feature).view(batch_size, seq_len, -1)
         print('predicted shape:', predicted.shape)
