@@ -168,7 +168,7 @@ class EEGEncoder(nn.Module):
         # print('*******', self.G.shape) # [64, 30, 9]
         # print(self.G)
         attn = torch.nn.functional.tanh(torch.nn.functional.softmax(self.G, dim=-1))
-        attn = attn.max(1)
+        attn, _ = attn.max(1)
         print(attn)
         print(attn.shape)
         print('time_enc shape:', time_enc.shape) # [64, 30, 256]
