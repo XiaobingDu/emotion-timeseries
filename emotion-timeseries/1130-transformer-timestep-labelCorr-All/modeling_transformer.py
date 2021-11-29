@@ -191,7 +191,7 @@ class PositionalEncoder(nn.Module):
         self.dropout = nn.Dropout(p=p)
 
     def forward(self, x):
-
+        print ('x shape:', x.shape)
         x = x.cuda()
         x = x + Variable(self.pe[:, :x.size(1)].cuda(), requires_grad=False)
         return self.dropout(x)

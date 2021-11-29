@@ -145,6 +145,7 @@ class EEGEncoder(nn.Module):
         x = x.float()
         left_features = left_features.float().cuda()
         right_features = right_features.float().cuda()
+        labelEmb = labelEmb.float().cuda()
         # batch_size, seq_len
         batch_size, seq_len = x.shape[0], x.shape[1]
 
@@ -156,6 +157,13 @@ class EEGEncoder(nn.Module):
         # print('time_enc shape:', time_enc.shape) # [64, 30, 256]
         print('******* label emb shape:', labelEmb.shape)
         print(labelEmb)
+        labelEmb_e = labelEmb.unsqueeze(dim=0)
+        for i in batch_size:
+            if i == 0:
+                labelEmb = labelEmb_e
+            else:
+                labelEmb = torch.cat((labelEmb, labelEmb_e), dim=0)
+        print('******* label emb shape:', labelEmb.shape)
         label_corr = self.label_transformer(labelEmb)
         label_enc = self.label_linear(label_corr)
         label_enc = label_enc.permute(0, 2, 1)
