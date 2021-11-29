@@ -155,15 +155,15 @@ class EEGEncoder(nn.Module):
         time_enc = self.time_transformer_enc(all_features)
         time_enc = self.time_linear(time_enc)
         # print('time_enc shape:', time_enc.shape) # [64, 30, 256]
-        print('******* label emb shape:', labelEmb.shape)
-        print(labelEmb)
+
+        # print('******* label emb shape:', labelEmb.shape) # [9, 300]
         labelEmb_e = labelEmb.unsqueeze(dim=0)
         for i in range(batch_size):
             if i == 0:
                 labelEmb = labelEmb_e
             else:
                 labelEmb = torch.cat((labelEmb, labelEmb_e), dim=0)
-        print('******* label emb shape:', labelEmb.shape)
+        # print('******* label emb shape:', labelEmb.shape) # [64, 9, 300]
         label_corr = self.label_transformer(labelEmb)
         label_enc = self.label_linear(label_corr)
         label_enc = label_enc.permute(0, 2, 1)

@@ -124,7 +124,7 @@ class MultiHeadAttention(nn.Module):
             adj_file = 'embedding/positiveEmotion_adj.pkl'
             mask = self.colabelMask(t=0.4, adj_file=adj_file)
             print('before masking......', score)
-            score = torch.mul(score, torch.tensor(mask))
+            score = torch.mul(score, torch.tensor(mask).double())
             print('after masking......', score)
 
         self.att = F.softmax(score / np.sqrt(score.shape[-1]), dim=-1)
@@ -191,7 +191,6 @@ class PositionalEncoder(nn.Module):
         self.dropout = nn.Dropout(p=p)
 
     def forward(self, x):
-        print ('x shape:', x.shape)
         x = x.cuda()
         x = x + Variable(self.pe[:, :x.size(1)].cuda(), requires_grad=False)
         return self.dropout(x)
