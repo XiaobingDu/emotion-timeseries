@@ -90,7 +90,20 @@ class MediaEvalDataset(Dataset):
         return combined, y, target_gt, left, right
 
 
-# ______________________________________________________________________________________________________________________________________
+def colabelMask(t, adj_file):
+    import pickle
+    result = pickle.load(open(adj_file, 'rb'), encoding='iso-8859-1')
+    adj = result['adj']
+    nums = result['nums']
+    nums = nums[:, np.newaxis]
+    adj = adj / nums
+    adj = adj + np.identity(9, np.int)
+    # print('adj.....', adj)
+    adj[adj < t] = -float('inf')
+    adj[adj >= t] = 0
+    # print('^^^^^^', adj)
+    return adj
+
 def adjust_learning_rate(optimizer, epoch, lr):
     """Sets the learning rate to the initial LR decayed by 10 every 5 epochs
     lr_decay = 10 equals to lr = lr * 0.1

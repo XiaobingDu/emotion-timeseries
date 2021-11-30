@@ -3,6 +3,7 @@
 import copy
 from collections import OrderedDict
 from torch.autograd import Variable
+from utils import colabelMask
 import torch
 import torch.nn.functional as F
 import torch.nn as nn
@@ -122,11 +123,12 @@ class MultiHeadAttention(nn.Module):
 
         if self.mask == 'co-label':
             adj_file = 'embedding/positiveEmotion_adj.pkl'
-            mask = self.colabelMask(t=0.4, adj_file=adj_file)
+            mask = colabelMask(t=0.4, adj_file=adj_file)
+            print(mask)
             score = score.double()
             mask = torch.as_tensor(mask, dtype=torch.double).cuda()
-            score = torch.mul(score, mask)
-            score[score == float('inf')] = float('-inf')
+            score = score + mask
+            # score[score == float('inf')] = float('-inf')
             score = score.double()
 
         self.att = F.softmax(score / np.sqrt(score.shape[-1]), dim=-1)
@@ -134,17 +136,6 @@ class MultiHeadAttention(nn.Module):
 
         return ret
 
-    def colabelMask(self, t, adj_file):
-            import pickle
-            result = pickle.load(open(adj_file, 'rb'), encoding='iso-8859-1')
-            adj = result['adj']
-            nums = result['nums']
-            nums = nums[:, np.newaxis]
-            adj = adj / nums
-            adj[adj < t] = -float('inf')
-            adj[adj >= t] = 1
-            # print('^^^^^^', adj)
-            return adj
 
 
 class Embedding(nn.Module):
