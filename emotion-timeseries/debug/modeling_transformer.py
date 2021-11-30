@@ -94,8 +94,11 @@ class MultiHeadAttention(nn.Module):
         print('linear value........', self.linear_q(value))
 
         query = torch.Tensor(normalization(query.cpu().detach().numpy())).float().cuda()
+        query = query.reshape([query.shape[0], 9, 300])
         key = torch.Tensor(normalization(key.cpu().detach().numpy())).float().cuda()
+        key = key.reshape([key.shape[0], 9, 300])
         value = torch.Tensor(normalization(value.cpu().detach().numpy())).float().cuda()
+        value = value.reshape([value.shape[0], 9, 300])
 
         print('norm query.......', query)
         print('norm key.......', key)
