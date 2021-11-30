@@ -85,6 +85,9 @@ class MultiHeadAttention(nn.Module):
         shape_k = key.shape[:2]+(self.nheads, key_dim)
         shape_v = value.shape[:2]+(self.nheads, key_dim)
 
+        print('multihead query.......', query)
+        print('multihead key.......', key)
+        print('multihead value.......', value)
         ret = self.attention(
             self.linear_q(query).reshape(shape_q),
             self.linear_k(key).reshape(shape_k),
@@ -107,6 +110,7 @@ class MultiHeadAttention(nn.Module):
         """
         print('query .......', query)
         print('key .........', key)
+        print('value.........', value)
         score = torch.einsum('bqhd,bkhd->bhqk', query, key)
         print('start score ........', score)
         if self.mask == 'triu':
