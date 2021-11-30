@@ -88,9 +88,9 @@ class MultiHeadAttention(nn.Module):
         print('multihead query.......', query)
         print('multihead key.......', key)
         print('multihead value.......', value)
-        print('linear query........', self.linear_q(query).reshape(shape_q))
-        print('linear key........', self.linear_q(key).reshape(shape_k))
-        print('linear value........', self.linear_q(value).reshape(shape_v))
+        print('linear query........', self.linear_q(query))
+        print('linear key........', self.linear_q(key))
+        print('linear value........', self.linear_q(value))
 
         ret = self.attention(
             self.linear_q(query).reshape(shape_q),
