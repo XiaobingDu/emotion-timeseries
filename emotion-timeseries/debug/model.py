@@ -97,7 +97,7 @@ class MultiHeadAttention(nn.Module):
 
 
 def normalization(data):
-    data = data.cpu()
+    data = data
     num = data.shape[0]
     reshape = np.reshape(data, [num, -1])
     mean = np.mean(reshape, axis=1)
@@ -105,7 +105,7 @@ def normalization(data):
     std = np.std(reshape, axis=1)
     std = np.reshape(std, [-1, 1])
     norm = (reshape - mean) / std
-    data = norm.cuda()
+    data = norm
 
     return data
 
@@ -170,8 +170,10 @@ class EEGEncoder(nn.Module):
         time_enc = self.tmp(all_features)
 
         # print('******* label emb shape:', labelEmb.shape) # [9, 300]
-        labelEmb = normalization(labelEmb)
+
+        labelEmb = normalization(labelEmb.detach().numpy())
         labelEmb_e = labelEmb.unsqueeze(dim=0)
+        labelEmb = labelEmb.float().cuda()
         for i in range(batch_size):
             if i == 0:
                 labelEmb = labelEmb_e
