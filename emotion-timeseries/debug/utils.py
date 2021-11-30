@@ -90,7 +90,19 @@ class MediaEvalDataset(Dataset):
         return combined, y, target_gt, left, right
 
 
-# ______________________________________________________________________________________________________________________________________
+def normalization(data):
+    data = data
+    num = data.shape[0]
+    reshape = np.reshape(data, [num, -1])
+    mean = np.mean(reshape, axis=1)
+    mean = np.reshape(mean, [-1, 1])
+    std = np.std(reshape, axis=1)
+    std = np.reshape(std, [-1, 1])
+    norm = (reshape - mean) / std
+    data = norm
+
+    return data
+
 def adjust_learning_rate(optimizer, epoch, lr):
     """Sets the learning rate to the initial LR decayed by 10 every 5 epochs
     lr_decay = 10 equals to lr = lr * 0.1

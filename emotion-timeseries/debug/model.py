@@ -6,108 +6,12 @@ import torch
 import torch.nn.functional as F
 import numpy as np
 from modeling_transformer import TransformerEncoder
+from utils import normalization
 import warnings
 warnings.filterwarnings('ignore')
 import os
 os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
 
-class MultiHeadAttention(nn.Module):
-    """Implement multi-head attention module.
-
-    Args:
-        model_dim: dimension of embedding.
-        nheads: number of attention heads.
-        mask: sets whether an input mask should be used.
-    """
-
-    def __init__(self, model_dim, nheads, p=0.1, mask=None):
-        super(MultiHeadAttention,self).__init__()
-
-        self.mask = mask
-        self.nheads = nheads
-        self.model_dim = model_dim
-
-        self.linear_q = nn.Linear(model_dim, model_dim)
-        self.linear_k = nn.Linear(model_dim, model_dim)
-        self.linear_v = nn.Linear(model_dim, model_dim)
-        self.linear_out = nn.Linear(model_dim, model_dim)
-
-        self.att = None
-
-        self.dropout = nn.Dropout(p=p)
-
-    def forward(self, query, key, value):
-        """Compute multi-head attention forward pass.
-
-        Args:
-            query: tensor with shape (batch_size, sentence_len1, model_dim).
-            key: tensor with shape (batch_size, sentence_len2, model_dim).
-            value: tensor with shape (batch_size, sentence_len2, model_dim).
-
-        Returns:
-            tensor with shape (batch_size, sentence_len1, model_dim).
-        """
-
-        assert self.model_dim % self.nheads == 0
-
-        key_dim = self.model_dim//self.nheads
-        shape_q = query.shape[:2]+(self.nheads, key_dim)
-        shape_k = key.shape[:2]+(self.nheads, key_dim)
-        shape_v = value.shape[:2]+(self.nheads, key_dim)
-
-        ret, att = self.attention(
-            self.linear_q(query).reshape(shape_q),
-            self.linear_k(key).reshape(shape_k),
-            self.linear_v(value).reshape(shape_v)
-        )
-        ret = ret.reshape(ret.shape[:2] + (self.model_dim,))
-
-        return self.dropout(self.linear_out(ret)), att
-
-    def attention(self, query, key, value):
-        """Compute scaled dot-product attention.
-
-        Args:
-            query: tensor with shape (batch_size, sentence_len1, nheads, key_dim).
-            key: tensor with shape (batch_size, sentence_len2, nheads, key_dim).
-            value: tensor with shape (batch_size, sentence_len2, nheads, key_dim).
-
-        Returns:
-            tensor with shape (batch_size, sentence_len1, nheads, key_dim).
-        """
-
-        score = torch.einsum('bqhd,bkhd->bhqk', query, key)
-        if self.mask == 'triu':
-            mask = torch.triu(
-                torch.ones(score.shape, dtype=torch.bool), diagonal=1
-            )
-            score[mask] = -float('inf')
-
-        if self.mask == 'diag':
-            mask = torch.eye(
-                n=score.shape[2], m=score.shape[3], dtype=torch.float,
-            )
-            mask = mask.reshape(-1).repeat((1, np.prod(score.shape[:2]))).reshape(score.shape)
-            score[mask.type(torch.long)] = -float('inf')
-
-        self.att = F.softmax(score / np.sqrt(score.shape[-1]), dim=-1)
-        ret = torch.einsum('bhqk,bkhd->bqhd', self.att, value)
-
-        return ret, self.att
-
-
-def normalization(data):
-    data = data
-    num = data.shape[0]
-    reshape = np.reshape(data, [num, -1])
-    mean = np.mean(reshape, axis=1)
-    mean = np.reshape(mean, [-1, 1])
-    std = np.std(reshape, axis=1)
-    std = np.reshape(std, [-1, 1])
-    norm = (reshape - mean) / std
-    data = norm
-
-    return data
 
 class EEGEncoder(nn.Module):
     """Transformer based model.
