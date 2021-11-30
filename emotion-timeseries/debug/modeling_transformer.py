@@ -135,7 +135,7 @@ class MultiHeadAttention(nn.Module):
 
         if self.mask == 'co-label':
             adj_file = 'embedding/positiveEmotion_adj.pkl'
-            mask = self.colabelMask(t=0.2, adj_file=adj_file)
+            mask = colabelMask(t=0.2, adj_file=adj_file)
             print('mask....', mask)
             score = score.double()
             print('bafore score.....', score)
