@@ -171,7 +171,7 @@ class EEGEncoder(nn.Module):
 
         # print('******* label emb shape:', labelEmb.shape) # [9, 300]
 
-        labelEmb = normalization(labelEmb.detach().numpy())
+        labelEmb = normalization(labelEmb.cpu().detach().numpy())
         labelEmb_e = labelEmb.unsqueeze(dim=0)
         labelEmb = labelEmb.float().cuda()
         for i in range(batch_size):
