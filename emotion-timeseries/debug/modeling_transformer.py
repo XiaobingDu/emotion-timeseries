@@ -107,6 +107,7 @@ class MultiHeadAttention(nn.Module):
         """
 
         score = torch.einsum('bqhd,bkhd->bhqk', query, key)
+        print('start score ........', score)
         if self.mask == 'triu':
             mask = torch.triu(
                 torch.ones(score.shape, dtype=torch.bool), diagonal=1
