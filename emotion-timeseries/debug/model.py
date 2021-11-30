@@ -95,6 +95,20 @@ class MultiHeadAttention(nn.Module):
 
         return ret, self.att
 
+
+def normalization(data):
+    data = data.cpu()
+    num = data.shape[0]
+    reshape = np.reshape(data, [num, -1])
+    mean = np.mean(reshape, axis=1)
+    mean = np.reshape(mean, [-1, 1])
+    std = np.std(reshape, axis=1)
+    std = np.reshape(std, [-1, 1])
+    norm = (reshape - mean) / std
+    data = norm.cuda()
+
+    return data
+
 class EEGEncoder(nn.Module):
     """Transformer based model.
     left -- the channels in left brain region
@@ -123,6 +137,8 @@ class EEGEncoder(nn.Module):
 
         self.label_transformer = TransformerEncoder(self.labelNum, self.labelEmbedding, self.hidden_dim, nheads=3, depth=2, p=0.5, max_len=300, mask='co-label')
         self.label_linear = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.labelEmbedding, self.enc_dim, nn.LeakyReLU()))
+
+        self.norm = Normlize()
 
         # all_transformer --> out
         self.out = nn.Sequential(nn.Linear(256, 64),
@@ -156,6 +172,7 @@ class EEGEncoder(nn.Module):
         time_enc = self.tmp(all_features)
 
         # print('******* label emb shape:', labelEmb.shape) # [9, 300]
+        labelEmb = normalization(labelEmb)
         labelEmb_e = labelEmb.unsqueeze(dim=0)
         for i in range(batch_size):
             if i == 0:
@@ -187,3 +204,5 @@ class EEGEncoder(nn.Module):
         predict = predicted_last
 
         return predict
+
+

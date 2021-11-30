@@ -112,18 +112,6 @@ class MultiHeadAttention(nn.Module):
 
         return self.dropout(self.linear_out(ret))
 
-    def normalization(self, data):
-        data = data.cpu()
-        num = data.shape[0]
-        reshape = np.reshape(data, [num, -1])
-        mean = np.mean(reshape, axis=1)
-        mean = np.reshape(mean, [-1, 1])
-        std = np.std(reshape, axis=1)
-        std = np.reshape(std, [-1, 1])
-        norm = (reshape - mean) / std
-        data = norm.cuda()
-
-        return data
 
     def attention(self, query, key, value):
         """Compute scaled dot-product attention.
