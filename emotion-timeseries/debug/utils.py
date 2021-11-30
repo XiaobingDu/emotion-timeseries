@@ -98,7 +98,7 @@ def colabelMask(t, adj_file):
         nums = nums[:, np.newaxis]
         adj = adj / nums
         adj = adj + np.identity(9, np.int)
-        print('adj.....', adj)
+        # print('adj.....', adj)
         adj[adj < t] = -float('inf')
         adj[adj >= t] = 0
         # print('^^^^^^', adj)

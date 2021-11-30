@@ -370,9 +370,7 @@ class TransformerEncoder(nn.Module):
     def forward(self, src):
 
         # self.src_embedding = self.embedding(src)
-        print('src........', src)
         src_pe = self.pos_enc(src)
-        print('src_pe.........', src_pe)
         enc = self.encoder(src_pe)
 
         return enc
