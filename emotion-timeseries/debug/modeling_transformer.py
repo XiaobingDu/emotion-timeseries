@@ -93,9 +93,9 @@ class MultiHeadAttention(nn.Module):
         print('linear key........', self.linear_q(key))
         print('linear value........', self.linear_q(value))
 
-        query = torch.Tensor(normalization(query)).float().cuda()
-        key = torch.Tensor(normalization(key)).float().cuda()
-        value = torch.Tensor(normalization(value)).float().cuda()
+        query = torch.Tensor(normalization(query.cpu().detach().numpy())).float().cuda()
+        key = torch.Tensor(normalization(key.cpu().detach().numpy())).float().cuda()
+        value = torch.Tensor(normalization(value.cpu().detach().numpy())).float().cuda()
 
         print('norm query.......', query)
         print('norm key.......', key)
