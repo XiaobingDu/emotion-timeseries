@@ -173,7 +173,7 @@ class EEGEncoder(nn.Module):
 
         labelEmb = normalization(labelEmb.cpu().detach().numpy())
         labelEmb_e = labelEmb.unsqueeze(dim=0)
-        labelEmb = labelEmb.float().cuda()
+        labelEmb = torch.Tensor(labelEmb).float().cuda()
         for i in range(batch_size):
             if i == 0:
                 labelEmb = labelEmb_e
