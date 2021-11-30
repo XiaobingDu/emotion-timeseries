@@ -3,11 +3,14 @@
 from __future__ import division
 import torch.nn as nn
 import torch
+import torch.nn.functional as F
+import numpy as np
 from modeling_transformer import TransformerEncoder
 import warnings
 warnings.filterwarnings('ignore')
 import os
 os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
+
 
 
 class EEGEncoder(nn.Module):
@@ -34,9 +37,8 @@ class EEGEncoder(nn.Module):
 
         self.time_transformer_enc = TransformerEncoder(self.time_steps, self.feature_dim, self.hidden_dim,  nheads=3, depth=2, p=0.5, max_len=150)
         self.time_linear = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.feature_dim, self.enc_dim, nn.LeakyReLU()))
-        self.tmp = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(150, 64, nn.LeakyReLU()))
 
-        self.label_transformer = TransformerEncoder(self.labelNum, self.labelEmbedding, self.hidden_dim, nheads=3, depth=2, p=0.5, max_len=300, mask='co-label')
+        self.label_transformer = TransformerEncoder(self.labelNum, self.labelEmbedding, self.hidden_dim, nheads=3, depth=2, p=0.5,max_len=300, mask='co-label')
         self.label_linear = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.labelEmbedding, self.enc_dim, nn.LeakyReLU()))
 
         # all_transformer --> out
@@ -64,11 +66,9 @@ class EEGEncoder(nn.Module):
         # time_step as the input sequence
         all_features = torch.cat([left_features, right_features], dim=-1)
         # print('all_feature shape:', all_features.shape)  # [64, 30, 150]
-        # time_enc = self.time_transformer_enc(all_features)
-        # time_enc = self.time_linear(time_enc)
+        time_enc = self.time_transformer_enc(all_features)
+        time_enc = self.time_linear(time_enc)
         # print('time_enc shape:', time_enc.shape) # [64, 30, 256]
-
-        time_enc = self.tmp(all_features)
 
         # print('******* label emb shape:', labelEmb.shape) # [9, 300]
         labelEmb_e = labelEmb.unsqueeze(dim=0)
@@ -78,7 +78,6 @@ class EEGEncoder(nn.Module):
             else:
                 labelEmb = torch.cat((labelEmb, labelEmb_e), dim=0)
         # print('******* label emb shape:', labelEmb.shape) # [64, 9, 300]
-        print('label embedding.......', labelEmb)
         label_corr = self.label_transformer(labelEmb)
         label_enc = self.label_linear(label_corr)
         label_enc = label_enc.permute(0, 2, 1)

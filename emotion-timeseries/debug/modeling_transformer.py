@@ -86,12 +86,12 @@ class MultiHeadAttention(nn.Module):
         shape_k = key.shape[:2]+(self.nheads, key_dim)
         shape_v = value.shape[:2]+(self.nheads, key_dim)
 
-        print('multihead query.......', query)
-        print('multihead key.......', key)
-        print('multihead value.......', value)
-        print('linear query........', self.linear_q(query))
-        print('linear key........', self.linear_q(key))
-        print('linear value........', self.linear_q(value))
+        # print('multihead query.......', query)
+        # print('multihead key.......', key)
+        # print('multihead value.......', value)
+        # print('linear query........', self.linear_q(query))
+        # print('linear key........', self.linear_q(key))
+        # print('linear value........', self.linear_q(value))
 
 
         ret = self.attention(
@@ -115,11 +115,11 @@ class MultiHeadAttention(nn.Module):
         Returns:
             tensor with shape (batch_size, sentence_len1, nheads, key_dim).
         """
-        print('query .......', query)
-        print('key .........', key)
-        print('value.........', value)
+        # print('query .......', query)
+        # print('key .........', key)
+        # print('value.........', value)
         score = torch.einsum('bqhd,bkhd->bhqk', query, key)
-        print('start score ........', score)
+        # print('start score ........', score)
         if self.mask == 'triu':
             mask = torch.triu(
                 torch.ones(score.shape, dtype=torch.bool), diagonal=1
@@ -230,13 +230,13 @@ class EncoderLayer(nn.Module):
         self.layer_norms = clones(nn.LayerNorm(model_dim), 2)
 
     def forward(self, src):
-        print('src .......', src)
-        print('output of MultiheadAttention.......', self.mhatt(src, src, src) )
+        # print('src .......', src)
+        # print('output of MultiheadAttention.......', self.mhatt(src, src, src) )
         src_att = self.layer_norms[0](self.mhatt(src, src, src) + src)
-        print('layer_norm output.........', src_att)
-        print('output of ffn.........', self.ffn(src_att))
+        # print('layer_norm output.........', src_att)
+        # print('output of ffn.........', self.ffn(src_att))
         src_out = self.layer_norms[1](self.ffn(src_att) + src_att)
-        print('output of layer_norm.......', src_out)
+        # print('output of layer_norm.......', src_out)
 
         return src_out
 
