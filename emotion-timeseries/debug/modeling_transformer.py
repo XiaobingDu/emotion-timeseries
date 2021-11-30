@@ -3,7 +3,6 @@
 import copy
 from collections import OrderedDict
 from torch.autograd import Variable
-from utils import normalization
 import torch
 import torch.nn.functional as F
 import torch.nn as nn
@@ -93,19 +92,6 @@ class MultiHeadAttention(nn.Module):
         print('linear key........', self.linear_q(key))
         print('linear value........', self.linear_q(value))
 
-        query = torch.Tensor(normalization(query.cpu().detach().numpy())).float().cuda()
-        query = query.reshape([query.shape[0], 9, 300])
-        key = torch.Tensor(normalization(key.cpu().detach().numpy())).float().cuda()
-        key = key.reshape([key.shape[0], 9, 300])
-        value = torch.Tensor(normalization(value.cpu().detach().numpy())).float().cuda()
-        value = value.reshape([value.shape[0], 9, 300])
-
-        print('norm query.......', query)
-        print('norm key.......', key)
-        print('norm value.......', value)
-        print('linear query........', self.linear_q(query))
-        print('linear key........', self.linear_q(key))
-        print('linear value........', self.linear_q(value))
 
         ret = self.attention(
             self.linear_q(query).reshape(shape_q),

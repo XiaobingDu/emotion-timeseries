@@ -3,10 +3,7 @@
 from __future__ import division
 import torch.nn as nn
 import torch
-import torch.nn.functional as F
-import numpy as np
 from modeling_transformer import TransformerEncoder
-from utils import normalization
 import warnings
 warnings.filterwarnings('ignore')
 import os
@@ -74,9 +71,6 @@ class EEGEncoder(nn.Module):
         time_enc = self.tmp(all_features)
 
         # print('******* label emb shape:', labelEmb.shape) # [9, 300]
-
-        labelEmb = normalization(labelEmb.cpu().detach().numpy())
-        labelEmb = torch.Tensor(labelEmb).float().cuda()
         labelEmb_e = labelEmb.unsqueeze(dim=0)
         for i in range(batch_size):
             if i == 0:
