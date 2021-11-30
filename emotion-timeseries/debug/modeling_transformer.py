@@ -229,8 +229,12 @@ class EncoderLayer(nn.Module):
         self.layer_norms = clones(nn.LayerNorm(model_dim), 2)
 
     def forward(self, src):
+        print('output of MultiheadAttention.......', self.mhatt(src, src, src) )
         src_att = self.layer_norms[0](self.mhatt(src, src, src) + src)
+        print('layer_norm output.........', src_att)
+        print('output of ffn.........', self.ffn(src_att))
         src_out = self.layer_norms[1](self.ffn(src_att) + src_att)
+        print('output of layer_norm.......', src_out)
 
         return src_out
 
