@@ -105,7 +105,8 @@ class MultiHeadAttention(nn.Module):
         Returns:
             tensor with shape (batch_size, sentence_len1, nheads, key_dim).
         """
-
+        print('query .......', query)
+        print('key .........', key)
         score = torch.einsum('bqhd,bkhd->bhqk', query, key)
         print('start score ........', score)
         if self.mask == 'triu':
