@@ -92,6 +92,17 @@ class MultiHeadAttention(nn.Module):
         print('linear key........', self.linear_q(key))
         print('linear value........', self.linear_q(value))
 
+        # normlization
+        query = self.normalization(query)
+        key = self.normalization(key)
+        value = self.normalization(value)
+        print('norm query.......', query)
+        print('norm key.......', key)
+        print('norm value.......', value)
+        print('linear query........', self.linear_q(query))
+        print('linear key........', self.linear_q(key))
+        print('linear value........', self.linear_q(value))
+
         ret = self.attention(
             self.linear_q(query).reshape(shape_q),
             self.linear_k(key).reshape(shape_k),
@@ -100,6 +111,18 @@ class MultiHeadAttention(nn.Module):
         ret = ret.reshape(ret.shape[:2] + (self.model_dim,))
 
         return self.dropout(self.linear_out(ret))
+
+    def normalization(self, data):
+        num = data.shape[0]
+        reshape = np.reshape(data, [num, -1])
+        mean = np.mean(reshape, axis=1)
+        mean = np.reshape(mean, [-1, 1])
+        std = np.std(reshape, axis=1)
+        std = np.reshape(std, [-1, 1])
+        norm = (reshape - mean) / std
+        data = norm
+
+        return data
 
     def attention(self, query, key, value):
         """Compute scaled dot-product attention.
