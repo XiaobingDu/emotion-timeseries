@@ -138,8 +138,6 @@ class EEGEncoder(nn.Module):
         self.label_transformer = TransformerEncoder(self.labelNum, self.labelEmbedding, self.hidden_dim, nheads=3, depth=2, p=0.5, max_len=300, mask='co-label')
         self.label_linear = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.labelEmbedding, self.enc_dim, nn.LeakyReLU()))
 
-        self.norm = Normlize()
-
         # all_transformer --> out
         self.out = nn.Sequential(nn.Linear(256, 64),
                                  nn.LeakyReLU(),
