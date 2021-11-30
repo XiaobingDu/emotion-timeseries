@@ -135,7 +135,7 @@ class MultiHeadAttention(nn.Module):
 
         if self.mask == 'co-label':
             adj_file = 'embedding/positiveEmotion_adj.pkl'
-            mask = colabelMask(t=0, adj_file=adj_file)
+            mask = colabelMask(t=0.4, adj_file=adj_file)
             print('mask....', mask)
             score = score.double()
             # print('bafore score.....', score)
@@ -149,7 +149,6 @@ class MultiHeadAttention(nn.Module):
         self.att = F.softmax(score / np.sqrt(score.shape[-1]), dim=-1)
         print('self.att.....', self.att)
         ret = torch.einsum('bhqk,bkhd->bqhd', self.att.float(), value)
-        print('ret.....', ret)
 
         return ret
 
