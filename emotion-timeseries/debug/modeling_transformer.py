@@ -140,9 +140,10 @@ class MultiHeadAttention(nn.Module):
             score = score.double()
             # print('bafore score.....', score)
             mask = torch.as_tensor(mask, dtype=torch.double).cuda()
-            score = torch.mul(score, mask)
+            score = score + mask
+            # score = torch.mul(score, mask)
             # print('after score.....', score)
-            score[score == float('inf')] = float('-inf')
+            # score[score == float('inf')] = float('-inf')
             print('score.....', score)
             score = score.double()
 
