@@ -231,6 +231,7 @@ class EncoderLayer(nn.Module):
         self.layer_norms = clones(nn.LayerNorm(model_dim), 2)
 
     def forward(self, src):
+        print('src .......', src)
         print('output of MultiheadAttention.......', self.mhatt(src, src, src) )
         src_att = self.layer_norms[0](self.mhatt(src, src, src) + src)
         print('layer_norm output.........', src_att)
@@ -370,7 +371,9 @@ class TransformerEncoder(nn.Module):
     def forward(self, src):
 
         # self.src_embedding = self.embedding(src)
+        print('src........', src)
         src_pe = self.pos_enc(src)
+        print('src_pe.........', src_pe)
         enc = self.encoder(src_pe)
 
         return enc
