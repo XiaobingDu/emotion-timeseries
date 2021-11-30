@@ -163,6 +163,7 @@ class EEGEncoder(nn.Module):
             else:
                 labelEmb = torch.cat((labelEmb, labelEmb_e), dim=0)
         # print('******* label emb shape:', labelEmb.shape) # [64, 9, 300]
+        print('label embedding.......', labelEmb)
         label_corr = self.label_transformer(labelEmb)
         label_enc = self.label_linear(label_corr)
         label_enc = label_enc.permute(0, 2, 1)
