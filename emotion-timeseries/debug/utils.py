@@ -90,6 +90,18 @@ class MediaEvalDataset(Dataset):
         return combined, y, target_gt, left, right
 
 
+def colabelMask(t, adj_file):
+        import pickle
+        result = pickle.load(open(adj_file, 'rb'), encoding='iso-8859-1')
+        adj = result['adj']
+        nums = result['nums']
+        nums = nums[:, np.newaxis]
+        adj = adj / nums
+        adj[adj < t] = -float('inf')
+        adj[adj >= t] = 1
+        # print('^^^^^^', adj)
+        return adj
+
 def normalization(data):
     data = data
     num = data.shape[0]

@@ -27,8 +27,8 @@ class EEGEncoder(nn.Module):
         self.feature_len = args['feature_len'] # 150 = 30time_steps * 5
         self.labelNum = args['label_num'] # 9
         self.labelEmbedding = args['label_em'] # 300, Glove embedding
-        self.enc_dim = args['enc_dim'] # 256
-        self.hidden_dim = args['hidden_dim'] # 256
+        self.enc_dim = args['enc_dim'] # 64
+        self.hidden_dim = args['hidden_dim'] # 128
         self.attn_len = args['attn_len']
         self.dropout= args['dropout_prob']
 
@@ -40,11 +40,11 @@ class EEGEncoder(nn.Module):
         self.label_linear = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.labelEmbedding, self.enc_dim, nn.LeakyReLU()))
 
         # all_transformer --> out
-        self.out = nn.Sequential(nn.Linear(256, 64),
-                                 nn.LeakyReLU(),
+        self.out = nn.Sequential(
                                  nn.Linear(64, 32),
                                  nn.LeakyReLU(),
-                                 nn.Linear(32, self.out_layer)
+                                 nn.Linear(32, self.out_layer),
+                                 nn.LeakyReLU()
                                  )
 
         # Store module in specified device (CUDA/CPU)
