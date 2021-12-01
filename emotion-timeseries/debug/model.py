@@ -177,6 +177,7 @@ class EEGEncoder(nn.Module):
         print(time_enc.shape)
         concate_enc = torch.cat((time_enc, channel_enc), dim=-1)
         concate_enc = concate_enc.permute(0,2,1) #[64, 50, 256]
+        print(concate_enc.shape)
 
         #time_step = 30, 30这个维度相等，所以直接按行拼接
         # concate_enc = torch.cat((time_enc, channel_enc), dim=-1)  # [64, 30, 512]
@@ -208,7 +209,7 @@ class EEGEncoder(nn.Module):
         # print(attn.shape)
         # print('time_enc shape:', time_enc.shape) # [64, 30, 256]
         # context_feature = time_enc * attn # [64, 30, 256]
-        context_feature = channel_enc * attn # [64, 30, 256]
+        context_feature = concate_enc * attn # [64, 30, 256]
 
         # print(context_feature.shape)
         predicted = self.out(context_feature).view(batch_size, seq_len, -1)
