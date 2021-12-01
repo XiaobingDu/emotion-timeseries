@@ -123,7 +123,7 @@ class EEGEncoder(nn.Module):
         self.channel_transformer_enc = TransformerEncoder(self.channels, self.feature_len, self.hidden_dim, nheads=6,depth=2, p=0.5, max_len=self.feature_len)
         self.channel_linear = nn.Sequential(nn.Dropout(self.dropout),nn.Linear(self.feature_len, self.enc_dim, nn.LeakyReLU()))
 
-        self.label_transformer = TransformerEncoder(self.labelNum, self.labelEmbedding, self.hidden_dim, nheads=3, depth=2, p=0.5,max_len=self.labelEmbedding, mask='co-label')
+        self.label_transformer = TransformerEncoder(self.labelNum, self.labelEmbedding, self.hidden_dim, nheads=6, depth=2, p=0.5,max_len=self.labelEmbedding, mask='co-label')
         self.label_linear = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.labelEmbedding, self.enc_dim, nn.LeakyReLU()))
 
         self.concate_linear = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.enc_dim * 2, self.enc_dim, nn.LeakyReLU()))
