@@ -175,7 +175,7 @@ class EEGEncoder(nn.Module):
         channel_enc = channel_enc.permute(0,2,1)
         print(channel_enc.shape)
         print(time_enc.shape)
-        concate_enc = torch.cat((time_enc, channel_enc), dim=0)
+        concate_enc = torch.cat((time_enc, channel_enc), dim=-1)
         concate_enc = concate_enc.permute(0,2,1) #[64, 50, 256]
 
         #time_step = 30, 30这个维度相等，所以直接按行拼接
