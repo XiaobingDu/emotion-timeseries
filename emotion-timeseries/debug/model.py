@@ -30,8 +30,8 @@ class EEGEncoder(nn.Module):
         self.feature_len = args['feature_len'] # 150 = 30time_steps * 5
         self.labelNum = args['label_num'] # 9
         self.labelEmbedding = args['label_em'] # 300, Glove embedding
-        self.enc_dim = args['enc_dim'] # 64
-        self.hidden_dim = args['hidden_dim'] # 128
+        self.enc_dim = args['enc_dim'] # 512
+        self.hidden_dim = args['hidden_dim'] # 1024
         self.attn_len = args['attn_len']
         self.dropout= args['dropout_prob']
 
@@ -43,6 +43,10 @@ class EEGEncoder(nn.Module):
 
         # all_transformer --> out
         self.out = nn.Sequential(
+                                 nn.Linear(512, 128),
+                                 nn.LeakyReLU(),
+                                 nn.Linear(128, 64),
+                                 nn.LeakyReLU(),
                                  nn.Linear(64, 32),
                                  nn.LeakyReLU(),
                                  nn.Linear(32, self.out_layer),
