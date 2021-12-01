@@ -86,12 +86,12 @@ class MultiHeadAttention(nn.Module):
         shape_k = key.shape[:2]+(self.nheads, key_dim)
         shape_v = value.shape[:2]+(self.nheads, key_dim)
 
-        # print('multihead query.......', query)
-        # print('multihead key.......', key)
-        # print('multihead value.......', value)
-        # print('linear query........', self.linear_q(query))
-        # print('linear key........', self.linear_q(key))
-        # print('linear value........', self.linear_q(value))
+        print('multihead query.......', query)
+        print('multihead key.......', key)
+        print('multihead value.......', value)
+        print('linear query........', self.linear_q(query))
+        print('linear key........', self.linear_q(key))
+        print('linear value........', self.linear_q(value))
 
 
         ret = self.attention(
@@ -136,7 +136,7 @@ class MultiHeadAttention(nn.Module):
         if self.mask == 'co-label':
             adj_file = 'embedding/positiveEmotion_adj.pkl'
             mask = colabelMask(t=0.6, adj_file=adj_file)
-            # print('mask....', mask)
+            print('mask....', mask)
             score = score.double()
             # print('bafore score.....', score)
             mask = torch.as_tensor(mask, dtype=torch.double).cuda()
