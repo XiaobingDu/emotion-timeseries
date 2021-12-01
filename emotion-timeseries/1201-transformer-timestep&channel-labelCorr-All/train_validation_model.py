@@ -79,11 +79,11 @@ epoch_cosine_min = np.NINF
 epoch_accuracy_min = np.NINF
 
 # Network Arguments
-args['time_steps'] = 30  # timesteps
+args['time_steps'] = 20  # timesteps
 args['feature_dim'] = 150  # 30channels * 5
 args['out_layer'] = FLAGS.out_layer
 args['channels'] = 30  # channel
-args['feature_len'] = 150  # 30time_steps * 5 = 150
+args['feature_len'] = 100  # 30time_steps * 5 = 150
 args['label_num'] = 9  # 9
 args['label_em'] = 300  # 300, Glove embedding
 args['enc_dim'] = 256
