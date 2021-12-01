@@ -79,15 +79,15 @@ epoch_cosine_min = np.NINF
 epoch_accuracy_min = np.NINF
 
 # Network Arguments
-args['time_steps'] = 30  # timesteps
+args['time_steps'] = 40  # timesteps
 args['feature_dim'] = 150  # 30channels * 5
 args['out_layer'] = FLAGS.out_layer
 args['channels'] = 30  # channel
-args['feature_len'] = 150  # 30time_steps * 5 = 150
+args['feature_len'] = 200  # 30time_steps * 5 = 150
 args['label_num'] = 9  # 9
 args['label_em'] = 300  # 300, Glove embedding
-args['enc_dim'] = 512
-args['hidden_dim'] = 1024
+args['enc_dim'] = 256
+args['hidden_dim'] = 256
 args['attn_len'] = FLAGS.attn_len
 args['dropout_prob'] = FLAGS.dropout
 args['use_cuda'] = True
@@ -257,7 +257,7 @@ for epoch_num in range(num_epochs):
         # loss2:
         loss = lamda * loss1 + (1 - lamda) * loss2
         # print('loss1.....:', loss1.item())
-        print('loss2......:', loss2.item())
+        # print('loss2......:', loss2.item())
         # print('loss.......:', loss.item())
 
         # Backprop and update weights

@@ -86,14 +86,6 @@ class MultiHeadAttention(nn.Module):
         shape_k = key.shape[:2]+(self.nheads, key_dim)
         shape_v = value.shape[:2]+(self.nheads, key_dim)
 
-        # print('multihead query.......', query)
-        # print('multihead key.......', key)
-        # print('multihead value.......', value)
-        # print('linear query........', self.linear_q(query))
-        # print('linear key........', self.linear_q(key))
-        # print('linear value........', self.linear_q(value))
-
-
         ret = self.attention(
             self.linear_q(query).reshape(shape_q),
             self.linear_k(key).reshape(shape_k),
@@ -102,7 +94,6 @@ class MultiHeadAttention(nn.Module):
         ret = ret.reshape(ret.shape[:2] + (self.model_dim,))
 
         return self.dropout(self.linear_out(ret))
-
 
     def attention(self, query, key, value):
         """Compute scaled dot-product attention.
@@ -115,11 +106,8 @@ class MultiHeadAttention(nn.Module):
         Returns:
             tensor with shape (batch_size, sentence_len1, nheads, key_dim).
         """
-        # print('query .......', query)
-        # print('key .........', key)
-        # print('value.........', value)
+
         score = torch.einsum('bqhd,bkhd->bhqk', query, key)
-        # print('start score ........', score)
         if self.mask == 'triu':
             mask = torch.triu(
                 torch.ones(score.shape, dtype=torch.bool), diagonal=1
@@ -135,23 +123,19 @@ class MultiHeadAttention(nn.Module):
 
         if self.mask == 'co-label':
             adj_file = 'embedding/positiveEmotion_adj.pkl'
-            mask = colabelMask(t=0.6, adj_file=adj_file)
-            # print('mask....', mask)
+            mask = colabelMask(t=0.4, adj_file=adj_file)
+            # print(mask)
             score = score.double()
-            # print('bafore score.....', score)
             mask = torch.as_tensor(mask, dtype=torch.double).cuda()
             score = score + mask
-            # score = torch.mul(score, mask)
-            # print('after score.....', score)
             # score[score == float('inf')] = float('-inf')
-            # print('score.....', score)
             score = score.double()
 
         self.att = F.softmax(score / np.sqrt(score.shape[-1]), dim=-1)
-        # print('self.att.....', self.att)
         ret = torch.einsum('bhqk,bkhd->bqhd', self.att.float(), value)
 
         return ret
+
 
 
 class Embedding(nn.Module):
@@ -230,13 +214,8 @@ class EncoderLayer(nn.Module):
         self.layer_norms = clones(nn.LayerNorm(model_dim), 2)
 
     def forward(self, src):
-        # print('src .......', src)
-        # print('output of MultiheadAttention.......', self.mhatt(src, src, src) )
         src_att = self.layer_norms[0](self.mhatt(src, src, src) + src)
-        # print('layer_norm output.........', src_att)
-        # print('output of ffn.........', self.ffn(src_att))
         src_out = self.layer_norms[1](self.ffn(src_att) + src_att)
-        # print('output of layer_norm.......', src_out)
 
         return src_out
 
