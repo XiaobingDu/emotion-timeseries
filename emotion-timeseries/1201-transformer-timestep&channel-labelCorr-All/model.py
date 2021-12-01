@@ -105,11 +105,11 @@ class EEGEncoder(nn.Module):
     def __init__(self, args, device=torch.cuda.set_device(0)): # torch.device('cuda:0')
         super(EEGEncoder, self).__init__()
         #the feature length of five brain regions
-        self.time_steps = args['time_steps'] # 20 # 30
+        self.time_steps = args['time_steps']  # 30
         self.feature_dim = args['feature_dim'] # 150 = 30channels *5 # 150 300 600
         self.out_layer = args['out_layer']
         self.channels = args['channels'] # 30
-        self.feature_len = args['feature_len'] # 100 = 20timesteps * 5  #150 = 30time_steps * 5
+        self.feature_len = args['feature_len'] # 150 = 30time_steps * 5
         self.labelNum = args['label_num'] # 9
         self.labelEmbedding = args['label_em'] # 300, Glove embedding
         self.enc_dim = args['enc_dim'] # 256
@@ -117,10 +117,10 @@ class EEGEncoder(nn.Module):
         self.attn_len = args['attn_len']
         self.dropout= args['dropout_prob']
 
-        self.time_transformer_enc = TransformerEncoder(self.time_steps, self.feature_dim, self.hidden_dim,  nheads=5, depth=2, p=0.5, max_len=self.feature_dim)
+        self.time_transformer_enc = TransformerEncoder(self.time_steps, self.feature_dim, self.hidden_dim,  nheads=6, depth=2, p=0.5, max_len=self.feature_dim)
         self.time_linear = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.feature_dim, self.enc_dim, nn.LeakyReLU()))
 
-        self.channel_transformer_enc = TransformerEncoder(self.channels, self.feature_len, self.hidden_dim, nheads=5,depth=2, p=0.5, max_len=self.feature_len)
+        self.channel_transformer_enc = TransformerEncoder(self.channels, self.feature_len, self.hidden_dim, nheads=6,depth=2, p=0.5, max_len=self.feature_len)
         self.channel_linear = nn.Sequential(nn.Dropout(self.dropout),nn.Linear(self.feature_len, self.enc_dim, nn.LeakyReLU()))
 
         self.label_transformer = TransformerEncoder(self.labelNum, self.labelEmbedding, self.hidden_dim, nheads=3, depth=2, p=0.5,max_len=self.labelEmbedding, mask='co-label')
@@ -171,11 +171,8 @@ class EEGEncoder(nn.Module):
         # print('channel_enc shape:', channel_enc.shape) # [64, 30, 150]
         channel_enc = self.channel_linear(channel_enc)  # [64, 30, 256]
 
-        # concate_enc = torch.cat((time_enc, channel_enc), dim=-1)  # [64, 30, 512]
-        #  timesteps = 20s
-        concate_enc = torch.cat((time_enc, channel_enc), dim=0)  # [64, 50, 256]
-        # 因为time steps = 20， 所以按列拼接，dim = 256
-        # concate_enc = self.concate_linear(concate_enc)  # [64, 30, 256]
+        concate_enc = torch.cat((time_enc, channel_enc), dim=-1)  # [64, 30, 512]
+        concate_enc = self.concate_linear(concate_enc)  # [64, 30, 256]
 
         # print('******* label emb shape:', labelEmb.shape) # [9, 300]
         labelEmb_e = labelEmb.unsqueeze(dim=0)
