@@ -46,7 +46,7 @@ class EEGEncoder(nn.Module):
 
         # time_step = 30, channel = 30, 所以G[b_s, 30, 9]
         # 使用1DConv，需要对数据permute（0，2，1），得到 [b_s, 9, 30]
-        self.convlayer = nn.Conv1d(in_channels=self.labelNum,out_channels = self.labelNum, kernel_size = 3, padding=2)
+        self.convlayer = nn.Conv1d(in_channels=self.labelNum,out_channels = self.labelNum, kernel_size = 3, padding=1)
 
 
 
