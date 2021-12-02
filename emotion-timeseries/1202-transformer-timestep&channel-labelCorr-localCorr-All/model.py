@@ -109,16 +109,13 @@ class EEGEncoder(nn.Module):
 
         # self.G = torch.matmul(time_enc, label_enc)
         # self.G = torch.matmul(channel_enc, label_enc)
-        self.G = torch.matmul(concate_enc, label_enc)
-        print('self.G',self.G.shape)
+        self.G = torch.matmul(concate_enc, label_enc) # [64, 30, 9]
         self.G = self.G.permute(0, 2, 1)
-        print('self.G', self.G.shape)
+        # learn the higher-order correlation matrix
         self.M = self.convlayer(self.G)
-        print('self.M', self.M.shape)
+        self.M = self.M.permute(0, 2, 1) # [64, 30, 9]
 
-        # print('*******', self.G.shape) # [64, 30, 9]
-        # print(self.G)
-        attn = torch.nn.functional.tanh(torch.nn.functional.softmax(self.G, dim=-1)) # [64, 30, 9]
+        attn = torch.nn.functional.tanh(torch.nn.functional.softmax(self.M, dim=-1)) # [64, 30, 9]
         attn, _ = attn.max(2) # [64, 30]
         attn = torch.reshape(attn,[attn.shape[0],attn.shape[1],-1]) # [64, 30, 1]
 
