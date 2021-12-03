@@ -33,13 +33,13 @@ class EEGEncoder(nn.Module):
         self.attn_len = args['attn_len']
         self.dropout= args['dropout_prob']
 
-        self.time_transformer_enc = TransformerEncoder(self.time_steps, self.feature_dim, self.hidden_dim,  nheads=6, depth=2, p=0.5, max_len=self.feature_dim)
+        self.time_transformer_enc = TransformerEncoder(self.time_steps, self.feature_dim, self.hidden_dim,  nheads=2, depth=2, p=0.5, max_len=self.feature_dim)
         self.time_linear = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.feature_dim, self.enc_dim, nn.LeakyReLU()))
 
-        self.channel_transformer_enc = TransformerEncoder(self.channels, self.feature_len, self.hidden_dim, nheads=6,depth=2, p=0.5, max_len=self.feature_len)
+        self.channel_transformer_enc = TransformerEncoder(self.channels, self.feature_len, self.hidden_dim, nheads=2,depth=2, p=0.5, max_len=self.feature_len)
         self.channel_linear = nn.Sequential(nn.Dropout(self.dropout),nn.Linear(self.feature_len, self.enc_dim, nn.LeakyReLU()))
 
-        self.label_transformer = TransformerEncoder(self.labelNum, self.labelEmbedding, self.hidden_dim, nheads=6, depth=2, p=0.5,max_len=self.labelEmbedding, mask='co-label')
+        self.label_transformer = TransformerEncoder(self.labelNum, self.labelEmbedding, self.hidden_dim, nheads=5, depth=2, p=0.5,max_len=self.labelEmbedding, mask='co-label')
         self.label_linear = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.labelEmbedding, self.enc_dim, nn.LeakyReLU()))
 
         self.concate_linear = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.enc_dim * 2, self.enc_dim, nn.LeakyReLU()))
