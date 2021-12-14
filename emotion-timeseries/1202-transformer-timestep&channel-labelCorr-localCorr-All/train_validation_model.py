@@ -80,6 +80,7 @@ epoch_accuracy_min = np.NINF
 
 # Network Arguments
 args['time_steps'] = 30  # timesteps
+args['project_dim'] = 300 # 300
 args['feature_dim'] = 150  # 30channels * 5
 args['out_layer'] = FLAGS.out_layer
 args['channels'] = 30  # channel

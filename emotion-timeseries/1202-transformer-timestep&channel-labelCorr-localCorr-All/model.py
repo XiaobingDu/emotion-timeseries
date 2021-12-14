@@ -23,6 +23,7 @@ class EEGEncoder(nn.Module):
         #the feature length of five brain regions
         self.time_steps = args['time_steps']  # 30
         self.feature_dim = args['feature_dim'] # 150 = 30channels *5 # 150 300 600
+        self.project_dim = args['project_dim'] # 300
         self.out_layer = args['out_layer']
         self.channels = args['channels'] # 30
         self.feature_len = args['feature_len'] # 150 = 30time_steps * 5
@@ -33,13 +34,15 @@ class EEGEncoder(nn.Module):
         self.attn_len = args['attn_len']
         self.dropout= args['dropout_prob']
 
-        self.time_transformer_enc = TransformerEncoder(self.time_steps, self.feature_dim, self.hidden_dim,  nheads=2, depth=2, p=0.5, max_len=self.feature_dim)
-        self.time_linear = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.feature_dim, self.enc_dim, nn.LeakyReLU()))
+        self.time_linear_projection = nn.Sequential(nn.Dropout(self.dropout),nn.Linear(self.feature_dim, self.project_dim, nn.LeakyReLU()))
+        self.time_transformer_enc = TransformerEncoder(self.time_steps, self.project_dim, self.hidden_dim,  nheads=6, depth=2, p=0.5, max_len=self.feature_dim)
+        self.time_linear = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.project_dim, self.enc_dim, nn.LeakyReLU()))
 
-        self.channel_transformer_enc = TransformerEncoder(self.channels, self.feature_len, self.hidden_dim, nheads=2,depth=2, p=0.5, max_len=self.feature_len)
-        self.channel_linear = nn.Sequential(nn.Dropout(self.dropout),nn.Linear(self.feature_len, self.enc_dim, nn.LeakyReLU()))
+        self.channel_linear_projection = nn.Sequential(nn.Dropout(self.dropout),nn.Linear(self.feature_len, self.project_dim, nn.LeakyReLU()))
+        self.channel_transformer_enc = TransformerEncoder(self.channels, self.project_dim, self.hidden_dim, nheads=6,depth=2, p=0.5, max_len=self.feature_len)
+        self.channel_linear = nn.Sequential(nn.Dropout(self.dropout),nn.Linear(self.project_dim, self.enc_dim, nn.LeakyReLU()))
 
-        self.label_transformer = TransformerEncoder(self.labelNum, self.labelEmbedding, self.hidden_dim, nheads=5, depth=2, p=0.5,max_len=self.labelEmbedding, mask='co-label')
+        self.label_transformer = TransformerEncoder(self.labelNum, self.labelEmbedding, self.hidden_dim, nheads=6, depth=2, p=0.5,max_len=self.labelEmbedding, mask='co-label')
         self.label_linear = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.labelEmbedding, self.enc_dim, nn.LeakyReLU()))
 
         self.concate_linear = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.enc_dim * 2, self.enc_dim, nn.LeakyReLU()))
@@ -77,7 +80,8 @@ class EEGEncoder(nn.Module):
         # time_step as the input sequence
         all_features = torch.cat([left_features, right_features], dim=-1)
         # print('all_feature shape:', all_features.shape)  # [64, 30, 150]
-        time_enc = self.time_transformer_enc(all_features)
+        time_project_feature = self.time_linear_projection(all_features) # [64, 30, 300]
+        time_enc = self.time_transformer_enc(time_project_feature)
         time_enc = self.time_linear(time_enc)
         # print('time_enc shape:', time_enc.shape) # [64, 30, 256]
 
@@ -87,7 +91,8 @@ class EEGEncoder(nn.Module):
         all_features = torch.reshape(all_features, [all_features.shape[0], all_features.shape[1],
                                                     all_features.shape[2] * all_features.shape[3]])
         # print('all_feature shape:', all_features.shape) # [64, 30, 150]
-        channel_enc = self.channel_transformer_enc(all_features)
+        channel_project_feature = self.channel_linear_projection(all_features) # [64, 30, 300]
+        channel_enc = self.channel_transformer_enc(channel_project_feature)
         # print('channel_enc shape:', channel_enc.shape) # [64, 30, 150]
         channel_enc = self.channel_linear(channel_enc)  # [64, 30, 256]
 
