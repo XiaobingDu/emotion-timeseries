@@ -88,7 +88,7 @@ args['feature_len'] = 150  # 30time_steps * 5 = 150
 args['label_num'] = 9  # 9
 args['label_em'] = 300  # 300, Glove embedding
 args['enc_dim'] = 256
-args['hidden_dim'] = 256
+args['hidden_dim'] = 1024
 args['attn_len'] = FLAGS.attn_len
 args['dropout_prob'] = FLAGS.dropout
 args['use_cuda'] = True

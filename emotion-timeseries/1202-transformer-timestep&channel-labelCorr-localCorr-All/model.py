@@ -30,7 +30,7 @@ class EEGEncoder(nn.Module):
         self.labelNum = args['label_num'] # 9
         self.labelEmbedding = args['label_em'] # 300, Glove embedding
         self.enc_dim = args['enc_dim'] # 256
-        self.hidden_dim = args['hidden_dim'] # 256
+        self.hidden_dim = args['hidden_dim'] # 1024
         self.attn_len = args['attn_len']
         self.dropout= args['dropout_prob']
 
