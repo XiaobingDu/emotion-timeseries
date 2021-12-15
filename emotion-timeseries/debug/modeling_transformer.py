@@ -123,8 +123,8 @@ class MultiHeadAttention(nn.Module):
 
         if self.mask == 'co-label':
             adj_file = 'embedding/positiveEmotion_adj.pkl'
-            mask = colabelMask(t=0.4, adj_file=adj_file)
-            # print(mask)
+            mask = colabelMask(t=0.5, adj_file=adj_file)
+            print(mask)
             score = score.double()
             mask = torch.as_tensor(mask, dtype=torch.double).cuda()
             score = score + mask
