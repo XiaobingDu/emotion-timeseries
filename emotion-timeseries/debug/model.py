@@ -160,8 +160,8 @@ class EEGEncoder(nn.Module):
         # time_step as the input sequence
         all_features = torch.cat([left_features, right_features], dim=-1)
         # print('all_feature shape:', all_features.shape)  # [64, 30, 150]
-        time_all_features = self.time_linear_projection(all_features) # [64, 30, 300]
-        time_enc = self.time_transformer_enc(time_all_features)
+        time_project_features = self.time_linear_projection(all_features) # [64, 30, 300]
+        time_enc = self.time_transformer_enc(time_project_features)
         time_enc = self.time_linear(time_enc)
         # print('time_enc shape:', time_enc.shape) # [64, 30, 256]
 
@@ -175,9 +175,9 @@ class EEGEncoder(nn.Module):
                                                     all_features.shape[2] * all_features.shape[3]])
         print('all_feature shape:', all_features.shape)        # print('all_feature shape:', all_features.shape) # [64, 30, 150]
 
-        channel_all_features = self.channel_linear_projection(all_features) # [64, 30, 300]
-        print('all_feature shape:', channel_all_features.shape)
-        channel_enc = self.channel_transformer_enc(channel_all_features)
+        channel_project_features = self.channel_linear_projection(all_features) # [64, 30, 300]
+        print('all_feature shape:', channel_project_features.shape)
+        channel_enc = self.channel_transformer_enc(channel_project_features)
         # print('channel_enc shape:', channel_enc.shape) # [64, 30, 150]
         channel_enc = self.channel_linear(channel_enc)  # [64, 30, 256]
 
