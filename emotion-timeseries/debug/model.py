@@ -217,7 +217,7 @@ class EEGEncoder(nn.Module):
         context_feature = concate_enc * attn # [64, 30, 256]
 
         # print(context_feature.shape)
-        predicted = self.out(context_feature).view(batch_size, 70, -1)
+        predicted = self.out(context_feature).view(batch_size,context_feature.shape[1] , -1)
         # print('predicted shape:', predicted.shape) # [64, 30, 9]
         # predicted_last = predicted[:, -1, :]
         predicted_last = predicted.mean(1) # [64, 9]
