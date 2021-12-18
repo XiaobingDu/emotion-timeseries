@@ -168,15 +168,12 @@ class EEGEncoder(nn.Module):
         # reshape the data to use the channel as the input sequence
         all_features = torch.reshape(all_features,
                                      [all_features.shape[0], all_features.shape[1], int(all_features.shape[2] / 5), 5])
-        print('all_feature shape:', all_features.shape)
         all_features = all_features.permute(0, 2, 1, 3)
-        print('all_feature shape:', all_features.shape)
         all_features = torch.reshape(all_features, [all_features.shape[0], all_features.shape[1],
                                                     all_features.shape[2] * all_features.shape[3]])
-        print('all_feature shape:', all_features.shape)        # print('all_feature shape:', all_features.shape) # [64, 30, 150]
+        # print('all_feature shape:', all_features.shape)        # print('all_feature shape:', all_features.shape) # [64, 30, 150]
 
         channel_project_features = self.channel_linear_projection(all_features) # [64, 30, 300]
-        print('all_feature shape:', channel_project_features.shape)
         channel_enc = self.channel_transformer_enc(channel_project_features)
         # print('channel_enc shape:', channel_enc.shape) # [64, 30, 150]
         channel_enc = self.channel_linear(channel_enc)  # [64, 30, 256]
