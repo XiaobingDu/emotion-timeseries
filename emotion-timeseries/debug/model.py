@@ -172,6 +172,7 @@ class EEGEncoder(nn.Module):
                                                     all_features.shape[2] * all_features.shape[3]])
         # print('all_feature shape:', all_features.shape) # [64, 30, 150]
         all_features = self.channel_linear_projection(all_features) # [64, 30, 300]
+        print('all_feature shape:', all_features.shape)
         channel_enc = self.channel_transformer_enc(all_features)
         # print('channel_enc shape:', channel_enc.shape) # [64, 30, 150]
         channel_enc = self.channel_linear(channel_enc)  # [64, 30, 256]
