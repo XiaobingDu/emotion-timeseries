@@ -159,7 +159,7 @@ class EEGEncoder(nn.Module):
 
         # time_step as the input sequence
         all_features = torch.cat([left_features, right_features], dim=-1)
-        # print('all_feature shape:', all_features.shape)  # [64, 30, 150]
+        print('all_feature shape:', all_features.shape)  # [64, 30, 150]
         all_features = self.time_linear_projection(all_features) # [64, 30, 300]
         time_enc = self.time_transformer_enc(all_features)
         time_enc = self.time_linear(time_enc)
