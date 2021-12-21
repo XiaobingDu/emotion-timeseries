@@ -166,7 +166,7 @@ elif args['optimizer'] == 'adam':
 elif args['optimizer'] == 'sgd':
     optimizer = torch.optim.SGD(net.parameters(), lr=lr, momentum=0.9, weight_decay=1e-4)
 
-scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.8)
+scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.1)
 
 kl_div = torch.nn.KLDivLoss(size_average=True, reduce=True)
 BCE = torch.nn.BCEWithLogitsLoss()

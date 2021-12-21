@@ -94,12 +94,9 @@ def colabelMask(t, adj_file):
     import pickle
     result = pickle.load(open(adj_file, 'rb'), encoding='iso-8859-1')
     adj = result['adj']
-    print(adj)
     nums = result['nums']
-    print(nums)
     nums = nums[:, np.newaxis]
     adj = adj / nums
-    print(adj)
     adj = adj + np.identity(9, np.int)
     # print('adj.....', adj)
     adj[adj < t] = -float('inf')
