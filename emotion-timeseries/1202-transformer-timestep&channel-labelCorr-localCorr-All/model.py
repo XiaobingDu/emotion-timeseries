@@ -115,8 +115,9 @@ class EEGEncoder(nn.Module):
         # self.G = torch.matmul(time_enc, label_enc)
         # self.G = torch.matmul(channel_enc, label_enc)
         self.G = torch.matmul(concate_enc, label_enc) # [64, 30, 9]
-        self.G = self.G.permute(0, 2, 1)
-        # learn the higher-order correlation matrix
+
+        # learn the higher-order correlation matrix by learning the local-correlation
+        # self.G = self.G.permute(0, 2, 1)
         # self.M = self.convlayer(self.G)
         # self.M = self.M.permute(0, 2, 1) # [64, 30, 9]
 
