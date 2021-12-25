@@ -36,7 +36,7 @@ def accuracyMacro(y_test, predictions):
 
     accuracymacro = float(accuracymacro / len(TP))
 
-    print('******', per_accuracy)
+    # print('******', per_accuracy)
     return accuracymacro, per_accuracy
 
 
@@ -219,7 +219,7 @@ def fbetaMacro(y_test, predictions, beta=1):
             per_f1.append(num / den)
 
     fbetamacro = fbetamacro / len(TP)
-    print('******', per_f1)
+    # print('******', per_f1)
     return fbetamacro, per_f1
 
 
