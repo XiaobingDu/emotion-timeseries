@@ -544,12 +544,6 @@ for epoch_num in range(num_epochs):
         val_precisionMacro, val_per_P = precisionMacro(dom_label, predict_sig)
         sum_precisionMacro += val_precisionMacro
         val_per_P = torch.tensor(val_per_P)
-        print('----', len(val_per_P))
-        print('----', val_per_P.shape)
-        print(val_per_P)
-        print('----', len(sum_per_P))
-        print('----', sum_per_P.shape)
-        print(sum_per_P)
         sum_per_P += val_per_P
         val_precisionMicro = precisionMicro(dom_label, predict_sig)
         sum_precisionMicro += val_accuracyMicro
