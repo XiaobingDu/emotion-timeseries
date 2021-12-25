@@ -166,7 +166,7 @@ elif args['optimizer'] == 'adam':
 elif args['optimizer'] == 'sgd':
     optimizer = torch.optim.SGD(net.parameters(), lr=lr, momentum=0.9, weight_decay=1e-4)
 
-scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.1) #0.8
+scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.1)
 
 kl_div = torch.nn.KLDivLoss(size_average=True, reduce=True)
 BCE = torch.nn.BCEWithLogitsLoss()
@@ -209,10 +209,6 @@ epoch_precisionMicro = 0
 epoch_recallMacro = 0
 epoch_recallMicro = 0
 epoch_fbetaMacro = 0
-epoch_per_A = torch.zeros(9)
-epoch_per_P = torch.zeros(9)
-epoch_per_R = torch.zeros(9)
-epoch_per_F1 = torch.zeros(9)
 
 for epoch_num in range(num_epochs):
     #    """Sets the learning rate to the initial LR decayed by 10 every 30 epochs"""
@@ -307,13 +303,13 @@ for epoch_num in range(num_epochs):
         train_rankingLoss = rankingLoss(dom_label, predict_sig)
         #
         # # label-based-classification
-        train_accuracyMacro, train_per_A = accuracyMacro(dom_label, predict_sig)
+        train_accuracyMacro = accuracyMacro(dom_label, predict_sig)
         train_accuracyMicro = accuracyMicro(dom_label, predict_sig)
-        train_precisionMacro, train_per_P = precisionMacro(dom_label, predict_sig)
+        train_precisionMacro = precisionMacro(dom_label, predict_sig)
         train_precisionMicro = precisionMicro(dom_label, predict_sig)
-        train_recallMacro, train_per_R = recallMacro(dom_label, predict_sig)
+        train_recallMacro = recallMacro(dom_label, predict_sig)
         train_recallMicro = recallMicro(dom_label, predict_sig)
-        train_fbetaMacro, train_per_F1 = fbetaMacro(dom_label, predict_sig)
+        train_fbetaMacro = fbetaMacro(dom_label, predict_sig)
         train_fbetaMicro = fbetaMicro(dom_label, predict_sig)
 
         # results
@@ -357,7 +353,6 @@ for epoch_num in range(num_epochs):
                   "recallMicro= {:.4f}".format(train_recallMicro),
                   "f-1Macro= {:.4f}".format(train_fbetaMacro),
                   "f-1Micro= {:.4f}".format(train_fbetaMicro))
-
 
             result = codecs.open(FLAGS.save_file, 'a', 'utf-8')
     #         result.write("\n------------------------------------------------------------------\n")
@@ -448,10 +443,6 @@ for epoch_num in range(num_epochs):
     sum_recallMacro = 0
     sum_recallMicro = 0
     sum_fbetaMacro = 0
-    sum_per_A = torch.zeros(9)
-    sum_per_P = torch.zeros(9)
-    sum_per_R = torch.zeros(9)
-    sum_per_F1 = torch.zeros(9)
     cnt = 0
 
     for i, data in enumerate(valDataloader):
@@ -535,24 +526,20 @@ for epoch_num in range(num_epochs):
         sum_rankingLoss += val_rankingLoss
 
         # label-based-classification
-        val_accuracyMacro, val_per_A = accuracyMacro(dom_label, predict_sig)
+        val_accuracyMacro = accuracyMacro(dom_label, predict_sig)
         sum_accuracyMacro += val_accuracyMacro
-        sum_per_A += val_per_A
         val_accuracyMicro = accuracyMicro(dom_label, predict_sig)
         sum_accuracyMicro += val_accuracyMicro
-        val_precisionMacro, val_per_P = precisionMacro(dom_label, predict_sig)
+        val_precisionMacro = precisionMacro(dom_label, predict_sig)
         sum_precisionMacro += val_precisionMacro
-        sum_per_P += val_per_P
         val_precisionMicro = precisionMicro(dom_label, predict_sig)
         sum_precisionMicro += val_accuracyMicro
-        val_recallMacro, val_per_R = recallMacro(dom_label, predict_sig)
-        sum_per_R += val_per_R
+        val_recallMacro = recallMacro(dom_label, predict_sig)
         sum_recallMacro += val_recallMacro
         val_recallMicro = recallMicro(dom_label, predict_sig)
         sum_recallMicro += val_recallMicro
-        val_fbetaMacro, val_per_F1 = fbetaMacro(dom_label, predict_sig)
+        val_fbetaMacro = fbetaMacro(dom_label, predict_sig)
         sum_fbetaMacro += val_fbetaMacro
-        sum_per_F1 += val_per_F1
         val_fbetaMicro = fbetaMicro(dom_label, predict_sig)
         sum_fbetaMicro += val_fbetaMicro
 
@@ -696,8 +683,6 @@ for epoch_num in range(num_epochs):
     epoch_rankingLoss += ave_rankingLoss
     ave_accuracyMacro = sum_accuracyMacro / cnt
     epoch_accuracyMacro += ave_accuracyMacro
-    ave_per_A = sum_per_A / cnt
-    epoch_per_A += ave_per_A
     ave_fbetaMicro = sum_fbetaMicro / cnt
     epoch_fbetaMicro += ave_fbetaMicro
     ave_coverage = sum_coverage / cnt
@@ -706,20 +691,14 @@ for epoch_num in range(num_epochs):
     epoch_accuracyMicro += ave_accuracyMicro
     ave_precisionMacro = sum_precisionMacro / cnt
     epoch_precisionMacro += ave_precisionMacro
-    ave_per_P = sum_per_P / cnt
-    epoch_per_P += ave_per_P
     ave_precisionMicro = sum_precisionMicro / cnt
     epoch_precisionMicro += ave_precisionMicro
     ave_recallMacro = sum_recallMacro / cnt
     epoch_recallMacro += ave_recallMacro
-    ave_per_R = sum_per_R / cnt
-    epoch_per_R += ave_per_R
     ave_recallMicro = sum_recallMicro / cnt
     epoch_recallMicro += ave_recallMicro
     ave_fbetaMacro = sum_fbetaMacro / cnt
     epoch_fbetaMacro += ave_fbetaMacro
-    ave_per_F1 = sum_per_F1 / cnt
-    epoch_per_F1 += ave_per_F1
 
     result.write("\n================================================================================\n")
     result.write('Epoch: {epoch:.1f}\t'
@@ -775,82 +754,6 @@ for epoch_num in range(num_epochs):
                                                                          epoch_recallMicro=ave_recallMicro,
                                                                          epoch_fbetaMacro=ave_fbetaMacro,
                                                                          epoch_fbetaMicro=ave_fbetaMicro))
-
-    result.write("\n================================================================================\n")
-    result.write('Epoch: {epoch:.1f}\t'
-                 'Val epoch_per_A1: {epoch_per_A1:.4f}\t'
-                 'Val epoch_per_A2: {epoch_per_A2:.4f}\t'
-                 'Val epoch_per_A3: {epoch_per_A3:.4f}\t'
-                 'Val epoch_per_A4: {epoch_per_A4:.4f}\t'
-                 'Val epoch_per_A5: {epoch_per_A5:.4f}\t'
-                 'Val epoch_per_A6: {epoch_per_A6:.4f}\t'
-                 'Val epoch_per_A7: {epoch_per_A7:.4f}\t'
-                 'Val epoch_per_A8: {epoch_per_A8:.4f}\t'
-                 'Val epoch_per_A9: {epoch_per_A9:.4f}\t'
-                 'Val epoch_per_P1: {epoch_per_P1:.4f}\t'
-                 'Val epoch_per_P2: {epoch_per_P2:.4f}\t'
-                 'Val epoch_per_P3: {epoch_per_P3:.4f}\t'
-                 'Val epoch_per_P4: {epoch_per_P4:.4f}\t'
-                 'Val epoch_per_P5: {epoch_per_P5:.4f}\t'
-                 'Val epoch_per_P6: {epoch_per_P6:.4f}\t'
-                 'Val epoch_per_P7: {epoch_per_P7:.4f}\t'
-                 'Val epoch_per_P8: {epoch_per_P8:.4f}\t'
-                 'Val epoch_per_P9: {epoch_per_P9:.4f}\t'
-                 'Val epoch_per_R1: {epoch_per_R1:.4f}\t'
-                 'Val epoch_per_R2: {epoch_per_R2:.4f}\t'
-                 'Val epoch_per_R3: {epoch_per_R3:.4f}\t'
-                 'Val epoch_per_R4: {epoch_per_R4:.4f}\t'
-                 'Val epoch_per_R5: {epoch_per_R5:.4f}\t'
-                 'Val epoch_per_R6: {epoch_per_R6:.4f}\t'
-                 'Val epoch_per_R7: {epoch_per_R7:.4f}\t'
-                 'Val epoch_per_R8: {epoch_per_R8:.4f}\t'
-                 'Val epoch_per_R9: {epoch_per_R9:.4f}\t'
-                 'Val epoch_per_F11: {epoch_per_F11:.4f}\t'
-                 'Val epoch_per_F12: {epoch_per_F12:.4f}\t'
-                 'Val epoch_per_F13: {epoch_per_F13:.4f}\t'
-                 'Val epoch_per_F14: {epoch_per_F14:.4f}\t'
-                 'Val epoch_per_F15: {epoch_per_F15:.4f}\t'
-                 'Val epoch_per_F16: {epoch_per_F16:.4f}\t'
-                 'Val epoch_per_F17: {epoch_per_F17:.4f}\t'
-                 'Val epoch_per_F18: {epoch_per_F18:.4f}\t'
-                 'Val epoch_per_F19: {epoch_per_F19:.4f}\t'.format(epoch=epoch_num + 1,
-                                                                         epoch_per_A1=epoch_per_A[0],
-                                                                         epoch_per_A2=epoch_per_A[1],
-                                                                         epoch_per_A3=epoch_per_A[2],
-                                                                         epoch_per_A4=epoch_per_A[3],
-                                                                         epoch_per_A5=epoch_per_A[4],
-                                                                         epoch_per_A6=epoch_per_A[5],
-                                                                         epoch_per_A7=epoch_per_A[6],
-                                                                         epoch_per_A8=epoch_per_A[7],
-                                                                         epoch_per_A9=epoch_per_A[8],
-                                                                         epoch_per_P1=epoch_per_P[0],
-                                                                         epoch_per_P2=epoch_per_P[1],
-                                                                         epoch_per_P3=epoch_per_P[2],
-                                                                         epoch_per_P4=epoch_per_P[3],
-                                                                         epoch_per_P5=epoch_per_P[4],
-                                                                         epoch_per_P6=epoch_per_P[5],
-                                                                         epoch_per_P7=epoch_per_P[6],
-                                                                         epoch_per_P8=epoch_per_P[7],
-                                                                         epoch_per_P9=epoch_per_P[8],
-                                                                         epoch_per_R1=epoch_per_R[0],
-                                                                         epoch_per_R2=epoch_per_R[1],
-                                                                         epoch_per_R3=epoch_per_R[2],
-                                                                         epoch_per_R4=epoch_per_R[3],
-                                                                         epoch_per_R5=epoch_per_R[4],
-                                                                         epoch_per_R6=epoch_per_R[5],
-                                                                         epoch_per_R7=epoch_per_R[6],
-                                                                         epoch_per_R8=epoch_per_R[7],
-                                                                         epoch_per_R9=epoch_per_R[8],
-                                                                         epoch_per_F11=epoch_per_F1[0],
-                                                                         epoch_per_F12=epoch_per_F1[1],
-                                                                         epoch_per_F13=epoch_per_F1[2],
-                                                                         epoch_per_F14=epoch_per_F1[3],
-                                                                         epoch_per_F15=epoch_per_F1[4],
-                                                                         epoch_per_F16=epoch_per_F1[5],
-                                                                         epoch_per_F17=epoch_per_F1[6],
-                                                                         epoch_per_F18=epoch_per_F1[7],
-                                                                         epoch_per_F19=epoch_per_F1[8],
-                                                                        ))
 
     # Pearson correlation
     emopcc += pearsonr(dis_prediction.cpu().detach().numpy(), dis.cpu().detach().numpy())[0]
@@ -916,18 +819,14 @@ final_oneError = epoch_oneError / num_epochs
 final_averagePrecision = epoch_averagePrecision / num_epochs
 final_rankingLoss = epoch_rankingLoss / num_epochs
 final_accuracyMacro = epoch_accuracyMacro / num_epochs
-final_per_A = epoch_per_A / num_epochs
 final_fbetaMicro = epoch_fbetaMicro / num_epochs
 final_coverage = epoch_coverage / num_epochs
 final_accuracyMicro = epoch_accuracyMicro / num_epochs
 final_precisionMacro = epoch_precisionMacro / num_epochs
-final_per_P = epoch_per_P / num_epochs
 final_precisionMicro = epoch_precisionMicro / num_epochs
 final_recallMacro = epoch_recallMacro / num_epochs
-final_per_R = epoch_per_R / num_epochs
 final_recallMicro = epoch_recallMicro / num_epochs
 final_fbetaMacro = epoch_fbetaMacro / num_epochs
-final_per_F1 = epoch_per_F1 / num_epochs
 
 result.write("\n================================================================================\n")
 result.write('Epoch: {epoch:.1f}\t'
@@ -983,82 +882,6 @@ result.write('Epoch: {epoch:.1f}\t'
                                                                      final_recallMicro=final_recallMicro,
                                                                      final_fbetaMacro=final_fbetaMacro,
                                                                      final_fbetaMicro=final_fbetaMicro))
-
-result.write("\n================================================================================\n")
-result.write('Epoch: {epoch:.1f}\t'
-             'Val final_per_A1: {final_per_A1:.4f}\t'
-             'Val final_per_A2: {final_per_A2:.4f}\t'
-             'Val final_per_A3: {final_per_A3:.4f}\t'
-             'Val final_per_A4: {final_per_A4:.4f}\t'
-             'Val final_per_A5: {final_per_A5:.4f}\t'
-             'Val final_per_A6: {final_per_A6:.4f}\t'
-             'Val final_per_A7: {final_per_A7:.4f}\t'
-             'Val final_per_A8: {final_per_A8:.4f}\t'
-             'Val final_per_A9: {final_per_A9:.4f}\t'
-             'Val final_per_P1: {final_per_P1:.4f}\t'
-             'Val final_per_P2: {final_per_P2:.4f}\t'
-             'Val final_per_P3: {final_per_P3:.4f}\t'
-             'Val final_per_P4: {final_per_P4:.4f}\t'
-             'Val final_per_P5: {final_per_P5:.4f}\t'
-             'Val final_per_P6: {final_per_P6:.4f}\t'
-             'Val final_per_P7: {final_per_P7:.4f}\t'
-             'Val final_per_P8: {final_per_P8:.4f}\t'
-             'Val final_per_P9: {final_per_P9:.4f}\t'
-             'Val final_per_R1: {final_per_R1:.4f}\t'
-             'Val final_per_R2: {final_per_R2:.4f}\t'
-             'Val final_per_R3: {final_per_R3:.4f}\t'
-             'Val final_per_R4: {final_per_R4:.4f}\t'
-             'Val final_per_R5: {final_per_R5:.4f}\t'
-             'Val final_per_R6: {final_per_R6:.4f}\t'
-             'Val final_per_R7: {final_per_R7:.4f}\t'
-             'Val final_per_R8: {final_per_R8:.4f}\t'
-             'Val final_per_R9: {final_per_R9:.4f}\t'
-             'Val final_per_F11: {final_per_F11:.4f}\t'
-             'Val final_per_F12: {final_per_F12:.4f}\t'
-             'Val final_per_F13: {final_per_F13:.4f}\t'
-             'Val final_per_F14: {final_per_F14:.4f}\t'
-             'Val final_per_F15: {final_per_F15:.4f}\t'
-             'Val final_per_F16: {final_per_F16:.4f}\t'
-             'Val final_per_F17: {final_per_F17:.4f}\t'
-             'Val final_per_F18: {final_per_F18:.4f}\t'
-             'Val final_per_F19: {final_per_F19:.4f}\t'.format(epoch=epoch_num + 1,
-                                                                     final_per_A1=final_per_A[0],
-                                                                     final_per_A2=final_per_A[1],
-                                                                     final_per_A3=final_per_A[2],
-                                                                     final_per_A4=final_per_A[3],
-                                                                     final_per_A5=final_per_A[4],
-                                                                     final_per_A6=final_per_A[5],
-                                                                     final_per_A7=final_per_A[6],
-                                                                     final_per_A8=final_per_A[7],
-                                                                     final_per_A9=final_per_A[8],
-                                                                     final_per_P1=final_per_P[0],
-                                                                     final_per_P2=final_per_P[1],
-                                                                     final_per_P3=final_per_P[2],
-                                                                     final_per_P4=final_per_P[3],
-                                                                     final_per_P5=final_per_P[4],
-                                                                     final_per_P6=final_per_P[5],
-                                                                     final_per_P7=final_per_P[6],
-                                                                     final_per_P8=final_per_P[7],
-                                                                     final_per_P9=final_per_P[8],
-                                                                     final_per_R1=final_per_R[0],
-                                                                     final_per_R2=final_per_R[1],
-                                                                     final_per_R3=final_per_R[2],
-                                                                     final_per_R4=final_per_R[3],
-                                                                     final_per_R5=final_per_R[4],
-                                                                     final_per_R6=final_per_R[5],
-                                                                     final_per_R7=final_per_R[6],
-                                                                     final_per_R8=final_per_R[7],
-                                                                     final_per_R9=final_per_R[8],
-                                                                     final_per_F11=final_per_F1[0],
-                                                                     final_per_F12=final_per_F1[1],
-                                                                     final_per_F13=final_per_F1[2],
-                                                                     final_per_F14=final_per_F1[3],
-                                                                     final_per_F15=final_per_F1[4],
-                                                                     final_per_F16=final_per_F1[5],
-                                                                     final_per_F17=final_per_F1[6],
-                                                                     final_per_F18=final_per_F1[7],
-                                                                     final_per_F19=final_per_F1[8],
-                                                                    ))
 
 # # testing
 # net = EEGEncoder(args)

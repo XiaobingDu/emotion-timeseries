@@ -36,6 +36,7 @@ def multilabelConfussionMatrix(y_test, predictions):
     FN = np.zeros(y_test.shape[1])
 
     for j in range(y_test.shape[1]):
+        print('------',j)
         TPaux = 0
         FPaux = 0
         TNaux = 0
@@ -57,7 +58,10 @@ def multilabelConfussionMatrix(y_test, predictions):
         FP[j] = FPaux
         TN[j] = TNaux
         FN[j] = FNaux
-
+    print(TP)
+    print(FP)
+    print(TN)
+    print(FN)
     return TP, FP, TN, FN
 
 
@@ -68,10 +72,16 @@ def multilabelMicroConfussionMatrix(TP, FP, TN, FN):
     FNMicro = 0.0
 
     for i in range(len(TP)):
+        print('*****',i)
         TPMicro = TPMicro + TP[i]
         FPMicro = FPMicro + FP[i]
         TNMicro = TNMicro + TN[i]
         FNMicro = FNMicro + FN[i]
+    print('Micro ConfuseMatrix')
+    print(TPMicro)
+    print(FPMicro)
+    print(TNMicro)
+    print(FNMicro)
 
     return TPMicro, FPMicro, TNMicro, FNMicro
 

@@ -34,15 +34,15 @@ class EEGEncoder(nn.Module):
         self.attn_len = args['attn_len']
         self.dropout= args['dropout_prob']
 
-        self.time_linear_projection = nn.Sequential(nn.Dropout(self.dropout),nn.Linear(self.feature_dim, self.project_dim, nn.LeakyReLU()))
-        self.time_transformer_enc = TransformerEncoder(self.time_steps, self.project_dim, self.hidden_dim,  nheads=6, depth=2, p=0.1, max_len=self.project_dim)
-        self.time_linear = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.project_dim, self.enc_dim, nn.LeakyReLU()))
+        # self.time_linear_projection = nn.Sequential(nn.Dropout(self.dropout),nn.Linear(self.feature_dim, self.project_dim, nn.LeakyReLU()))
+        self.time_transformer_enc = TransformerEncoder(self.time_steps, self.feature_dim, self.hidden_dim,  nheads=6, depth=2, p=0.5, max_len=self.feature_dim)
+        self.time_linear = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.feature_dim, self.enc_dim, nn.LeakyReLU()))
 
-        self.channel_linear_projection = nn.Sequential(nn.Dropout(self.dropout),nn.Linear(self.feature_len, self.project_dim, nn.LeakyReLU()))
-        self.channel_transformer_enc = TransformerEncoder(self.channels, self.project_dim, self.hidden_dim, nheads=6,depth=2, p=0.1, max_len=self.project_dim)
-        self.channel_linear = nn.Sequential(nn.Dropout(self.dropout),nn.Linear(self.project_dim, self.enc_dim, nn.LeakyReLU()))
+        # self.channel_linear_projection = nn.Sequential(nn.Dropout(self.dropout),nn.Linear(self.feature_len, self.project_dim, nn.LeakyReLU()))
+        self.channel_transformer_enc = TransformerEncoder(self.channels, self.feature_len, self.hidden_dim, nheads=6,depth=2, p=0.5, max_len=self.feature_len)
+        self.channel_linear = nn.Sequential(nn.Dropout(self.dropout),nn.Linear(self.feature_len, self.enc_dim, nn.LeakyReLU()))
 
-        self.label_transformer = TransformerEncoder(self.labelNum, self.labelEmbedding, self.hidden_dim, nheads=6, depth=2, p=0.1,max_len=self.labelEmbedding, mask='co-label')
+        self.label_transformer = TransformerEncoder(self.labelNum, self.labelEmbedding, self.hidden_dim, nheads=6, depth=2, p=0.5,max_len=self.labelEmbedding, mask='co-label')
         self.label_linear = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.labelEmbedding, self.enc_dim, nn.LeakyReLU()))
 
         self.concate_linear = nn.Sequential(nn.Dropout(self.dropout), nn.Linear(self.enc_dim * 2, self.enc_dim, nn.LeakyReLU()))
@@ -80,8 +80,8 @@ class EEGEncoder(nn.Module):
         # time_step as the input sequence
         all_features = torch.cat([left_features, right_features], dim=-1)
         # print('all_feature shape:', all_features.shape)  # [64, 30, 150]
-        time_project_feature = self.time_linear_projection(all_features) # [64, 30, 300]
-        time_enc = self.time_transformer_enc(time_project_feature)
+        # time_project_feature = self.time_linear_projection(all_features) # [64, 30, 300]
+        time_enc = self.time_transformer_enc(all_features)
         time_enc = self.time_linear(time_enc)
         # print('time_enc shape:', time_enc.shape) # [64, 30, 256]
 
@@ -91,8 +91,8 @@ class EEGEncoder(nn.Module):
         all_features = torch.reshape(all_features, [all_features.shape[0], all_features.shape[1],
                                                     all_features.shape[2] * all_features.shape[3]])
         # print('all_feature shape:', all_features.shape) # [64, 30, 150]
-        channel_project_feature = self.channel_linear_projection(all_features) # [64, 30, 300]
-        channel_enc = self.channel_transformer_enc(channel_project_feature)
+        # channel_project_feature = self.channel_linear_projection(all_features) # [64, 30, 300]
+        channel_enc = self.channel_transformer_enc(all_features)
         # print('channel_enc shape:', channel_enc.shape) # [64, 30, 150]
         channel_enc = self.channel_linear(channel_enc)  # [64, 30, 256]
 
@@ -117,10 +117,10 @@ class EEGEncoder(nn.Module):
         self.G = torch.matmul(concate_enc, label_enc) # [64, 30, 9]
         self.G = self.G.permute(0, 2, 1)
         # learn the higher-order correlation matrix
-        self.M = self.convlayer(self.G)
-        self.M = self.M.permute(0, 2, 1) # [64, 30, 9]
+        # self.M = self.convlayer(self.G)
+        # self.M = self.M.permute(0, 2, 1) # [64, 30, 9]
 
-        attn = torch.nn.functional.tanh(torch.nn.functional.softmax(self.M, dim=-1)) # [64, 30, 9]
+        attn = torch.nn.functional.tanh(torch.nn.functional.softmax(self.G, dim=-1)) # [64, 30, 9]
         attn, _ = attn.max(2) # [64, 30]
         attn = torch.reshape(attn,[attn.shape[0],attn.shape[1],-1]) # [64, 30, 1]
 
