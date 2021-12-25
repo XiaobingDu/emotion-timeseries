@@ -243,7 +243,7 @@ for epoch_num in range(num_epochs):
         right.requires_grad_()
 
         # Forward pass
-        predict = net(train, left, right, labelEmbedding)
+        predict,attention = net(train, left, right, labelEmbedding)
 
         # for loss1
         # softmax layer
@@ -468,7 +468,7 @@ for epoch_num in range(num_epochs):
             right = torch.nn.Parameter(right).cuda()
 
         # Forward pass
-        predict = net(val, left, right, labelEmbedding)
+        predict,attention = net(val, left, right, labelEmbedding)
 
         # for loss1
         softmax = torch.nn.Softmax(dim=1)
@@ -537,21 +537,25 @@ for epoch_num in range(num_epochs):
         # label-based-classification
         val_accuracyMacro, val_per_A = accuracyMacro(dom_label, predict_sig)
         sum_accuracyMacro += val_accuracyMacro
+        val_per_A = torch.tensor(val_per_A)
         sum_per_A += val_per_A
         val_accuracyMicro = accuracyMicro(dom_label, predict_sig)
         sum_accuracyMicro += val_accuracyMicro
         val_precisionMacro, val_per_P = precisionMacro(dom_label, predict_sig)
         sum_precisionMacro += val_precisionMacro
+        val_per_P = torch.tensor(val_per_P)
         sum_per_P += val_per_P
         val_precisionMicro = precisionMicro(dom_label, predict_sig)
         sum_precisionMicro += val_accuracyMicro
         val_recallMacro, val_per_R = recallMacro(dom_label, predict_sig)
+        val_per_R = torch.tensor(val_per_R)
         sum_per_R += val_per_R
         sum_recallMacro += val_recallMacro
         val_recallMicro = recallMicro(dom_label, predict_sig)
         sum_recallMicro += val_recallMicro
         val_fbetaMacro, val_per_F1 = fbetaMacro(dom_label, predict_sig)
         sum_fbetaMacro += val_fbetaMacro
+        val_per_F1 = torch.tensor(val_per_F1)
         sum_per_F1 += val_per_F1
         val_fbetaMicro = fbetaMicro(dom_label, predict_sig)
         sum_fbetaMicro += val_fbetaMicro
@@ -851,6 +855,11 @@ for epoch_num in range(num_epochs):
                                                                          epoch_per_F18=epoch_per_F1[7],
                                                                          epoch_per_F19=epoch_per_F1[8],
                                                                         ))
+
+    result.write("\n------------------------------------------------------------------\n")
+    result.write('Validation Attention:\n ')
+    result.write('Context-label Attention: \t')
+    result.write('%s\n' % attention.cpu().detach().numpy().mean(axis=0))
 
     # Pearson correlation
     emopcc += pearsonr(dis_prediction.cpu().detach().numpy(), dis.cpu().detach().numpy())[0]

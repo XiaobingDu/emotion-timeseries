@@ -138,4 +138,4 @@ class EEGEncoder(nn.Module):
         # print(predicted_last.shape)
         predict = predicted_last
 
-        return predict
+        return predict, attn
