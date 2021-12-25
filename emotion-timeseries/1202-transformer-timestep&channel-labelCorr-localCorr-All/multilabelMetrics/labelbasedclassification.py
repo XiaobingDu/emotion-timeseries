@@ -90,6 +90,8 @@ def precisionMacro(y_test, predictions):
     per_precision = []
     TP, FP, TN, FN = multilabelConfussionMatrix(y_test, predict_label)
     for i in range(len(TP)):
+        if TP[i] + FP[i] == 0:
+            per_precision.append(0)
         if TP[i] + FP[i] != 0:
             precisionmacro = precisionmacro + (TP[i] / (TP[i] + FP[i]))
             per_precision.append(TP[i] / (TP[i] + FP[i]))
@@ -147,6 +149,8 @@ def recallMacro(y_test, predictions):
     per_recall = []
     TP, FP, TN, FN = multilabelConfussionMatrix(y_test, predict_label)
     for i in range(len(TP)):
+        if TP[i] + FN[i] == 0:
+            per_recall.append(0)
         if TP[i] + FN[i] != 0:
             recallmacro = recallmacro + (TP[i] / (TP[i] + FN[i]))
             per_recall.append(TP[i] / (TP[i] + FN[i]))
@@ -208,6 +212,8 @@ def fbetaMacro(y_test, predictions, beta=1):
     for i in range(len(TP)):
         num = float((1 + pow(beta, 2)) * TP[i])
         den = float((1 + pow(beta, 2)) * TP[i] + pow(beta, 2) * FN[i] + FP[i])
+        if den == 0:
+            per_f1.append(0)
         if den != 0:
             fbetamacro = fbetamacro + num / den
             per_f1.append(num / den)
