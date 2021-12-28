@@ -154,6 +154,11 @@ def recallMacro(y_test, predictions):
     recallmacro = 0.0
     per_recall = []
     TP, FP, TN, FN = multilabelConfussionMatrix(y_test, predict_label)
+    print('Macro-R')
+    print(TP)
+    print(FP)
+    print(TN)
+    print(FN)
     for i in range(len(TP)):
         if TP[i] + FN[i] == 0:
             per_recall.append(0)
@@ -162,6 +167,7 @@ def recallMacro(y_test, predictions):
             per_recall.append(TP[i] / (TP[i] + FN[i]))
 
     recallmacro = recallmacro / len(TP)
+    print('++++++',per_recall)
     return recallmacro, per_recall
 
 
