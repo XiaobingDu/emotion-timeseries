@@ -25,10 +25,11 @@ def accuracyMacro(y_test, predictions):
     accuracymacro = 0.0
     per_accuracy = []
     TP, FP, TN, FN = multilabelConfussionMatrix(y_test, predict_label)
-    # print(TP)
-    # print(FP)
-    # print(TN)
-    # print(FN)
+    print('Macro-A')
+    print(TP)
+    print(FP)
+    print(TN)
+    print(FN)
     for i in range(len(TP)):
         accuracymacro = accuracymacro + ((TP[i] + TN[i]) / (TP[i] + FP[i] + TN[i] + FN[i]))
         # accuracy for each class
@@ -36,7 +37,7 @@ def accuracyMacro(y_test, predictions):
 
     accuracymacro = float(accuracymacro / len(TP))
 
-    # print('******', per_accuracy)
+    print('******', per_accuracy)
     return accuracymacro, per_accuracy
 
 
@@ -85,10 +86,14 @@ def precisionMacro(y_test, predictions):
     y_test = y_test.cpu().detach().numpy()
     predictions = predictions.cpu().detach().numpy()
     predict_label = np.array(predictions > 0.500, dtype=float)
-
     precisionmacro = 0.0
     per_precision = []
     TP, FP, TN, FN = multilabelConfussionMatrix(y_test, predict_label)
+    print('Macro-P')
+    print(TP)
+    print(FP)
+    print(TN)
+    print(FN)
     for i in range(len(TP)):
         if TP[i] + FP[i] == 0:
             per_precision.append(0)
@@ -97,6 +102,7 @@ def precisionMacro(y_test, predictions):
             per_precision.append(TP[i] / (TP[i] + FP[i]))
 
     precisionmacro = float(precisionmacro / len(TP))
+    print('------',per_precision)
     return precisionmacro, per_precision
 
 
