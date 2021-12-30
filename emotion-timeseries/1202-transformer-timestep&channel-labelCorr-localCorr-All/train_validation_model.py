@@ -664,7 +664,7 @@ for epoch_num in range(num_epochs):
             # result.write('att_1: \t')
             # result.write('%s\n' % att_1.cpu().detach().numpy().mean(axis=0))
         print('Validation Attention for Every Instance:\n ')
-        print('%s\n' % dom_label.cpu().detach().numpy())
+        print('%s\n' % attention.cpu().detach().numpy().mean(axis=0))
         result.write("\n*****************************************************************************\n")
         result.write('Validation Attention for Every Instance:\n ')
         result.write('%s\n' % dom_label.cpu().detach().numpy())
