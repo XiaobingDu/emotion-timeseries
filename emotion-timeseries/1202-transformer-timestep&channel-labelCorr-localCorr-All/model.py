@@ -124,7 +124,7 @@ class EEGEncoder(nn.Module):
         attn = torch.nn.functional.tanh(torch.nn.functional.softmax(self.G, dim=-1)) # [64, 30, 9]
         attn, _ = attn.max(2) # [64, 30]
         attn = torch.reshape(attn,[attn.shape[0],attn.shape[1],-1]) # [64, 30, 1]
-        print('*****************',attn)
+        # print('*****************',attn)
 
         # print(attn.shape)
         # print('time_enc shape:', time_enc.shape) # [64, 30, 256]
