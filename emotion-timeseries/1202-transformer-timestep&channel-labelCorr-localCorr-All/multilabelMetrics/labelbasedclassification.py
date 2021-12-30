@@ -16,7 +16,7 @@ def accuracyMacro(y_test, predictions):
         Accuracy Macro of our model
     """
     y_test = y_test.cpu().detach().numpy()
-    print(y_test)
+    # print(y_test)
     predictions = predictions.cpu().detach().numpy()
     # print('####', predictions)
     predict_label = np.array(predictions > 0.500, dtype=float)
