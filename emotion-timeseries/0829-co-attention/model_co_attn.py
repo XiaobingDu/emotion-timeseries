@@ -217,7 +217,7 @@ class MovieNet(nn.Module):
         #eq.6
         # output of cLSTM
         # [32, 10, 5]
-        enc_out, _ = self.shared_encoder(enc_input_unimodal_cat)
+        enc_out, _ = self.shared_encoder(enc_input_unimodal_cat) # [64, 20, 5]
         print('enc_out shape........', enc_out.shape)
         #eq.8
         #context vector d
@@ -225,9 +225,11 @@ class MovieNet(nn.Module):
         # [32, 10, 5]
 
         ##20220501：毕业论文修改；添加ablation study；去掉co-attention
-        context = convolve(enc_out, attn) #使用co-attention对enc_out处理
+        # context [64, 20, 5]
+        # context = convolve(enc_out, attn) #使用co-attention对enc_out处理
+
+        context = enc_out #不使用co-attention处理
         print('context shape........', context.shape)
-        # context = enc_out
         # context_feature = context.reshape(-1, 5)  # [320,5]
 
         # Decoder
