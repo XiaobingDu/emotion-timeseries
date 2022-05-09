@@ -218,7 +218,7 @@ class MovieNet(nn.Module):
         # output of cLSTM
         # [32, 10, 5]
         enc_out, _ = self.shared_encoder(enc_input_unimodal_cat) # [64, 20, 5]
-        print('enc_out shape........', enc_out.shape)
+        # print('enc_out shape........', enc_out.shape)
         #eq.8
         #context vector d
         # i.e. out[t] = a[t,0]*in[t] + ... + a[t,win_len-1]*in[t-(win_len-1)]
@@ -229,7 +229,7 @@ class MovieNet(nn.Module):
         # context = convolve(enc_out, attn) #使用co-attention对enc_out处理
 
         context = enc_out #不使用co-attention处理
-        print('context shape........', context.shape)
+        # print('context shape........', context.shape)
         # context_feature = context.reshape(-1, 5)  # [320,5]
 
         # Decoder
